@@ -1,51 +1,75 @@
-# Wamasivos AI - Individual Edition
+# Wamasivos AI - Individual Edition 🚀
 
-Plataforma inteligente de automatización de WhatsApp, recordatorios y difusión con inteligencia artificial.
+Plataforma inteligente de automatización de WhatsApp, recordatorios y difusión con inteligencia artificial. Esta versión está optimizada para ser ligera, segura y rápida.
 
-## 🚀 Características
-- **WhatsApp Engine**: Conectividad robusta con reconexión automática.
-- **Cerebro IA**: Personalidad configurable (System Prompt) y base de conocimientos externa.
-- **Aprendizaje Automático**: Capacidad de leer sitios web y aprender de ellos instantáneamente.
-- **Gestión de Recordatorios**: Programa mensajes con texto y multimedia.
-- **Difusión Masiva**: Envío a listas de contactos con velocidad controlada.
-- **Almacenamiento Optimizado**: Uso de SQLite para sesiones y base de datos (Ultra rápido).
+## 📋 Requisitos Previos
 
-## 🛠️ Tecnologías
-- **Backend**: Node.js, Express, Baileys, SQLite (better-sqlite3).
-- **Frontend**: Next.js 15, Tailwind CSS, Lucide Icons.
-- **IA**: Soporte para Groq, Gemini, OpenAI y OpenRouter.
+- **Node.js**: Versión 18 o superior.
+- **Git**: Para clonar el repositorio.
+- **API Keys**: Necesitarás al menos una llave de (Groq, Gemini, OpenAI o OpenRouter).
 
-## 📦 Instalación
+---
 
-1. Clona el repositorio:
-   ```bash
-   git clone <tu-repo>
-   cd wamasivos
-   ```
+## 🛠️ Guía de Instalación Paso a Paso
 
-2. Instala las dependencias en la raíz:
-   ```bash
-   npm install
-   ```
+### 1. Clonar el repositorio
+Abre una terminal y ejecuta:
+```bash
+git clone https://github.com/LedezmaSune/BotMaRe.git
+cd BotMaRe
+```
 
-3. Instala dependencias en backend y frontend:
-   ```bash
-   cd backend && npm install
-   cd ../frontend && npm install
-   cd ..
-   ```
+### 2. Instalar dependencias
+Instala todas las piezas del sistema con este comando en la raíz:
+```bash
+npm run install-all
+```
+*(Si no tienes ese comando, hazlo manualmente):*
+```bash
+npm install
+cd backend && npm install
+cd ../frontend && npm install
+cd ..
+```
 
-4. Configura las variables de entorno:
-   - Crea un archivo `backend/.env` basado en las necesidades de los proveedores de IA.
+### 3. Configurar las Variables de Entorno
+Crea un archivo llamado `.env` dentro de la carpeta `backend/` y añade tus llaves:
+```env
+PORT=3001
+# Elige al menos una:
+GROQ_API_KEY=tu_llave_aqui
+GEMINI_API_KEY=tu_llave_aqui
+OPENAI_API_KEY=tu_llave_aqui
+```
 
-## 🏃 Modo Desarrollo
-Desde la raíz del proyecto, ejecuta:
+### 4. Iniciar el Sistema
+Vuelve a la raíz del proyecto y arranca todo:
 ```bash
 npm run dev
 ```
 
-El sistema iniciará el Frontend en el puerto **3000** y el Backend en el puerto **3001**.
-Visita **http://localhost:3001** para la experiencia completa integrada.
+---
+
+## 📱 Cómo Vincular tu WhatsApp
+
+1. Una vez ejecutado el comando `dev`, abre tu navegador en: **http://localhost:3001**
+2. Verás una interfaz con un **Código QR**.
+3. Abre WhatsApp en tu celular -> Dispositivos Vinculados -> Vincular un dispositivo.
+4. Escanea el código QR de la pantalla.
+5. ¡Listo! Tu bot ya estará en línea.
 
 ---
-© 2026 Developed with Antigravity
+
+## 🤖 Funciones Principales
+
+- **Cerebro IA**: Configura el nombre y la personalidad de tu bot desde el panel.
+- **Aprendizaje Web**: Pega una URL en la sección de "Personalidad" y el bot aprenderá el contenido de esa web automáticamente.
+- **Difusión**: Sube una lista de números y envía mensajes masivos con soporte multimedia.
+- **Recordatorios**: Programa mensajes para que se envíen en una fecha y hora específica.
+
+## 🔒 Seguridad y Rendimiento
+- **Sesión SQLite**: Tus datos de conexión se guardan en una base de datos local cifrada dentro de `backend/data/whatsapp_auth.db`.
+- **Privacidad**: El archivo `.gitignore` está configurado para que tus contraseñas y sesiones nunca se suban a GitHub.
+
+---
+Desarrollado con ❤️ usando **Antigravity Engine**.
