@@ -191,7 +191,7 @@ export default function Home() {
 
                 <footer className="mt-20 py-8 border-t border-slate-900 text-center">
                     <p className="text-[10px] uppercase font-bold text-slate-700 tracking-[0.3em]">
-                        Powered by Antigravity Engine • © 2026
+                        Powered by Kitsune Engine • © 2026
                     </p>
                 </footer>
             </div>

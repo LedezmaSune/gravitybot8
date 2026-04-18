@@ -72,4 +72,4 @@ npm run dev
 - **Privacidad**: El archivo `.gitignore` está configurado para que tus contraseñas y sesiones nunca se suban a GitHub.
 
 ---
-Desarrollado con ❤️ usando **Antigravity Engine**.
+Desarrollado con ❤️ usando **Kitsune Engine**.
