@@ -1,0 +1,49 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch auth_info_baileys,data,dist src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "axios": "^1.15.0",
+    "better-sqlite3": "^12.8.0",
+    "cloudflared": "^0.7.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "form-data": "^4.0.5",
+    "google-tts-api": "^2.0.2",
+    "grammy": "^1.42.0",
+    "http-proxy-middleware": "^3.0.5",
+    "luxon": "^3.7.2",
+    "multer": "^2.1.1",
+    "openai": "^6.34.0",
+    "pino": "^10.3.1",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.9.36",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/hapi__boom": "^7.4.1",
+    "@types/luxon": "^3.7.1",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.6.0",
+    "@types/pino": "^7.0.4",
+    "@types/qrcode": "^1.5.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^6.0.2"
+  }
+}
