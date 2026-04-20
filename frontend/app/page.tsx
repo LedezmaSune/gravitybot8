@@ -70,9 +70,25 @@ export default function Home() {
     const handleSendMass = async (contacts: string, message: string, media: File | null) => {
         const formData = new FormData();
         const contactList = contacts
-            .split(/[\n,]+/)
-            .filter(c => c.trim())
-            .map(c => ({ number: c.trim(), name: '' }));
+            .split('\n')
+            .filter(line => line.trim())
+            .map(line => {
+                const cleanLine = line.trim();
+                if (cleanLine.includes(',')) {
+                    const parts = cleanLine.split(',');
+                    const part1 = parts[0].trim();
+                    const part2 = parts.slice(1).join(',').trim();
+                    if (/\d{8,}/.test(part1)) return { number: part1, name: part2 };
+                    return { number: part2, name: part1 };
+                }
+                const numberMatch = cleanLine.match(/\+?\d{8,15}/);
+                if (numberMatch) {
+                    const number = numberMatch[0];
+                    const name = cleanLine.replace(number, '').replace(/^[-\s]+|[-\s]+$/g, '').trim();
+                    return { number, name };
+                }
+                return { number: cleanLine, name: '' };
+            });
 
         formData.append('contacts', JSON.stringify(contactList));
         formData.append('message', message);
@@ -137,7 +153,7 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 font-sans overflow-x-hidden selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden selection:bg-cyan-500/30 transition-colors duration-300">
             <ConnectionOverlay qr={qr} status={status} />
 
             <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
@@ -149,7 +165,7 @@ export default function Home() {
                 <StatusHeader status={status} qr={qr} onCleanUploads={handleCleanUploads} />
 
                 <nav className="flex items-center justify-center mb-12">
-                    <div className="flex bg-slate-900/40 p-1.5 rounded-3xl border border-slate-800/50 backdrop-blur-xl shadow-2xl">
+                    <div className="flex bg-app-card p-1.5 rounded-3xl border border-app-border backdrop-blur-xl shadow-2xl transition-colors">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
@@ -189,8 +205,8 @@ export default function Home() {
                     )}
                 </main>
 
-                <footer className="mt-20 py-8 border-t border-slate-900 text-center">
-                    <p className="text-[10px] uppercase font-bold text-slate-700 tracking-[0.3em]">
+                <footer className="mt-20 py-8 border-t border-app-border text-center">
+                    <p className="text-[10px] uppercase font-bold text-app-text/30 tracking-[0.3em] font-mono">
                         Powered by Kitsune Engine • © 2026
                     </p>
                 </footer>

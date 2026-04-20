@@ -1,10 +1,13 @@
-import { tunnel } from 'cloudflared';
+import { bin } from 'cloudflared';
 import { EventEmitter } from 'events';
+import { spawn, ChildProcess } from 'child_process';
 
 export class TunnelService extends EventEmitter {
     private static instance: TunnelService;
-    private tunnelProcess: any = null;
+    private tunnelProcess: ChildProcess | null = null;
     private publicUrl: string | null = null;
+    private retryCount: number = 0;
+    private readonly MAX_RETRIES = 3;
 
     private constructor() {
         super();
@@ -18,66 +21,91 @@ export class TunnelService extends EventEmitter {
     }
 
     public async start(port: number): Promise<string> {
+        this.retryCount = 0;
+        return this.initializeTunnel(port);
+    }
+
+    private async initializeTunnel(port: number): Promise<string> {
         return new Promise((resolve, reject) => {
-            console.log(`[Tunnel] Starting Cloudflare Quick Tunnel for port ${port}...`);
+            console.log(`[Tunnel] Inciando Tunel Manual en puerto ${port}...`);
             
             try {
-                const tunnelInstance = tunnel({
-                    url: `http://localhost:${port}`,
+                // Command: cloudflared.exe tunnel --url http://localhost:PORT
+                const args = ['tunnel', '--url', `http://localhost:${port}`, '--protocol', 'http2'];
+                
+                this.tunnelProcess = spawn(bin, args);
+
+                this.tunnelProcess.stdout?.on('data', (data) => {
+                    const output = data.toString();
+                    // Optional: log or handle stdout if needed
                 });
-                this.tunnelProcess = tunnelInstance;
 
-                console.log("[Tunnel] Tunnel instance created, waiting for events...");
+                this.tunnelProcess.stderr?.on('data', (data) => {
+                    const output = data.toString();
+                    
+                    // Look for the URL in stderr (cloudflared logs there)
+                    const urlMatch = output.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/i);
+                    if (urlMatch && !this.publicUrl) {
+                        const url = urlMatch[0];
+                        this.publicUrl = url;
+                        console.log(`\n-----------------------------------------`);
+                        console.log(`🌍 TUNEL ACTIVADO: ${url}`);
+                        console.log(`-----------------------------------------\n`);
+                        this.emit('started', url);
+                        resolve(url);
+                    }
 
-                // Capture raw output for debugging
-                (tunnelInstance as any).addHandler((output: string) => {
-                    if (output.includes('error') || output.includes('Error') || output.includes('failed')) {
+                    if (output.includes('error') || output.includes('failed')) {
                         console.error(`[Tunnel-Log] ${output.trim()}`);
-                    } else {
-                        console.log(`[Tunnel-Log] ${output.trim()}`);
                     }
                 });
 
-                tunnelInstance.on('url', (url: string) => {
-                    this.publicUrl = url;
-                    console.log(`\n-----------------------------------------`);
-                    console.log(`🌍 TUNEL ACTIVO: ${url}`);
-                    console.log(`-----------------------------------------\n`);
-                    this.emit('started', url);
-                    resolve(url);
+                this.tunnelProcess.on('error', (err) => {
+                    console.error("[Tunnel] Error al spawnear cloudflared:", err);
+                    this.handleRestart(port, resolve, reject);
                 });
 
-                tunnelInstance.on('error', (err: any) => {
-                    console.error("[Tunnel] EVENT 'error' received:", err);
-                    reject(err);
-                });
-
-                tunnelInstance.on('exit', (code: number | null) => {
-                    console.warn(`[Tunnel] EVENT 'exit' received with code: ${code}`);
+                this.tunnelProcess.on('exit', (code) => {
                     if (!this.publicUrl) {
-                        reject(new Error(`Cloudflared process exited with code ${code} before providing a URL.`));
+                        console.warn(`[Tunnel] Proceso salio con codigo ${code} sin generar URL.`);
+                        this.handleRestart(port, resolve, reject);
+                    } else {
+                        console.log(`[Tunnel] Proceso terminado.`);
                     }
                 });
 
-                // Fail if no URL after 30 seconds
+                // Timeout
                 setTimeout(() => {
                     if (!this.publicUrl) {
-                        console.error("[Tunnel] Timeout reached: No URL was generated after 30s.");
-                        reject(new Error("Cloudflare tunnel timeout: URL not received."));
+                        console.error("[Tunnel] Tiempo limite agotado.");
+                        this.handleRestart(port, resolve, reject);
                     }
-                }, 30000);
+                }, 40000);
 
             } catch (error: any) {
-                console.error(`[Tunnel] Synchronous error during tunnel() call:`, error);
+                console.error(`[Tunnel] Error Fatal:`, error);
                 reject(error);
             }
         });
     }
 
+    private async handleRestart(port: number, resolve: any, reject: any) {
+        if (this.retryCount < this.MAX_RETRIES) {
+            this.retryCount++;
+            this.stop();
+            console.log(`[Tunnel] Reintentando (#${this.retryCount}) en 5 segundos...`);
+            setTimeout(() => {
+                this.initializeTunnel(port).then(resolve).catch(reject);
+            }, 5000);
+        } else {
+            reject(new Error("Cloudflare Tunnel no pudo iniciar."));
+        }
+    }
+
     public stop() {
         if (this.tunnelProcess) {
-            console.log(`[Tunnel] Stopping tunnel...`);
-            this.tunnelProcess.stop();
+            console.log(`[Tunnel] Cerrando proceso...`);
+            this.tunnelProcess.kill();
             this.tunnelProcess = null;
             this.publicUrl = null;
         }

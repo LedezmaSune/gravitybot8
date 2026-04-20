@@ -115,4 +115,12 @@ export class Scheduler {
             console.error("[Scheduler] Error in cleanup cycle:", error);
         }
     }
+
+    static async sendNow(reminderId: number) {
+        const reminder = db.prepare("SELECT * FROM reminders WHERE id = ?").get(reminderId) as any;
+        if (!reminder) throw new Error("Recordatorio no encontrado");
+        if (reminder.status === 'sent') throw new Error("Este recordatorio ya fue enviado");
+
+        await this.asyncBatch([reminder]);
+    }
 }

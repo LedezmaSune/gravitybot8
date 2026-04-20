@@ -2,23 +2,23 @@ import axios from 'axios';
 
 export async function scrapeUrl(url: string): Promise<string> {
     try {
-        const response = await axios.get(url, {
-            timeout: 10000,
+        // Utilizamos un servicio externo que renderiza JavaScript y extrae Markdown limpio (ideal para IA)
+        const response = await axios.get(`https://r.jina.ai/${url}`, {
+            timeout: 15000,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                // Solicitar formato limpio en markdown
+                'X-Return-Format': 'markdown'
             }
         });
 
-        const html = response.data as string;
+        const markdownText = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
         
-        // Basic cleanup: remove script, style tags and then get text
-        const cleanText = html
-            .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gmi, "")
-            .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gmi, "")
-            .replace(/<[^>]+>/g, ' ')
+        // Limpiamos espacios extras y limitamos el tamaño para no saturar la memoria
+        const cleanText = markdownText
             .replace(/\s+/g, ' ')
             .trim()
-            .substring(0, 5000); // Allow more context for knowledge base
+            .substring(0, 8000);
 
         return cleanText;
     } catch (error: any) {

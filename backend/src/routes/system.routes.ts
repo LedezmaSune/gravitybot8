@@ -8,5 +8,8 @@ export function createSystemRouter(controller: SystemController) {
     router.delete('/clean-uploads', controller.cleanUploads);
     router.post('/reset-whatsapp', controller.resetWhatsApp);
     
+    router.get('/check-update', controller.checkUpdates);
+    router.post('/apply-update', controller.applyUpdate);
+    
     return router;
 }

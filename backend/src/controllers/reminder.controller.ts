@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import path from 'path';
 import { ReminderService } from '../services/reminder.service';
 import { asyncHandler } from '../middleware/errorHandler';
+import { Scheduler } from '../modules/scheduling/scheduler';
+import { db } from '../core/memory';
 
 export class ReminderController {
     constructor(private reminderService: ReminderService) {}
@@ -37,6 +39,22 @@ export class ReminderController {
     delete = asyncHandler(async (req: Request, res: Response) => {
         const id = req.params.id;
         await this.reminderService.delete(parseInt(id as string));
+        res.json({ success: true });
+    });
+
+    update = asyncHandler(async (req: Request, res: Response) => {
+        const id = req.params.id;
+        const { chatId, text, time } = req.body;
+        
+        db.prepare('UPDATE reminders SET chatId = ?, text = ?, time = ? WHERE id = ?')
+          .run(chatId, text, time, id);
+          
+        res.json({ success: true });
+    });
+
+    sendNow = asyncHandler(async (req: Request, res: Response) => {
+        const id = req.params.id;
+        await Scheduler.sendNow(parseInt(id as string));
         res.json({ success: true });
     });
 }

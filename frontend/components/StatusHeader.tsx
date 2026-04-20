@@ -1,6 +1,7 @@
 'use client';
 
-import { Wifi, WifiOff, ShieldCheck, Trash2, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Wifi, WifiOff, ShieldCheck, Trash2, Loader2, RefreshCw, Sun, Moon } from 'lucide-react';
 import { ConnectionState } from '../types';
 
 interface StatusHeaderProps {
@@ -39,6 +40,9 @@ export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) 
                     </span>
                 </div>
                 
+                <ThemeToggle />
+                <UpdateChecker />
+
                 <button 
                     onClick={onCleanUploads}
                     title="Limpiar archivos temporales"
@@ -48,5 +52,87 @@ export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) 
                 </button>
             </div>
         </header>
+    );
+}
+
+function ThemeToggle() {
+    const [isDark, setIsDark] = useState(true);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('theme');
+        const initial = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        setIsDark(initial);
+        if (initial) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+    }, []);
+
+    const toggle = () => {
+        const next = !isDark;
+        setIsDark(next);
+        const theme = next ? 'dark' : 'light';
+        localStorage.setItem('theme', theme);
+        if (next) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+    };
+
+    return (
+        <button 
+            onClick={toggle}
+            className="p-3 bg-slate-900/40 border border-slate-800 rounded-2xl text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md dark:bg-slate-900/40 dark:border-slate-800 light:bg-slate-100 light:border-slate-200"
+            title={isDark ? "Modo Claro" : "Modo Oscuro"}
+        >
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+    );
+}
+
+function UpdateChecker() {
+    const [updateInfo, setUpdateInfo] = useState<any>(null);
+    const [checking, setChecking] = useState(false);
+
+    const check = async () => {
+        setChecking(true);
+        try {
+            const res = await fetch('http://localhost:3001/api/system/check-update');
+            const data = await res.json();
+            setUpdateInfo(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setChecking(false);
+        }
+    };
+
+    const apply = async () => {
+        if (!confirm('¿Quieres aplicar la actualización? Esto sobreescribirá cambios locales y reiniciará el bot.')) return;
+        try {
+            const res = await fetch('http://localhost:3001/api/system/apply-update', { method: 'POST' });
+            const data = await res.json();
+            alert(data.message || data.error);
+        } catch (e) {
+            alert('Error al aplicar actualización');
+        }
+    };
+
+    if (updateInfo?.updateAvailable) {
+        return (
+            <button 
+                onClick={apply}
+                className="flex items-center gap-2 px-4 py-3 bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 rounded-2xl text-xs font-bold uppercase tracking-wider hover:bg-cyan-500/30 transition-all animate-pulse"
+            >
+                ¡Actualización Disponible!
+            </button>
+        );
+    }
+
+    return (
+        <button 
+            onClick={check}
+            disabled={checking}
+            className="p-3 bg-slate-900/40 border border-slate-800 rounded-2xl text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
+            title="Buscar actualizaciones"
+        >
+            {checking ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}
+        </button>
     );
 }

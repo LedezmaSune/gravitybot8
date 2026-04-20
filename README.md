@@ -1,4 +1,4 @@
-# Wamasivos AI - Individual Edition 🚀
+# BotFree AI - Individual Edition 🚀
 
 Plataforma inteligente de automatización de WhatsApp, recordatorios y difusión con inteligencia artificial. Esta versión está optimizada para ser ligera, segura y rápida.
 
@@ -62,10 +62,12 @@ npm run dev
 
 ## 🤖 Funciones Principales
 
-- **Cerebro IA**: Configura el nombre y la personalidad de tu bot desde el panel.
-- **Aprendizaje Web**: Pega una URL en la sección de "Personalidad" y el bot aprenderá el contenido de esa web automáticamente.
-- **Difusión**: Sube una lista de números y envía mensajes masivos con soporte multimedia.
-- **Recordatorios**: Programa mensajes para que se envíen en una fecha y hora específica.
+- **Plantilla 100% Personalizable**: Edita los textos y la marca de la interfaz fácilmente desde `frontend/config.ts`.
+- **Cerebro IA**: Configura el nombre, instrucciones (Prompt) y comportamiento del bot desde el panel.
+- **Aprendizaje Web Inteligente**: Pega una URL y el bot extraerá todo su conocimiento. Utiliza el motor de **Jina Reader**, por lo que es capaz de leer sin problemas páginas complejas (React, Next.js) que requieren JavaScript.
+- **Aprendizaje por Documentos**: Sube manuales o reglas en formato **PDF, TXT, CSV o Markdown**. El sistema leerá el archivo automáticamente offline (usando pdf.js) y se lo enseñará a tu IA.
+- **Difusión Masiva Flexibe**: Sube una base de datos o pega los números para mandar mensajes automáticos. Su algoritmo inteligente de Regex detecta automáticamente el número y el nombre de tus contactos, sin importar si los separas por tabuladores, comas o espacios.
+- **Programación de Mensajes**: Organiza recordatorios o cobros programando envíos precisos en una fecha y hora específica.
 
 ## 🔒 Seguridad y Rendimiento
 - **Sesión SQLite**: Tus datos de conexión se guardan en una base de datos local cifrada dentro de `backend/data/whatsapp_auth.db`.

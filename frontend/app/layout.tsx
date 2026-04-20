@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { siteConfig } from "../config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wamasivos Individual",
-  description: "Cerebro de GravityBot8 con Protección Anti-Baneo",
+  title: siteConfig.title,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({

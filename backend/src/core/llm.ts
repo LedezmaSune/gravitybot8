@@ -83,7 +83,7 @@ export async function callLLM(
     if (geminiKeys.length > 0) {
         try {
             return await tryProvider('Gemini', geminiKeys, {
-                baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+                baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
                 model: process.env.GEMINI_MODEL || "gemini-1.5-flash"
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
@@ -107,7 +107,7 @@ export async function callLLM(
                 model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
                 defaultHeaders: {
                     "HTTP-Referer": "http://localhost:3000",
-                    "X-Title": "Wamasivos Individual",
+                    "X-Title": "BotFree AI",
                 }
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}

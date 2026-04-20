@@ -9,6 +9,8 @@ export function createReminderRouter(controller: ReminderController, upload: mul
     router.post('/', controller.create);
     router.post('/with-media', upload.single('media'), controller.createWithMedia);
     router.delete('/:id', controller.delete);
+    router.patch('/:id', controller.update);
+    router.post('/:id/send-now', controller.sendNow);
     
     return router;
 }

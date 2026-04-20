@@ -43,7 +43,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
     const contactCount = contacts.split(/[\n,]+/).filter(c => c.trim()).length;
 
     return (
-        <section className="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 lg:p-8 backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto shadow-2xl relative overflow-hidden">
+        <section className="bg-app-card border border-app-border rounded-3xl p-6 lg:p-8 backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto shadow-2xl relative overflow-hidden transition-colors">
             <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
             
             <div className="flex items-center gap-4 mb-10 relative z-10">
@@ -51,8 +51,8 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                     <Megaphone size={32} strokeWidth={2.5} />
                 </div>
                 <div>
-                    <h2 className="text-2xl font-extrabold text-slate-100">Difusión Masiva con IA</h2>
-                    <p className="text-orange-200/70 text-sm font-medium mt-1">Envía mensajes enriquecidos y archivos a multitudes.</p>
+                    <h2 className="text-2xl font-extrabold text-app-text">Difusión Masiva con IA</h2>
+                    <p className="text-app-text/60 text-sm font-medium mt-1">Envía mensajes enriquecidos y archivos a multitudes.</p>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                         value={contacts}
                         onChange={(e) => setContacts(e.target.value)}
                         placeholder="521234567890, Nombre&#10;523311223344, Cliente"
-                        className="w-full h-80 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none font-mono text-orange-100 placeholder:text-slate-600 shadow-inner"
+                        className="w-full h-80 bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none font-mono text-app-text placeholder:text-slate-500 shadow-inner"
                     />
                 </div>
 
@@ -97,7 +97,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             placeholder="Hola {nombre}, ¿cómo estás?..."
-                            className="w-full h-44 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none shadow-inner"
+                            className="w-full h-44 bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none shadow-inner"
                         />
                     </div>
 

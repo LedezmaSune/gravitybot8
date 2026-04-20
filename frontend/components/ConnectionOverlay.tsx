@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from 'qrcode.react';
 import { Smartphone, Loader2, ShieldCheck } from 'lucide-react';
+import { siteConfig } from '../config';
 
 interface ConnectionOverlayProps {
     qr: string | null;
@@ -25,7 +26,7 @@ export function ConnectionOverlay({ qr, status }: ConnectionOverlayProps) {
                         <Smartphone size={40} className="group-hover:scale-110 transition-transform duration-500" />
                     </div>
                     <h2 className="text-3xl font-black tracking-tight text-white mb-2">Vincular Dispositivo</h2>
-                    <p className="text-slate-400 text-sm font-medium">Escanea el código para activar la Inteligencia de Wamasivos</p>
+                    <p className="text-slate-400 text-sm font-medium">{siteConfig.connectionText}</p>
                 </div>
 
                 <div className="relative inline-block group">

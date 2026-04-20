@@ -3,10 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { db, listReminders } from '../core/memory';
 import { asyncHandler } from '../middleware/errorHandler';
+import { UpdateService } from '../services/update.service';
 
 const uploadDir = path.resolve('data/uploads');
 
 export class SystemController {
+    private updateService = new UpdateService();
     constructor(private waClient?: any) {}
 
     getAudits = asyncHandler(async (req: Request, res: Response) => {
@@ -66,5 +68,14 @@ export class SystemController {
         }
 
         res.json({ success: true, message: 'WhatsApp session reset initiated.' });
+    });
+    checkUpdates = asyncHandler(async (req: Request, res: Response) => {
+        const result = await this.updateService.checkUpdate();
+        res.json(result);
+    });
+
+    applyUpdate = asyncHandler(async (req: Request, res: Response) => {
+        const result = await this.updateService.performUpdate();
+        res.json(result);
     });
 }
