@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 // For socket.io, omitting the URL will connect back to the same host/port the page was served from.
-const SOCKET_URL = 'http://localhost:3001'; 
+const SOCKET_URL = ''; 
 
 export function useWhatsApp() {
     const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected'>('disconnected');

@@ -60,14 +60,13 @@ npm run dev
 
 ---
 
-## 🤖 Funciones Principales
-
-- **Plantilla 100% Personalizable**: Edita los textos y la marca de la interfaz fácilmente desde `frontend/config.ts`.
+- **Interfaz Premium Multi-Tema**: Disfruta de una experiencia visual de alto nivel con un modo claro y oscuro totalmente refinado, utilizando efectos de glassmorphism y una paleta de colores moderna.
 - **Cerebro IA**: Configura el nombre, instrucciones (Prompt) y comportamiento del bot desde el panel.
-- **Aprendizaje Web Inteligente**: Pega una URL y el bot extraerá todo su conocimiento. Utiliza el motor de **Jina Reader**, por lo que es capaz de leer sin problemas páginas complejas (React, Next.js) que requieren JavaScript.
-- **Aprendizaje por Documentos**: Sube manuales o reglas en formato **PDF, TXT, CSV o Markdown**. El sistema leerá el archivo automáticamente offline (usando pdf.js) y se lo enseñará a tu IA.
-- **Difusión Masiva Flexibe**: Sube una base de datos o pega los números para mandar mensajes automáticos. Su algoritmo inteligente de Regex detecta automáticamente el número y el nombre de tus contactos, sin importar si los separas por tabuladores, comas o espacios.
+- **Aprendizaje Web Inteligente**: Pega una URL y el bot extraerá todo su conocimiento. Utiliza el motor de **Jina Reader**, por lo que es capaz de leer sin problemas páginas complejas (React, Next.js).
+- **Aprendizaje por Documentos**: Sube manuales o reglas en formato **PDF, TXT, CSV o Markdown**. El sistema leerá el archivo automáticamente offline y se lo enseñará a tu IA.
+- **Difusión Masiva Flexible**: Sube una base de datos o pega los números para mandar mensajes automáticos con detección inteligente de nombres y números.
 - **Programación de Mensajes**: Organiza recordatorios o cobros programando envíos precisos en una fecha y hora específica.
+- **Docker Ready**: Incluye configuración de Docker y Docker Compose para un despliegue rápido y estable en cualquier servidor.
 
 ## 🔒 Seguridad y Rendimiento
 - **Sesión SQLite**: Tus datos de conexión se guardan en una base de datos local cifrada dentro de `backend/data/whatsapp_auth.db`.

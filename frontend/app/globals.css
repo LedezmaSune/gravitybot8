@@ -6,13 +6,13 @@
   Standard CSS syntax avoids IDE warnings.
 */
 :root {
-  --app-bg: #fdfdfd;
+  --app-bg: #f8fafc;
   --app-card: #ffffff;
   --app-border: #e2e8f0;
   --app-text: #0f172a;
   --app-text-muted: #64748b;
   
-  --background: #ffffff;
+  --background: #f8fafc;
   --foreground: #0f172a;
 
   /* Theme color mapping for Tailwind */
@@ -20,6 +20,7 @@
   --color-app-card: var(--app-card);
   --color-app-border: var(--app-border);
   --color-app-text: var(--app-text);
+  --color-app-text-muted: var(--app-text-muted);
 }
 
 .dark {

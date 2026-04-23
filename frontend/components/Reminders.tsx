@@ -23,7 +23,7 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
         setLoading(true);
         if (editingId) {
             // Update logic
-            await fetch(`http://localhost:3001/api/reminders/${editingId}`, {
+            await fetch(`/api/reminders/${editingId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chatId, text, time })
@@ -52,7 +52,7 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
         if (!confirm('¿Enviar este mensaje ahora mismo?')) return;
         setLoading(true);
         try {
-            await fetch(`http://localhost:3001/api/reminders/${id}/send-now`, { method: 'POST' });
+            await fetch(`/api/reminders/${id}/send-now`, { method: 'POST' });
             // Refresh logic usually handled by parent polling but we can force it if needed
         } finally {
             setLoading(false);
@@ -68,51 +68,51 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                         {editingId ? <Edit3 size={24} /> : <Bell size={24} />}
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold">{editingId ? 'Editar' : 'Programar'}</h2>
-                        <p className="text-slate-500 text-xs">{editingId ? 'Modifica el recordatorio.' : 'Recordatorios automáticos.'}</p>
+                        <h2 className="text-xl font-bold text-app-text">{editingId ? 'Editar' : 'Programar'}</h2>
+                        <p className="text-app-text-muted text-xs">{editingId ? 'Modifica el recordatorio.' : 'Recordatorios automáticos.'}</p>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-4">
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">WhatsApp ID / Grupo</label>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">WhatsApp ID / Grupo</label>
                             <input
                                 type="text"
                                 value={chatId}
                                 onChange={(e) => setChatId(e.target.value)}
-                                className="w-full bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all"
+                                className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
                                 placeholder="521..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Mensaje</label>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Mensaje</label>
                             <textarea
                                 value={text}
                                 onChange={(e) => setText(e.target.value)}
-                                className="w-full h-24 bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all"
+                                className="w-full h-24 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all text-app-text"
                                 placeholder="Escribe tu mensaje..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Fecha y Hora (CDMX)</label>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Fecha y Hora (CDMX)</label>
                             <input
                                 type="datetime-local"
                                 value={time}
                                 onChange={(e) => setTime(e.target.value)}
-                                className="w-full bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all"
+                                className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
                                 required
                             />
                         </div>
                         {!editingId && (
                             <div>
-                                <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Multimedia (Opcional)</label>
+                                <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Multimedia (Opcional)</label>
                                 <input
                                     type="file"
                                     onChange={(e) => setMedia(e.target.files?.[0] || null)}
-                                    className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 transition-all cursor-pointer"
+                                    className="block w-full text-xs text-app-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-300 dark:hover:file:bg-slate-700 transition-all cursor-pointer"
                                 />
                             </div>
                         )}
@@ -128,7 +128,7 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                                     setText('');
                                     setTime('');
                                 }}
-                                className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl font-bold transition-all active:scale-95"
+                                className="flex-1 py-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-app-text-muted dark:text-slate-200 rounded-2xl font-bold transition-all active:scale-95"
                             >
                                 Cancelar
                             </button>
@@ -149,7 +149,7 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
             <section className="lg:col-span-2 space-y-8">
                 {/* Pending List */}
                 <div className="space-y-4">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 pl-2">Pendientes</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-app-text-muted pl-2">Pendientes</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {reminders.filter(r => r.status !== 'sent').map((r) => (
                             <div 
@@ -176,14 +176,14 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                                     <div className="flex items-center gap-1">
                                         <button 
                                             onClick={() => handleEdit(r)}
-                                            className="text-slate-400 hover:text-cyan-400 p-2 rounded-lg transition-all hover:bg-cyan-500/10"
+                                            className="text-app-text-muted hover:text-cyan-600 dark:hover:text-cyan-400 p-2 rounded-lg transition-all hover:bg-cyan-500/10"
                                             title="Editar"
                                         >
                                             <Edit3 size={16} />
                                         </button>
                                         <button 
                                             onClick={() => handleSendNow(r.id)}
-                                            className="text-slate-400 hover:text-amber-400 p-2 rounded-lg transition-all hover:bg-amber-500/10"
+                                            className="text-app-text-muted hover:text-amber-600 dark:hover:text-amber-400 p-2 rounded-lg transition-all hover:bg-amber-500/10"
                                             title="Enviar ahora"
                                         >
                                             <Zap size={16} />
@@ -229,19 +229,19 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                                     <span className="px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400">
                                         Entregado
                                     </span>
-                                    <div className="flex items-center gap-2 text-slate-500">
+                                    <div className="flex items-center gap-2 text-app-text-muted">
                                         <Clock size={12} />
                                         <span className="text-[10px] font-bold tabular-nums">{r.time}</span>
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-500/80 line-clamp-3 mb-4 leading-relaxed relative z-10 line-through decoration-slate-600/50">{r.text}</p>
-                                <div className="flex items-center justify-between pt-4 border-t border-slate-800/50 relative z-10">
-                                    <div className="text-[10px] text-slate-500 font-bold tracking-tight truncate max-w-[150px]">
+                                <p className="text-sm text-app-text-muted/80 line-clamp-3 mb-4 leading-relaxed relative z-10 line-through decoration-slate-400/50">{r.text}</p>
+                                <div className="flex items-center justify-between pt-4 border-t border-app-border relative z-10">
+                                    <div className="text-[10px] text-app-text-muted font-bold tracking-tight truncate max-w-[150px]">
                                         A: {r.chatId}
                                     </div>
                                     <button 
                                         onClick={() => onDelete(r.id)}
-                                        className="text-red-500/60 hover:text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-all bg-slate-900/50"
+                                        className="text-red-500/60 hover:text-red-400 hover:bg-red-500/20 p-2 rounded-lg transition-all bg-slate-200/50 dark:bg-slate-900/50"
                                         title="Borrar del historial"
                                     >
                                         <Trash2 size={16} />
@@ -253,7 +253,7 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                 </div>
 
                 {reminders.length === 0 && (
-                    <div className="col-span-full py-20 bg-slate-900/20 border border-slate-800/50 border-dashed rounded-3xl flex flex-col items-center justify-center text-slate-600">
+                    <div className="col-span-full py-20 bg-slate-200/20 dark:bg-slate-900/20 border border-app-border border-dashed rounded-3xl flex flex-col items-center justify-center text-app-text-muted">
                         <Bell size={48} className="mb-4 opacity-20" />
                         <p className="text-sm font-medium">Bandeja de salida vacía.</p>
                     </div>

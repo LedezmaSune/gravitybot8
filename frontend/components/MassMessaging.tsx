@@ -52,7 +52,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                 </div>
                 <div>
                     <h2 className="text-2xl font-extrabold text-app-text">Difusión Masiva con IA</h2>
-                    <p className="text-app-text/60 text-sm font-medium mt-1">Envía mensajes enriquecidos y archivos a multitudes.</p>
+                    <p className="text-app-text-muted text-sm font-medium mt-1">Envía mensajes enriquecidos y archivos a multitudes.</p>
                 </div>
             </div>
 
@@ -60,9 +60,9 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                 {/* Contacts */}
                 <div className="space-y-4">
                     <div className="flex justify-between items-center mb-2">
-                        <label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
+                        <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest flex items-center gap-2">
                             Base de Datos
-                            <label className="cursor-pointer bg-slate-800/80 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-[9px] transition-colors border border-slate-700/50 flex items-center gap-1 active:scale-95">
+                            <label className="cursor-pointer bg-slate-200 dark:bg-slate-800/80 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-1 rounded-md text-[9px] transition-colors border border-slate-300 dark:border-slate-700/50 flex items-center gap-1 active:scale-95">
                                 <Upload size={12} /> Subir CSV
                                 <input type="file" accept=".csv" className="hidden" onChange={handleCSVUpload} />
                             </label>
@@ -75,7 +75,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                         value={contacts}
                         onChange={(e) => setContacts(e.target.value)}
                         placeholder="521234567890, Nombre&#10;523311223344, Cliente"
-                        className="w-full h-80 bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none font-mono text-app-text placeholder:text-slate-500 shadow-inner"
+                        className="w-full h-80 bg-app-bg dark:bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none font-mono text-app-text placeholder:text-app-text-muted/50 shadow-inner"
                     />
                 </div>
 
@@ -83,7 +83,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                 <div className="space-y-6">
                     <div>
                         <div className="flex justify-between items-center mb-2">
-                            <label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Cuerpo del Mensaje</label>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest">Cuerpo del Mensaje</label>
                             <button 
                                 onClick={handleReview}
                                 disabled={reviewing || !message}
@@ -97,16 +97,16 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             placeholder="Hola {nombre}, ¿cómo estás?..."
-                            className="w-full h-44 bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none shadow-inner"
+                            className="w-full h-44 bg-app-bg dark:bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none shadow-inner text-app-text placeholder:text-app-text-muted/50"
                         />
                     </div>
 
-                    <div className="bg-slate-950/40 p-5 rounded-2xl border border-white/5 space-y-4">
-                        <label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2 mb-2">Adjunto de Seguridad</label>
+                    <div className="bg-slate-100 dark:bg-slate-950/40 p-5 rounded-2xl border border-slate-200 dark:border-white/5 space-y-4">
+                        <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest flex items-center gap-2 mb-2">Adjunto de Seguridad</label>
                         <input 
                             type="file" 
                             onChange={(e) => setMedia(e.target.files?.[0] || null)}
-                            className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 transition-all cursor-pointer"
+                            className="block w-full text-xs text-app-text-muted file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:tracking-widest file:bg-slate-200 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-200 hover:file:bg-slate-300 dark:hover:file:bg-slate-700 transition-all cursor-pointer"
                         />
                     </div>
 

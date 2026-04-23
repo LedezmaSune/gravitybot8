@@ -18,8 +18,8 @@ export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) 
                 <h1 className="text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">
                     OpenGravity Individual
                 </h1>
-                <div className="flex items-center gap-2 text-slate-400">
-                    <ShieldCheck size={16} className="text-cyan-500" />
+                <div className="flex items-center gap-2 text-app-text-muted">
+                    <ShieldCheck size={16} className="text-cyan-600 dark:text-cyan-500" />
                     <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
                         Cerebro de GravityBot8 con Protección Anti-Baneo
                     </span>
@@ -27,10 +27,10 @@ export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) 
             </div>
 
             <div className="flex items-center gap-3">
-                <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all duration-500 bg-slate-900/40 backdrop-blur-md shadow-inner ${
+                <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all duration-500 bg-slate-200/50 dark:bg-slate-900/40 backdrop-blur-md shadow-inner ${
                     status === 'connected' 
-                    ? 'border-emerald-500/30 text-emerald-400 shadow-emerald-500/5' 
-                    : 'border-red-500/30 text-red-400 animate-pulse'
+                    ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-emerald-500/5' 
+                    : 'border-red-500/30 text-red-600 dark:text-red-400 animate-pulse'
                 }`}>
                     {status === 'connected' ? <Wifi size={20} strokeWidth={2.5} /> : 
                      status === 'connecting' ? <Loader2 size={20} className="animate-spin" /> : 
@@ -46,7 +46,7 @@ export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) 
                 <button 
                     onClick={onCleanUploads}
                     title="Limpiar archivos temporales"
-                    className="p-3 bg-slate-900/40 border border-slate-800 rounded-2xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
+                    className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
                 >
                     <Trash2 size={20} />
                 </button>
@@ -78,7 +78,7 @@ function ThemeToggle() {
     return (
         <button 
             onClick={toggle}
-            className="p-3 bg-slate-900/40 border border-slate-800 rounded-2xl text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md dark:bg-slate-900/40 dark:border-slate-800 light:bg-slate-100 light:border-slate-200"
+            className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
             title={isDark ? "Modo Claro" : "Modo Oscuro"}
         >
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
@@ -93,7 +93,7 @@ function UpdateChecker() {
     const check = async () => {
         setChecking(true);
         try {
-            const res = await fetch('http://localhost:3001/api/system/check-update');
+            const res = await fetch('/api/system/check-update');
             const data = await res.json();
             setUpdateInfo(data);
         } catch (e) {
@@ -106,7 +106,7 @@ function UpdateChecker() {
     const apply = async () => {
         if (!confirm('¿Quieres aplicar la actualización? Esto sobreescribirá cambios locales y reiniciará el bot.')) return;
         try {
-            const res = await fetch('http://localhost:3001/api/system/apply-update', { method: 'POST' });
+            const res = await fetch('/api/system/apply-update', { method: 'POST' });
             const data = await res.json();
             alert(data.message || data.error);
         } catch (e) {
@@ -129,7 +129,7 @@ function UpdateChecker() {
         <button 
             onClick={check}
             disabled={checking}
-            className="p-3 bg-slate-900/40 border border-slate-800 rounded-2xl text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
+            className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
             title="Buscar actualizaciones"
         >
             {checking ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}

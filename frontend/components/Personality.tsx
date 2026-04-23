@@ -29,14 +29,14 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                 </div>
                 <div>
                     <h2 className="text-2xl font-bold text-app-text">Personalidad del Bot</h2>
-                    <p className="text-app-text/60 text-sm">Define cómo piensa y responde tu asistente.</p>
+                    <p className="text-app-text-muted text-sm">Define cómo piensa y responde tu asistente.</p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-5 bg-background p-6 rounded-2xl border border-app-border">
+                <div className="space-y-5 bg-app-bg dark:bg-background p-6 rounded-2xl border border-app-border">
                     <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block tracking-widest">Nombre del Bot</label>
+                        <label className="text-[10px] uppercase font-bold text-app-text-muted mb-2 block tracking-widest">Nombre del Bot</label>
                         <input
                             type="text"
                             value={settings.bot_name}
@@ -47,7 +47,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                     </div>
 
                     <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block tracking-widest">System Prompt (Instrucciones)</label>
+                        <label className="text-[10px] uppercase font-bold text-app-text-muted mb-2 block tracking-widest">System Prompt (Instrucciones)</label>
                         <textarea
                             value={settings.system_prompt}
                             onChange={(e) => setSettings({...settings, system_prompt: e.target.value})}
@@ -57,7 +57,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                     </div>
 
                     <div>
-                        <label className="text-[10px] uppercase font-bold text-slate-500 mb-2 block tracking-widest">Reglas y Conocimiento</label>
+                        <label className="text-[10px] uppercase font-bold text-app-text-muted mb-2 block tracking-widest">Reglas y Conocimiento</label>
                         <textarea
                             value={settings.possible_responses}
                             onChange={(e) => setSettings({...settings, possible_responses: e.target.value})}
@@ -66,7 +66,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                         />
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800/50">
+                    <div className="pt-4 border-t border-app-border dark:border-slate-800/50">
                         <label className="text-[10px] uppercase font-bold text-cyan-500 mb-2 block tracking-widest">🚀 Aprendizaje Automático (URL)</label>
                         <div className="flex gap-2">
                             <input
@@ -84,7 +84,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                                     
                                     setLoading(true);
                                     try {
-                                        const res = await fetch('http://localhost:3001/api/settings/learn-url', {
+                                        const res = await fetch('/api/settings/learn-url', {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ url })
@@ -93,7 +93,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                                         if (data.success) {
                                             alert(`¡Aprendido! Se añadieron ${data.learnedCount} caracteres a la memoria.`);
                                             // Recargar settings
-                                            const sRes = await fetch('http://localhost:3001/api/settings');
+                                            const sRes = await fetch('/api/settings');
                                             if (sRes.ok) setSettings(await sRes.json());
                                             input.value = '';
                                         } else {
@@ -110,9 +110,9 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                                 Aprender
                             </button>
                         </div>
-                        <p className="text-[9px] text-slate-500 mt-2 italic">El bot leerá la web y guardará el texto en "Reglas y Conocimiento".</p>
+                        <p className="text-[9px] text-app-text-muted mt-2 italic">El bot leerá la web y guardará el texto en "Reglas y Conocimiento".</p>
                         
-                        <div className="mt-4 pt-4 border-t border-slate-800/50">
+                        <div className="mt-4 pt-4 border-t border-app-border dark:border-slate-800/50">
                             <label className="text-[10px] uppercase font-bold text-emerald-500 mb-2 flex items-center justify-between tracking-widest cursor-pointer">
                                 <span>📄 Subir Documento (.txt, .pdf, .md)</span>
                                 <div className="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border border-emerald-500/30">
@@ -170,7 +170,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
                                     />
                                 </div>
                             </label>
-                            <p className="text-[9px] text-slate-500 mt-1 italic">El texto del archivo se pegará automáticamente en la caja.</p>
+                            <p className="text-[9px] text-app-text-muted mt-1 italic">El texto del archivo se pegará automáticamente en la caja.</p>
                         </div>
                     </div>
                 </div>

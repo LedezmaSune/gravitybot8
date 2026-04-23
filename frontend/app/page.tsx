@@ -13,7 +13,7 @@ import { ConnectionOverlay } from '@/components/ConnectionOverlay';
 
 import { Audit, Reminder, Settings } from '../types';
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = '/api';
 type TabId = 'mass' | 'scheduling' | 'personality' | 'audits';
 
 const tabs: Array<{ id: TabId; icon: typeof Megaphone; label: string }> = [
@@ -157,8 +157,8 @@ export default function Home() {
             <ConnectionOverlay qr={qr} status={status} />
 
             <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
-                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-purple-600/10 rounded-full blur-[100px]"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 dark:bg-blue-600/5 rounded-full blur-[120px] opacity-70 dark:opacity-100"></div>
+                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-purple-600/10 dark:bg-purple-600/5 rounded-full blur-[100px] opacity-70 dark:opacity-100"></div>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -173,7 +173,7 @@ export default function Home() {
                                 className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                                     activeTab === tab.id
                                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 scale-105'
-                                        : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+                                        : 'text-app-text-muted hover:text-app-text hover:bg-slate-200/50 dark:hover:bg-white/5'
                                 }`}
                             >
                                 <tab.icon size={16} />
