@@ -1,0 +1,29 @@
+# Dependencies
+**/node_modules
+**/dist
+**/.next
+**/.vercel
+
+# Environment & Secrets
+**/.env
+**/.env.*
+**/*.pem
+**/credentials.json
+
+# WhatsApp Sessions & Data
+**/auth_info_baileys
+**/data/*.db
+**/data/*.db-journal
+**/data/*.db-shm
+**/data/*.db-wal
+**/data/uploads/*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

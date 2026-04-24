@@ -1,0 +1,26 @@
+import { Request, Response } from 'express';
+import { WhatsAppService } from '../services/whatsapp.service';
+import { asyncHandler } from '../middleware/errorHandler';
+
+export class WhatsAppController {
+    constructor(private waService: WhatsAppService) {}
+
+    getStatus = asyncHandler(async (req: Request, res: Response) => {
+        const status = this.waService.getStatus();
+        res.json(status);
+    });
+
+    sendMessage = asyncHandler(async (req: Request, res: Response) => {
+        const { to, message } = req.body;
+        if (!to || !message) {
+            return res.status(400).json({ success: false, error: "To and Message are required" });
+        }
+        await this.waService.sendMessage(to, message);
+        res.json({ success: true });
+    });
+
+    disconnect = asyncHandler(async (req: Request, res: Response) => {
+        await this.waService.disconnect();
+        res.json({ success: true });
+    });
+}
