@@ -114,17 +114,21 @@ export default function Home() {
         return data.success ? data.corrected : null;
     };
 
-    const handleAddReminder = async (chatId: string, text: string, time: string, media: File | null) => {
+    const handleAddReminder = async (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string) => {
         const formData = new FormData();
         formData.append('chatId', chatId);
         formData.append('text', text);
         formData.append('time', time);
         if (media) formData.append('media', media);
 
+        if (repeat) formData.append('repeat', repeat);
+        if (repeatInterval) formData.append('repeatInterval', repeatInterval.toString());
+        if (repeatUnit) formData.append('repeatUnit', repeatUnit);
+
         const url = media ? `${API_BASE}/reminders/with-media` : `${API_BASE}/reminders`;
         const res = await fetch(url, {
             method: 'POST',
-            body: media ? formData : JSON.stringify({ chatId, text, time }),
+            body: media ? formData : JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit }),
             headers: media ? {} : { 'Content-Type': 'application/json' }
         });
 

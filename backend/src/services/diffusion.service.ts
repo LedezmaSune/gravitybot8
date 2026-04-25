@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { WhatsAppService } from './whatsapp.service';
 import { Contact } from '../types';
+import { processVariables } from '../utils/variables';
 
 export class MassDiffusionService {
     private isProcessing = false;
@@ -30,9 +31,7 @@ export class MassDiffusionService {
                 const to = contact.number;
                 if (!to || to.trim() === '') continue;
                 
-                const personalizedMessage = rawMessage
-                    .replace(/{{nombre}}/gi, contact.name || '')
-                    .replace(/{nombre}/gi, contact.name || '');
+                const personalizedMessage = processVariables(rawMessage, contact.name || '');
 
                 console.log(`[Mass] Sending to ${to}...`);
                 

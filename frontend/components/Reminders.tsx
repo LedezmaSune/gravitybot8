@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { Bell, Loader2, Send, Clock, Trash2, CheckCircle, Edit3, Zap, Save } from 'lucide-react';
 import { Reminder } from '../types';
+import { VariableTextarea } from './VariableTextarea';
 
 interface RemindersProps {
     reminders: Reminder[];
-    onAdd: (chatId: string, text: string, time: string, media: File | null) => Promise<void>;
+    onAdd: (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string) => Promise<void>;
     onDelete: (id: number) => Promise<void>;
 }
 
@@ -17,6 +18,21 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
     const [media, setMedia] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [repeat, setRepeat] = useState('none');
+    const [repeatInterval, setRepeatInterval] = useState(1);
+    const [repeatUnit, setRepeatUnit] = useState('days');
+
+    const [showAdvancedModal, setShowAdvancedModal] = useState(false);
+    const [advInterval, setAdvInterval] = useState(1);
+    const [advUnit, setAdvUnit] = useState('days');
+    const [advSkipWeekends, setAdvSkipWeekends] = useState(false);
+    const [advDays, setAdvDays] = useState<number[]>([]);
+    const [advMonthlyType, setAdvMonthlyType] = useState('day');
+
+    const selectedDate = time ? new Date(time) : new Date();
+    const dayOfWeekName = selectedDate.toLocaleDateString('es-ES', { weekday: 'long' });
+    const dayOfMonth = selectedDate.getDate();
+    const dayAndMonth = selectedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,16 +42,19 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
             await fetch(`/api/reminders/${editingId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId, text, time })
+                body: JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit })
             });
             setEditingId(null);
         } else {
-            await onAdd(chatId, text, time, media);
+            await onAdd(chatId, text, time, media, repeat, repeatInterval, repeatUnit);
         }
         setChatId('');
         setText('');
         setTime('');
         setMedia(null);
+        setRepeat('none');
+        setRepeatInterval(1);
+        setRepeatUnit('days');
         setLoading(false);
     };
 
@@ -45,6 +64,9 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
         setText(r.text);
         // Date format handling for datetime-local
         setTime(r.time); 
+        setRepeat(r.repeat || 'none');
+        setRepeatInterval(r.repeatInterval || 1);
+        setRepeatUnit(r.repeatUnit || 'days');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -76,21 +98,21 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-4">
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">WhatsApp ID / Grupo</label>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">WhatsApp ID / Grupo (separados por coma)</label>
                             <input
                                 type="text"
                                 value={chatId}
                                 onChange={(e) => setChatId(e.target.value)}
                                 className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
-                                placeholder="521..."
+                                placeholder="521..., 522..."
                                 required
                             />
                         </div>
                         <div>
                             <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Mensaje</label>
-                            <textarea
+                            <VariableTextarea
                                 value={text}
-                                onChange={(e) => setText(e.target.value)}
+                                onChange={(val) => setText(val)}
                                 className="w-full h-24 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all text-app-text"
                                 placeholder="Escribe tu mensaje..."
                                 required
@@ -106,6 +128,32 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                                 required
                             />
                         </div>
+                        <div>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Repetición</label>
+                            <select
+                                value={repeat}
+                                onChange={(e) => {
+                                    if (e.target.value === 'advanced') {
+                                        setAdvInterval(repeatInterval);
+                                        setAdvUnit(repeatUnit);
+                                        setShowAdvancedModal(true);
+                                    } else {
+                                        setRepeat(e.target.value);
+                                    }
+                                }}
+                                className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
+                            >
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="none">No se repite</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="hourly">Cada hora</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="daily">Diariamente</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="weekdays">Entre semana (lun-vie)</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="weekly">Semanalmente ({dayOfWeekName})</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="monthly">Mensual (Día {dayOfMonth})</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="yearly">Anual ({dayAndMonth})</option>
+                                <option className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white" value="advanced">Repetición avanzada...</option>
+                            </select>
+                        </div>
+                        {/* Removing old inline advanced options */}
                         {!editingId && (
                             <div>
                                 <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Multimedia (Opcional)</label>
@@ -259,6 +307,139 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                     </div>
                 )}
             </section>
+
+            {showAdvancedModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-[#2D2D35] w-full max-w-sm rounded-3xl p-6 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-white font-bold text-lg mb-6">Repetición avanzada</h3>
+                        
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="text-white text-sm">Cada</span>
+                            <input 
+                                type="number" 
+                                min="1"
+                                value={advInterval} 
+                                onChange={e => setAdvInterval(Number(e.target.value))}
+                                className="w-16 bg-[#3B3B46] text-white rounded-xl py-3 text-center text-sm outline-none border border-transparent focus:border-cyan-500 transition-colors"
+                            />
+                            <select 
+                                value={advUnit}
+                                onChange={e => setAdvUnit(e.target.value)}
+                                className="flex-1 bg-[#3B3B46] text-white rounded-xl py-3 px-3 text-sm outline-none border border-transparent focus:border-cyan-500 transition-colors cursor-pointer appearance-none"
+                            >
+                                <option value="minutes">minuto</option>
+                                <option value="hours">hora</option>
+                                <option value="days">día</option>
+                                <option value="weeks">semana</option>
+                                <option value="months">mes</option>
+                            </select>
+                        </div>
+
+                        {advUnit === 'days' && (
+                            <label className="flex items-center gap-3 mb-6 cursor-pointer">
+                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${advSkipWeekends ? 'border-[#F3EBB9] bg-[#F3EBB9]' : 'border-gray-400'}`}>
+                                    {advSkipWeekends && <CheckCircle size={14} className="text-black" />}
+                                </div>
+                                <input 
+                                    type="checkbox" 
+                                    className="hidden"
+                                    checked={advSkipWeekends}
+                                    onChange={e => setAdvSkipWeekends(e.target.checked)}
+                                />
+                                <span className="text-white text-sm select-none">Saltar los fines de semana</span>
+                            </label>
+                        )}
+
+                        {advUnit === 'weeks' && (
+                            <div className="flex justify-between items-center mb-6">
+                                {['d', 'l', 'm', 'm', 'j', 'v', 's'].map((d, i) => (
+                                    <button 
+                                        key={i}
+                                        type="button"
+                                        onClick={() => {
+                                            setAdvDays(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])
+                                        }}
+                                        className={`w-10 h-10 rounded-full text-xs font-bold flex items-center justify-center transition-all ${advDays.includes(i) ? 'bg-[#F3EBB9] text-black shadow-lg shadow-[#F3EBB9]/20' : 'bg-transparent text-white hover:bg-[#3B3B46]'}`}
+                                    >
+                                        {d}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {advUnit === 'months' && (
+                            <div className="space-y-4 mb-6">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${advMonthlyType === 'day' ? 'border-[#F3EBB9]' : 'border-gray-400'}`}>
+                                        {advMonthlyType === 'day' && <div className="w-2.5 h-2.5 bg-[#F3EBB9] rounded-full" />}
+                                    </div>
+                                    <input type="radio" className="hidden" checked={advMonthlyType === 'day'} onChange={() => setAdvMonthlyType('day')} />
+                                    <div className="flex-1 bg-[#3B3B46] text-white rounded-xl py-3 px-4 text-sm transition-colors">
+                                        Día {dayOfMonth}
+                                    </div>
+                                </label>
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${advMonthlyType === 'nth' ? 'border-[#F3EBB9]' : 'border-gray-400'}`}>
+                                        {advMonthlyType === 'nth' && <div className="w-2.5 h-2.5 bg-[#F3EBB9] rounded-full" />}
+                                    </div>
+                                    <input type="radio" className="hidden" checked={advMonthlyType === 'nth'} onChange={() => setAdvMonthlyType('nth')} />
+                                    <div className="flex-1 bg-[#3B3B46] text-white rounded-xl py-3 px-4 text-sm transition-colors">
+                                        the 4th {dayOfWeekName}
+                                    </div>
+                                </label>
+                            </div>
+                        )}
+
+                        <div className="space-y-2 mb-8">
+                            <input
+                                type="date"
+                                value={time ? time.split('T')[0] : ''}
+                                onChange={e => {
+                                    const newDate = e.target.value;
+                                    const currTime = time ? time.split('T')[1] : '00:00';
+                                    if (newDate) setTime(`${newDate}T${currTime}`);
+                                }}
+                                className="w-full bg-[#3B3B46] text-white rounded-xl py-3 px-4 text-sm outline-none focus:border focus:border-cyan-500 transition-all block cursor-text"
+                            />
+                            <input
+                                type="time"
+                                value={time ? time.split('T')[1] : ''}
+                                onChange={e => {
+                                    const newTime = e.target.value;
+                                    const currDate = time ? time.split('T')[0] : new Date().toISOString().split('T')[0];
+                                    if (newTime) setTime(`${currDate}T${newTime}`);
+                                }}
+                                className="w-full bg-[#3B3B46] text-white rounded-xl py-3 px-4 text-sm outline-none focus:border focus:border-cyan-500 transition-all block cursor-text"
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-4">
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setShowAdvancedModal(false);
+                                    if(repeat === 'none') setRepeat('none');
+                                }}
+                                className="bg-[#42424D] hover:bg-[#4E4E5A] text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    setRepeat('advanced');
+                                    setRepeatInterval(advInterval);
+                                    setRepeatUnit(advUnit);
+                                    setShowAdvancedModal(false);
+                                }}
+                                className="bg-cyan-400 hover:bg-cyan-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

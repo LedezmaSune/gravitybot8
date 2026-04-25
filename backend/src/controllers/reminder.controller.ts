@@ -14,13 +14,13 @@ export class ReminderController {
     });
 
     create = asyncHandler(async (req: Request, res: Response) => {
-        const { chatId, text, time } = req.body;
-        const id = await this.reminderService.create('owner', chatId, text, time);
+        const { chatId, text, time, repeat, repeatInterval, repeatUnit } = req.body;
+        const id = await this.reminderService.create('owner', chatId, text, time, undefined, undefined, repeat, repeatInterval, repeatUnit);
         res.json({ success: true, id });
     });
 
     createWithMedia = asyncHandler(async (req: Request, res: Response) => {
-        const { chatId, text, time } = req.body;
+        const { chatId, text, time, repeat, repeatInterval, repeatUnit } = req.body;
         const file = req.file;
 
         let mediaType;
@@ -32,7 +32,7 @@ export class ReminderController {
         }
 
         const mediaPath = file ? path.resolve(file.path) : undefined;
-        const id = await this.reminderService.create('owner', chatId, text, time, mediaPath, mediaType);
+        const id = await this.reminderService.create('owner', chatId, text, time, mediaPath, mediaType, repeat, repeatInterval ? parseInt(repeatInterval) : undefined, repeatUnit);
         res.json({ success: true, id, mediaPath });
     });
 
@@ -44,10 +44,10 @@ export class ReminderController {
 
     update = asyncHandler(async (req: Request, res: Response) => {
         const id = req.params.id;
-        const { chatId, text, time } = req.body;
+        const { chatId, text, time, repeat, repeatInterval, repeatUnit } = req.body;
         
-        db.prepare('UPDATE reminders SET chatId = ?, text = ?, time = ? WHERE id = ?')
-          .run(chatId, text, time, id);
+        db.prepare('UPDATE reminders SET chatId = ?, text = ?, time = ?, repeat = ?, repeatInterval = ?, repeatUnit = ? WHERE id = ?')
+          .run(chatId, text, time, repeat || 'none', repeatInterval || null, repeatUnit || null, id);
           
         res.json({ success: true });
     });

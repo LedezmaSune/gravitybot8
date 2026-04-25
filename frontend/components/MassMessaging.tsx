@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Megaphone, Upload, Wand2, Loader2, Send } from 'lucide-react';
+import { VariableTextarea } from './VariableTextarea';
 
 interface MassMessagingProps {
     onSend: (contacts: string, message: string, media: File | null) => Promise<void>;
@@ -93,10 +94,10 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                                 Perfeccionar con IA
                             </button>
                         </div>
-                        <textarea 
+                        <VariableTextarea 
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            placeholder="Hola {nombre}, ¿cómo estás?..."
+                            onChange={(val) => setMessage(val)}
+                            placeholder="Hola {NOMBRE}, ¿cómo estás?..."
                             className="w-full h-44 bg-app-bg dark:bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none shadow-inner text-app-text placeholder:text-app-text-muted/50"
                         />
                     </div>

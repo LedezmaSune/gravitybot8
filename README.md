@@ -18,8 +18,9 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 - **Document Knowledge Base**: Sube archivos (PDF, TXT, CSV, Markdown) para que la IA responda basándose en tu propia documentación.
 
 ### 📢 Difusión y Marketing
-- **Envíos Masivos**: Gestiona campañas de difusión con variables dinámicas (nombres, números).
-- **Programación de Mensajes**: Planifica recordatorios, cobros o mensajes de seguimiento con precisión de segundo.
+- **Envíos Masivos con Variables Dinámicas**: Personaliza mensajes al instante usando etiquetas automáticas (`{NOMBRE}`, `{FECHA}`, `{HORA_12}`, etc.) con menú de autocompletado inteligente.
+- **Programación Avanzada de Recordatorios**: Define rutinas con extrema flexibilidad (cada hora, día, saltando fines de semana, semanalmente o mensualmente).
+- **Multi-Destinatario en Recordatorios**: Envía la misma tarea programada a varios grupos o contactos simultáneamente separando los números por coma.
 
 ### 🎨 Experiencia de Usuario Premium
 - **Kitsune Dashboard**: Interfaz moderna con modo oscuro/claro, efectos de glassmorphism y micro-animaciones.

@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { WhatsAppService } from '../../services/whatsapp.service';
 import { ReminderService } from '../../services/reminder.service';
 import { db } from '../../core/memory'; // Still needed for raw queries for now, or we could move this to ReminderService
+import { processVariables } from '../../utils/variables';
 
 export class Scheduler {
     private static waService: WhatsAppService;
@@ -39,16 +40,66 @@ export class Scheduler {
                 console.log(`[Scheduler] Procesando recordatorio ${r.id} para ${r.chatId}`);
                 
                 // Phase 2: Send
-                if (r.mediaPath) {
-                    await this.waService.sendMedia(r.chatId, r.mediaPath, r.text);
-                } else {
-                    await this.waService.sendMessage(r.chatId, r.text);
+                const personalizedText = processVariables(r.text, '');
+                
+                const chatIds = r.chatId.split(',').map((id: string) => id.trim()).filter((id: string) => id);
+                
+                for (const targetId of chatIds) {
+                    if (r.mediaPath) {
+                        await this.waService.sendMedia(targetId, r.mediaPath, personalizedText);
+                    } else {
+                        await this.waService.sendMessage(targetId, personalizedText);
+                    }
                 }
 
                 // Phase 3: Success
                 await this.reminderService.updateStatus(r.id, 'sent');
                 await this.reminderService.logAudit('system', 'REMINDER_SENT', { id: r.id, to: r.chatId, type: r.mediaPath ? 'media' : 'text' });
                 console.log(`[Scheduler] Recordatorio ${r.id} enviado con éxito.`);
+
+                // Phase 4: Repetition
+                if (r.repeat && r.repeat !== 'none') {
+                    let nextTime = DateTime.fromISO(r.time, { zone: 'America/Mexico_City' });
+                    let validRepeat = false;
+
+                    if (r.repeat === 'hourly') {
+                        nextTime = nextTime.plus({ hours: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'daily') {
+                        nextTime = nextTime.plus({ days: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'weekdays') {
+                        nextTime = nextTime.plus({ days: 1 });
+                        // Skip weekends (6 = Saturday, 7 = Sunday)
+                        while (nextTime.weekday > 5) {
+                            nextTime = nextTime.plus({ days: 1 });
+                        }
+                        validRepeat = true;
+                    } else if (r.repeat === 'weekly') {
+                        nextTime = nextTime.plus({ weeks: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'monthly') {
+                        nextTime = nextTime.plus({ months: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'yearly') {
+                        nextTime = nextTime.plus({ years: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'advanced' && r.repeatInterval && r.repeatUnit) {
+                        const obj: any = {};
+                        // Map units to luxon format if necessary
+                        let unit = r.repeatUnit; // minutes, hours, days, weeks, months
+                        obj[unit] = r.repeatInterval;
+                        nextTime = nextTime.plus(obj);
+                        validRepeat = true;
+                    }
+
+                    if (validRepeat) {
+                        const nextTimeStr = nextTime.toFormat("yyyy-MM-dd'T'HH:mm");
+                        db.prepare('INSERT INTO reminders (userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+                          .run(r.userId, r.chatId, r.text, nextTimeStr, r.mediaPath, r.mediaType, r.repeat, r.repeatInterval, r.repeatUnit);
+                        console.log(`[Scheduler] Recordatorio ${r.id} reprogramado para ${nextTimeStr}`);
+                    }
+                }
             } catch (error: any) {
                 console.error(`[Scheduler] Error enviando recordatorio ${r.id}:`, error.message);
                 await this.reminderService.updateStatus(r.id, 'failed'); 

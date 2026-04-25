@@ -15,6 +15,9 @@ export interface Reminder {
     status: 'pending' | 'processing' | 'sent' | 'failed';
     mediaPath?: string;
     mediaType?: string;
+    repeat?: string;
+    repeatInterval?: number;
+    repeatUnit?: string;
 }
 
 export interface Settings {
