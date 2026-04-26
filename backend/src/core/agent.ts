@@ -29,7 +29,9 @@ ${settings.possible_responses}
 `;
 
     const history = await getHistory(userId, 10);
-    const dynamicContext = `\n[SISTEMA] FECHA Y HORA ACTUAL: ${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}\n`;
+    const { TunnelService } = await import("./tunnel");
+    const tunnelUrl = TunnelService.getInstance().getUrl() || process.env.DASHBOARD_URL || "http://localhost:3000";
+    const dynamicContext = `\n[SISTEMA] FECHA Y HORA ACTUAL: ${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}\n[SISTEMA] URL DEL DASHBOARD / TUNEL CLOUDFLARE ACTUAL: ${tunnelUrl}\n`;
 
     let userContent: any = `<<<INICIO DEL MENSAJE>>>\n${userMessage}\n<<<FIN DEL MENSAJE>>>`;
     if (imageBase64) {

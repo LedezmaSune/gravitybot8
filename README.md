@@ -28,7 +28,9 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 
 ### 📱 Panel de Control Vía Telegram
 - **Modo Administrador de Bolsillo**: Vincula un bot de Telegram como panel de control exclusivo y privado.
-- **Paridad de Funciones**: Permite enviar mensajes masivos (`/masivo`), programar e interactuar con recordatorios (`/recordatorios`), revisar bitácoras de auditoría (`/auditoria`) y editar el "Cerebro" de la IA (`/cerebro`) directo desde tu chat de Telegram.
+- **Menú Principal Interactivo**: Escribe `/start` para desplegar un menú con botones navegables para controlar todo el sistema.
+- **Asistentes Paso a Paso**: Olvídate de comandos complejos. Toca "Crear Nuevo" en Recordatorios o "Difusión Masiva" y el bot te guiará preguntando destinatarios, mensaje, fecha y opciones de repetición con botones visuales.
+- **Paridad Total**: Permite enviar mensajes masivos, programar e interactuar con recordatorios, revisar bitácoras de auditoría (`/auditoria`) y editar el "Cerebro" de la IA (`/cerebro`) directo desde tu chat de Telegram de forma interactiva.
 
 ---
 
@@ -72,8 +74,8 @@ npm run install-all
 
 ### 3️⃣ Configurar Variables de Entorno
 1. Ve a la carpeta `backend/`.
-2. Busca el archivo `.env.example` y renómbralo a `.env` (o crea uno nuevo).
-3. Abre el archivo y pega tus llaves API:
+2. Renombra el archivo `.env.example` a `.env` (o crea uno nuevo).
+3. Pega tus llaves API:
 ```env
 PORT=3001
 
@@ -81,12 +83,18 @@ PORT=3001
 GROQ_API_KEY=tu_llave_aqui
 GEMINI_API_KEY=tu_llave_aqui
 OPENAI_API_KEY=tu_llave_aqui
-# OpenRouter es opcional si quieres usar otros modelos
 OPENROUTER_API_KEY=tu_llave_aqui
 
 # --- TELEGRAM BOT (Opcional) ---
 TELEGRAM_BOT_TOKEN="tu_token_de_botfather_aqui"
 TELEGRAM_ALLOWED_USER_IDS="tu_id_de_telegram_aqui"
+```
+
+4. Ve a la carpeta `frontend/` y crea o edita el archivo `.env`.
+5. Configura la contraseña de tu panel de control (Dashboard):
+```env
+DASHBOARD_USER="admin"
+DASHBOARD_PASS="admin123"
 ```
 
 > [!NOTE]
