@@ -26,6 +26,10 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 - **Kitsune Dashboard**: Interfaz moderna con modo oscuro/claro, efectos de glassmorphism y micro-animaciones.
 - **Control en Tiempo Real**: Monitorea el estado de la conexión y las estadísticas desde una consola intuitiva.
 
+### 📱 Panel de Control Vía Telegram
+- **Modo Administrador de Bolsillo**: Vincula un bot de Telegram como panel de control exclusivo y privado.
+- **Paridad de Funciones**: Permite enviar mensajes masivos (`/masivo`), programar e interactuar con recordatorios (`/recordatorios`), revisar bitácoras de auditoría (`/auditoria`) y editar el "Cerebro" de la IA (`/cerebro`) directo desde tu chat de Telegram.
+
 ---
 
 ## 🛠️ Tecnologías
@@ -79,7 +83,14 @@ GEMINI_API_KEY=tu_llave_aqui
 OPENAI_API_KEY=tu_llave_aqui
 # OpenRouter es opcional si quieres usar otros modelos
 OPENROUTER_API_KEY=tu_llave_aqui
+
+# --- TELEGRAM BOT (Opcional) ---
+TELEGRAM_BOT_TOKEN="tu_token_de_botfather_aqui"
+TELEGRAM_ALLOWED_USER_IDS="tu_id_de_telegram_aqui"
 ```
+
+> [!NOTE]
+> Para usar Telegram: Crea un bot usando a [@BotFather](https://t.me/BotFather) en Telegram para obtener el `TELEGRAM_BOT_TOKEN`. Para obtener tu ID numérico y ponerlo en `TELEGRAM_ALLOWED_USER_IDS`, puedes usar bots como @userinfobot. Puedes separar varios IDs con comas.
 
 ### 4️⃣ Iniciar el Sistema
 Regresa a la raíz del proyecto (`BotMaRe`) y arranca el motor:

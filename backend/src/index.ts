@@ -17,6 +17,8 @@ import { Scheduler } from './modules/scheduling/scheduler';
 import { WhatsAppService } from './services/whatsapp.service';
 import { ReminderService } from './services/reminder.service';
 import { WhatsAppEventHandler } from './whatsapp/handler';
+import { MassDiffusionService } from './services/diffusion.service';
+import { initTelegramBot } from './telegram/bot';
 
 dotenv.config();
 
@@ -40,6 +42,7 @@ const waClient = new WhatsAppClient(io);
 // Services for internal use (Scheduler)
 const waService = new WhatsAppService(waClient);
 const reminderService = new ReminderService();
+const diffusionService = new MassDiffusionService(waService);
 
 // Event Handling Registration
 const waHandler = new WhatsAppEventHandler(io, waService);
@@ -107,6 +110,10 @@ async function bootstrap() {
         // Phase 2: WhatsApp Engine
         console.log("[Phase 2] Initializing WhatsApp Connection...");
         await waClient.init();
+
+        // Phase 2.5: Telegram Engine
+        console.log("[Phase 2.5] Initializing Telegram Bot...");
+        initTelegramBot(waService, reminderService, diffusionService);
 
         // Phase 3: Background Tasks
         console.log("[Phase 3] Starting Scheduler...");
