@@ -8,20 +8,21 @@ interface StatusHeaderProps {
     status: ConnectionState;
     qr: string | null;
     onCleanUploads: () => void;
+    botName?: string;
 }
 
-export function StatusHeader({ status, qr, onCleanUploads }: StatusHeaderProps) {
+export function StatusHeader({ status, qr, onCleanUploads, botName }: StatusHeaderProps) {
     void qr;
     return (
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div className="space-y-2">
                 <h1 className="text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">
-                    OpenGravity Individual
+                    {botName || 'OpenGravity Individual'}
                 </h1>
                 <div className="flex items-center gap-2 text-app-text-muted">
                     <ShieldCheck size={16} className="text-cyan-600 dark:text-cyan-500" />
                     <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
-                        Cerebro de GravityBot8 con Protección Anti-Baneo
+                        Cerebro de {botName || 'GravityBot8'} con Protección Anti-Baneo
                     </span>
                 </div>
             </div>

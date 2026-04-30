@@ -175,7 +175,12 @@ export default function Home() {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-                <StatusHeader status={status} qr={qr} onCleanUploads={handleCleanUploads} />
+                <StatusHeader 
+                    status={status} 
+                    qr={qr} 
+                    onCleanUploads={handleCleanUploads} 
+                    botName={settings?.bot_name} 
+                />
 
                 <nav className="flex items-center justify-center mb-12">
                     <div className="flex bg-app-card p-1.5 rounded-3xl border border-app-border backdrop-blur-xl shadow-2xl transition-colors">
