@@ -1,19 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { Layout, Plus, Trash2, Save, FileText, X } from 'lucide-react';
+import { Layout, Plus, Trash2, Save, FileText, X, Wand2, Loader2 } from 'lucide-react';
 import { Template } from '../types';
+import { VariableTextarea } from './VariableTextarea';
 
 interface TemplatesProps {
     templates: Template[];
     onRefresh: () => void;
+    onReview: (text: string) => Promise<string | null>;
 }
 
-export function Templates({ templates, onRefresh }: TemplatesProps) {
+export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
     const [name, setName] = useState('');
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(false);
+    const [reviewing, setReviewing] = useState(false);
     const [showForm, setShowForm] = useState(false);
+
+    const handleReview = async () => {
+        if (!content) return;
+        setReviewing(true);
+        const corrected = await onReview(content);
+        if (corrected) setContent(corrected);
+        setReviewing(false);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -75,11 +86,22 @@ export function Templates({ templates, onRefresh }: TemplatesProps) {
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] uppercase font-black text-app-text-muted mb-1 block tracking-widest">Contenido del Mensaje</label>
-                            <textarea
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-[10px] uppercase font-black text-app-text-muted tracking-widest">Contenido del Mensaje</label>
+                                <button
+                                    type="button"
+                                    onClick={handleReview}
+                                    disabled={reviewing || !content}
+                                    className="flex items-center gap-2 px-3 py-1.5 border border-indigo-500/30 rounded-lg text-[9px] font-black text-indigo-500 hover:bg-indigo-500/10 hover:border-indigo-500/60 transition-all uppercase tracking-widest disabled:opacity-30 group"
+                                >
+                                    {reviewing ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} className="group-hover:rotate-12 transition-transform" />}
+                                    {reviewing ? 'Revisando...' : 'Perfeccionar con IA'}
+                                </button>
+                            </div>
+                            <VariableTextarea
                                 value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                className="w-full h-32 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none resize-none transition-all text-app-text"
+                                onChange={(val) => setContent(val)}
+                                className="h-44"
                                 placeholder="Hola {NOMBRE}, ..."
                                 required
                             />

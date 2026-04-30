@@ -230,7 +230,11 @@ export default function Home() {
                     )}
 
                     {activeTab === 'templates' && (
-                        <Templates templates={templates} onRefresh={() => void fetchData(activeTab, settings)} />
+                        <Templates 
+                            templates={templates} 
+                            onRefresh={() => void fetchData(activeTab, settings)} 
+                            onReview={handleAIGeneration}
+                        />
                     )}
                 </main>
 
