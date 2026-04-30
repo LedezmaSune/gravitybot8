@@ -9,24 +9,36 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 ## ✨ Características Principales
 
 ### 🧠 Cerebro IA Avanzado
+
 - **Multi-Modelo**: Soporte nativo para Groq, Gemini, OpenAI y OpenRouter.
 - **Personalización Total**: Define el nombre, personalidad y reglas de comportamiento (Prompt) desde el panel.
 - **RAG (Retrieval-Augmented Generation)**: Tu bot aprende de tus datos.
 
 ### 🌐 Aprendizaje Inteligente
+
 - **Jina Reader Integration**: Pega una URL y el bot procesará el contenido, incluso en sitios complejos (React/Next.js).
 - **Document Knowledge Base**: Sube archivos (PDF, TXT, CSV, Markdown) para que la IA responda basándose en tu propia documentación.
 
 ### 📢 Difusión y Marketing
+
 - **Envíos Masivos con Variables Dinámicas**: Personaliza mensajes al instante usando etiquetas automáticas (`{NOMBRE}`, `{FECHA}`, `{HORA_12}`, etc.) con menú de autocompletado inteligente.
 - **Programación Avanzada de Recordatorios**: Define rutinas con extrema flexibilidad (cada hora, día, saltando fines de semana, semanalmente o mensualmente).
 - **Multi-Destinatario en Recordatorios**: Envía la misma tarea programada a varios grupos o contactos simultáneamente separando los números por coma.
+
+### 📅 Calendario Profesional (Gravity Dashboard)
+- **Vista Multi-Temporal**: Visualiza tus recordatorios en 5 modos dinámicos: Mes, Semana, Día, Año y Agenda.
+- **Sincronización Total**: Alineación perfecta entre cabeceras y rejilla horaria con soporte para desplazamientos verticales y horizontales.
+- **Diseño de Alta Fidelidad**: Interfaz inspirada en Google Calendar con efectos de desenfoque, micro-animaciones y paleta de colores "Gravity" (Cian-Violeta) optimizada para alta legibilidad en modo claro y oscuro.
+
+### ✍️ Perfeccionamiento con IA
+- **Botón "Perfeccionar con IA"**: Optimiza tus mensajes de difusión y recordatorios con un solo clic. El sistema reescribe tus borradores para hacerlos más profesionales, persuasivos o claros usando los modelos de lenguaje configurados.
 
 ### 🎨 Experiencia de Usuario Premium
 - **Kitsune Dashboard**: Interfaz moderna con modo oscuro/claro, efectos de glassmorphism y micro-animaciones.
 - **Control en Tiempo Real**: Monitorea el estado de la conexión y las estadísticas desde una consola intuitiva.
 
 ### 📱 Panel de Control Vía Telegram
+
 - **Modo Administrador de Bolsillo**: Vincula un bot de Telegram como panel de control exclusivo y privado.
 - **Menú Principal Interactivo**: Escribe `/start` para desplegar un menú con botones navegables para controlar todo el sistema.
 - **Asistentes Paso a Paso**: Olvídate de comandos complejos. Toca "Crear Nuevo" en Recordatorios o "Difusión Masiva" y el bot te guiará preguntando destinatarios, mensaje, fecha y opciones de repetición con botones visuales.
@@ -46,6 +58,7 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 ## 📋 Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado:
+
 - **[Node.js](https://nodejs.org/)**: Versión 18 o superior (Recomendado 20+).
 - **[Git](https://git-scm.com/)**: Para clonar el repositorio.
 - **[Docker](https://www.docker.com/)**: (Opcional) Si prefieres usar contenedores.
@@ -58,24 +71,31 @@ Antes de comenzar, asegúrate de tener instalado:
 Sigue estos pasos en orden para tener tu bot funcionando en menos de 5 minutos:
 
 ### 1️⃣ Clonar el Proyecto
+
 Abre una terminal (PowerShell, CMD o Bash) y ejecuta:
+
 ```bash
 git clone https://github.com/LedezmaSune/BotMaRe.git
 cd BotMaRe
 ```
 
 ### 2️⃣ Instalar Dependencias
+
 Este proyecto es un monorepositorio. Hemos creado un comando para instalar todo (raíz, backend y frontend) de una sola vez:
+
 ```bash
 npm run install-all
 ```
+
 > [!TIP]
 > Si este comando falla, puedes instalar manualmente entrando en cada carpeta: `npm install`, luego `cd backend && npm install`, y finalmente `cd ../frontend && npm install`.
 
 ### 3️⃣ Configurar Variables de Entorno
+
 1. Ve a la carpeta `backend/`.
 2. Renombra el archivo `.env.example` a `.env` (o crea uno nuevo).
 3. Pega tus llaves API:
+
 ```env
 PORT=3001
 
@@ -85,6 +105,10 @@ GEMINI_API_KEY=tu_llave_aqui
 OPENAI_API_KEY=tu_llave_aqui
 OPENROUTER_API_KEY=tu_llave_aqui
 
+# NVIDIA DeepSeek (Alta Prioridad si se configura)
+NVIDIA_API_KEY=tu_llave_aqui
+NVIDIA_MODEL=deepseek-ai/deepseek-v4-pro
+
 # --- TELEGRAM BOT (Opcional) ---
 TELEGRAM_BOT_TOKEN="tu_token_de_botfather_aqui"
 TELEGRAM_ALLOWED_USER_IDS="tu_id_de_telegram_aqui"
@@ -92,6 +116,7 @@ TELEGRAM_ALLOWED_USER_IDS="tu_id_de_telegram_aqui"
 
 4. Ve a la carpeta `frontend/` y crea o edita el archivo `.env`.
 5. Configura la contraseña de tu panel de control (Dashboard):
+
 ```env
 DASHBOARD_USER="admin"
 DASHBOARD_PASS="admin123"
@@ -101,10 +126,13 @@ DASHBOARD_PASS="admin123"
 > Para usar Telegram: Crea un bot usando a [@BotFather](https://t.me/BotFather) en Telegram para obtener el `TELEGRAM_BOT_TOKEN`. Para obtener tu ID numérico y ponerlo en `TELEGRAM_ALLOWED_USER_IDS`, puedes usar bots como @userinfobot. Puedes separar varios IDs con comas.
 
 ### 4️⃣ Iniciar el Sistema
+
 Regresa a la raíz del proyecto (`BotMaRe`) y arranca el motor:
+
 ```bash
 npm run dev
 ```
+
 Esto iniciará el backend y el frontend simultáneamente. Verás logs en diferentes colores indicando que todo está listo.
 
 ---

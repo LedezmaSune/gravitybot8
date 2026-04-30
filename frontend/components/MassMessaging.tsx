@@ -75,7 +75,7 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                     <textarea 
                         value={contacts}
                         onChange={(e) => setContacts(e.target.value)}
-                        placeholder="521234567890, Nombre&#10;523311223344, Cliente"
+                        placeholder="8181234567, Nombre&#10;521234567890, Cliente"
                         className="w-full h-80 bg-app-bg dark:bg-background border border-app-border rounded-2xl p-4 text-sm focus:ring-2 focus:ring-orange-500/30 outline-none transition-all resize-none font-mono text-app-text placeholder:text-app-text-muted/50 shadow-inner"
                     />
                 </div>

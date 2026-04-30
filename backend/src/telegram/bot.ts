@@ -39,7 +39,7 @@ export function initTelegramBot(
     { command: "start", description: "Iniciar el bot" },
     { command: "dashboard", description: "Ver panel de control" },
     { command: "recordatorios", description: "Gestión de recordatorios" },
-    { command: "masivo", description: "Enviar difusión masiva (/masivo 521.., 521.. | Hola)" },
+    { command: "masivo", description: "Enviar difusión masiva (/masivo 10 dígitos | Hola)" },
     { command: "cerebro", description: "Ver configuración del bot" },
     { command: "auditoria", description: "Ver últimos 10 movimientos" },
     { command: "borrarmemorial", description: "Borrar memoria del bot" },
@@ -93,7 +93,7 @@ export function initTelegramBot(
         await ctx.reply("📅 *Gestión de Recordatorios*", { reply_markup: keyboard, parse_mode: "Markdown" });
       } else if (data === "menu_masivo") {
         wizardState.set(userId, { step: 'WAITING_DIFFUSION_NUMBERS' });
-        await ctx.reply("📣 ¡Vamos a enviar una Difusión Masiva paso a paso!\n\n¿A qué números o grupos se enviará?\n_(Escribe los números separados por coma. Ej: 521XXXXXXXX, 521YYYYYYYY)_", { parse_mode: "Markdown" });
+        await ctx.reply("📣 ¡Vamos a enviar una Difusión Masiva paso a paso!\n\n¿A qué números o grupos se enviará?\n_(Escribe los números separados por coma. Ej: 10 dígitos o 521XXXXXXXX)_", { parse_mode: "Markdown" });
       } else if (data === "menu_cerebro") {
         const settings = await getSettings() as any;
         const text = `🧠 *Cerebro Actual*\n\n*Nombre:* ${settings.bot_name}\n\n*Prompt:*\n_${settings.system_prompt}_\n\n*Reglas:*\n_${settings.possible_responses}_\n\n💡 _Para editar, usa:_ \`/setname\`, \`/setprompt\`, \`/setrules\``;
@@ -168,7 +168,7 @@ export function initTelegramBot(
       await ctx.answerCallbackQuery();
     } else if (data === "new_reminder") {
       wizardState.set(userId, { step: 'WAITING_NUMBERS' });
-      await ctx.reply("📲 ¡Vamos a crear un recordatorio paso a paso!\n\n¿Para quién es?\n_(Escribe el número de WhatsApp, Ej: 521XXXXXXXX. Usa comas para múltiples números o IDs de grupo)_", { parse_mode: "Markdown" });
+      await ctx.reply("📲 ¡Vamos a crear un recordatorio paso a paso!\n\n¿Para quién es?\n_(Escribe el número de WhatsApp, Ej: 10 dígitos o 521XXXXXXXX. Usa comas para múltiples números o IDs de grupo)_", { parse_mode: "Markdown" });
       await ctx.answerCallbackQuery();
     } else if (data === "delete_reminder") {
       await ctx.reply("Para eliminar un recordatorio, usa el botón de 'Eliminar ID' en la lista de 'Ver Activos', o usa el comando: `/delreminder ID`", { parse_mode: "Markdown" });
@@ -207,7 +207,7 @@ export function initTelegramBot(
     const userId = ctx.from?.id.toString();
     if (userId) {
       wizardState.set(userId, { step: 'WAITING_DIFFUSION_NUMBERS' });
-      await ctx.reply("📣 ¡Vamos a enviar una Difusión Masiva paso a paso!\n\n¿A qué números o grupos se enviará?\n_(Escribe los números separados por coma. Ej: 521XXXXXXXX, 521YYYYYYYY)_", { parse_mode: "Markdown" });
+      await ctx.reply("📣 ¡Vamos a enviar una Difusión Masiva paso a paso!\n\n¿A qué números o grupos se enviará?\n_(Escribe los números separados por coma. Ej: 10 dígitos o 521XXXXXXXX)_", { parse_mode: "Markdown" });
     }
   });
 

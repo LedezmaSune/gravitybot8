@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
-import { History, Bell, Brain, Megaphone } from 'lucide-react';
+import { History, Bell, Brain, Megaphone, CalendarDays } from 'lucide-react';
 
 import { StatusHeader } from '@/components/StatusHeader';
 import { MassMessaging } from '@/components/MassMessaging';
@@ -10,17 +10,19 @@ import { Reminders } from '@/components/Reminders';
 import { Personality } from '@/components/Personality';
 import { AuditLogs } from '@/components/AuditLogs';
 import { ConnectionOverlay } from '@/components/ConnectionOverlay';
+import { CalendarView } from '@/components/CalendarView';
 
 import { Audit, Reminder, Settings } from '../types';
 
 const API_BASE = '/api';
-type TabId = 'mass' | 'scheduling' | 'personality' | 'audits';
+type TabId = 'mass' | 'scheduling' | 'calendar' | 'personality' | 'audits';
 
 const tabs: Array<{ id: TabId; icon: typeof Megaphone; label: string }> = [
     { id: 'mass', icon: Megaphone, label: 'Difusion' },
     { id: 'scheduling', icon: Bell, label: 'Recordatorios' },
-    { id: 'personality', icon: Brain, label: 'Cerebro IA' },
-    { id: 'audits', icon: History, label: 'Auditoria' }
+    { id: 'calendar', icon: CalendarDays as any, label: 'Calendario' },
+    { id: 'personality', icon: Brain as any, label: 'Cerebro IA' },
+    { id: 'audits', icon: History as any, label: 'Auditoria' }
 ];
 
 export default function Home() {
@@ -29,6 +31,7 @@ export default function Home() {
     const [audits, setAudits] = useState<Audit[]>([]);
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [settings, setSettings] = useState<Settings | null>(null);
+    const [prefillDate, setPrefillDate] = useState<string>('');
 
     const fetchData = async (currentTab: TabId, currentSettings: Settings | null) => {
         try {
@@ -197,6 +200,17 @@ export default function Home() {
                             reminders={reminders}
                             onAdd={handleAddReminder}
                             onDelete={handleDeleteReminder}
+                            initialTime={prefillDate}
+                        />
+                    )}
+
+                    {activeTab === 'calendar' && (
+                        <CalendarView 
+                            reminders={reminders} 
+                            onDateSelect={(date) => {
+                                setPrefillDate(date);
+                                setActiveTab('scheduling');
+                            }}
                         />
                     )}
 

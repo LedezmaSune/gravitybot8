@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Bell, Loader2, Send, Clock, Trash2, CheckCircle, Edit3, Zap, Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, Loader2, Send, Clock, Trash2, CheckCircle, Edit3, Zap, Save, Wand2, Sparkles } from 'lucide-react';
 import { Reminder } from '../types';
 import { VariableTextarea } from './VariableTextarea';
 
@@ -9,12 +9,18 @@ interface RemindersProps {
     reminders: Reminder[];
     onAdd: (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string) => Promise<void>;
     onDelete: (id: number) => Promise<void>;
+    initialTime?: string;
 }
 
-export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
+export function Reminders({ reminders, onAdd, onDelete, initialTime }: RemindersProps) {
     const [chatId, setChatId] = useState('');
     const [text, setText] = useState('');
-    const [time, setTime] = useState('');
+    const [time, setTime] = useState(initialTime || '');
+
+    useEffect(() => {
+        if (initialTime) setTime(initialTime);
+    }, [initialTime]);
+
     const [media, setMedia] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -80,7 +86,23 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
             setLoading(false);
         }
     };
-
+    const handleAIPerfect = async () => {
+        if (!text) return;
+        setLoading(true);
+        try {
+            const res = await fetch('/api/ai/perfect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await res.json();
+            if (data.perfected) setText(data.perfected);
+        } catch (error) {
+            console.error('Error perfecting message:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Form */}
@@ -104,12 +126,22 @@ export function Reminders({ reminders, onAdd, onDelete }: RemindersProps) {
                                 value={chatId}
                                 onChange={(e) => setChatId(e.target.value)}
                                 className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
-                                placeholder="521..., 522..."
+                                placeholder="Ej: 10 dígitos o 521..."
                                 required
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Mensaje</label>
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest">Mensaje</label>
+                                <button
+                                    type="button"
+                                    onClick={handleAIPerfect}
+                                    className="flex items-center gap-2 px-3 py-1.5 border border-cyan-500/30 rounded-lg text-[9px] font-black text-cyan-500 hover:bg-cyan-500/10 hover:border-cyan-500/60 transition-all uppercase tracking-widest group"
+                                >
+                                    <Wand2 size={12} className="group-hover:rotate-12 transition-transform" />
+                                    Perfeccionar con IA
+                                </button>
+                            </div>
                             <VariableTextarea
                                 value={text}
                                 onChange={(val) => setText(val)}

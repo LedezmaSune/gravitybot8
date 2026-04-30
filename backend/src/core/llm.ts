@@ -16,12 +16,20 @@ async function tryProvider(
     for (const key of keys) {
         try {
             const client = new OpenAI({ ...config, apiKey: key });
-            const response = await client.chat.completions.create({
+            const payload: any = {
                 model: config.model,
                 messages: messages,
-                max_tokens: 300, // Limitar longitud para ahorrar tokens
+                max_tokens: config.max_tokens || 300,
                 ...(tools && tools.length > 0 && !(hasVision && providerName === 'Groq') ? { tools } : {}),
-            });
+            };
+            
+            if (config.extraBody) {
+                payload.extra_body = config.extraBody;
+            }
+            if (config.temperature) payload.temperature = config.temperature;
+            if (config.top_p) payload.top_p = config.top_p;
+
+            const response = await client.chat.completions.create(payload);
             console.log(`[LLM] ${providerName} (${config.model}) Responded successfully.`);
             return response.choices[0]?.message;
         } catch (error: any) {
@@ -66,6 +74,21 @@ export async function callLLM(
 ): Promise<any> {
     const cleanedMessages = cleanMessages(messages);
     const hasVision = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
+
+    // 0. Try Nvidia (DeepSeek)
+    const nvidiaKeys = getApiKeys(process.env.NVIDIA_API_KEY);
+    if (nvidiaKeys.length > 0) {
+        try {
+            return await tryProvider('Nvidia', nvidiaKeys, {
+                baseURL: "https://integrate.api.nvidia.com/v1",
+                model: process.env.NVIDIA_MODEL || "deepseek-ai/deepseek-v4-pro",
+                max_tokens: 4000,
+                temperature: 1,
+                top_p: 0.95,
+                extraBody: { chat_template_kwargs: { thinking: false } }
+            }, cleanedMessages, tools, hasVision);
+        } catch (e) {}
+    }
 
     // 1. Try Groq
     const groqKeys = getApiKeys(process.env.GROQ_API_KEY);

@@ -104,7 +104,11 @@ export class WhatsAppClient {
         if (!jid) return '';
         const clean = jid.trim();
         if (clean.includes('@')) return clean;
-        const numbers = clean.replace(/\D/g, '');
+        let numbers = clean.replace(/\D/g, '');
+        // Si el usuario ingresó solo 10 dígitos, asumimos que es de México y agregamos 521
+        if (numbers.length === 10) {
+            numbers = `521${numbers}`;
+        }
         return `${numbers}@s.whatsapp.net`;
     }
 
