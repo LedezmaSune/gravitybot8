@@ -3,6 +3,7 @@ import { WhatsAppService } from '../../services/whatsapp.service';
 import { ReminderService } from '../../services/reminder.service';
 import { db } from '../../core/memory'; // Still needed for raw queries for now, or we could move this to ReminderService
 import { processVariables } from '../../utils/variables';
+import { parseContacts } from '../../utils/contact-parser';
 
 export class Scheduler {
     private static waService: WhatsAppService;
@@ -41,17 +42,11 @@ export class Scheduler {
                 
                 // Phase 2: Send
                 // Phase 2: Send
-                const lines = r.chatId.split('\n').map((l: string) => l.trim()).filter((l: string) => l);
+                const parsedContacts = parseContacts(r.chatId);
                 
-                for (const line of lines) {
-                    let targetId = line;
-                    let targetName = '';
-                    
-                    if (line.includes(',')) {
-                        const parts = line.split(',');
-                        targetId = parts[0].trim();
-                        targetName = parts.slice(1).join(',').trim();
-                    }
+                for (const contact of parsedContacts) {
+                    const targetId = contact.number;
+                    const targetName = contact.name;
 
                     const personalizedText = processVariables(r.text, targetName);
 
