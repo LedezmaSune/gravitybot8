@@ -196,7 +196,7 @@ export function CalendarView({ reminders, onDateSelect }: CalendarViewProps) {
                                                 
                                                 <div className="flex-1 min-w-0">
                                                     <span className="text-sm md:text-base font-black text-app-text uppercase tracking-tight truncate block group-hover/item:translate-x-1 transition-transform">
-                                                        {r.text}
+                                                        {r.title || r.text}
                                                     </span>
                                                 </div>
 
@@ -338,7 +338,7 @@ export function CalendarView({ reminders, onDateSelect }: CalendarViewProps) {
                                                             <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></div>
                                                         </div>
                                                         <div className="text-[11px] md:text-xs font-black text-app-text leading-tight group-hover:whitespace-normal line-clamp-2">
-                                                            {r.text}
+                                                            {r.title || r.text}
                                                         </div>
                                                     </div>
                                                 );
@@ -540,7 +540,7 @@ export function CalendarView({ reminders, onDateSelect }: CalendarViewProps) {
                                                         title={r.text}
                                                     >
                                                         <span className="font-bold opacity-80 shrink-0">{new Date(r.time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
-                                                        <span className="truncate min-w-0">{r.text}</span>
+                                                        <span className="truncate min-w-0">{r.title || r.text}</span>
                                                     </div>
                                                 ))}
                                             </div>

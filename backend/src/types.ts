@@ -2,12 +2,16 @@ export interface Reminder {
     id: number;
     userId: string;
     chatId: string;
+    title?: string;
     text: string;
     time: string;
     mediaPath?: string;
     mediaType?: string;
     status: 'pending' | 'processing' | 'sent' | 'failed';
     timestamp: string;
+    repeat?: string;
+    repeatInterval?: number;
+    repeatUnit?: string;
 }
 
 export interface Settings {

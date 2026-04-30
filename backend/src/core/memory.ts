@@ -33,6 +33,7 @@ db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         userId TEXT,
         chatId TEXT,
+        title TEXT,
         text TEXT,
         time TEXT,
         mediaPath TEXT,
@@ -56,6 +57,7 @@ try { db.exec('ALTER TABLE reminders ADD COLUMN mediaType TEXT'); } catch (e) {}
 try { db.exec("ALTER TABLE reminders ADD COLUMN repeat TEXT DEFAULT 'none'"); } catch (e) {}
 try { db.exec('ALTER TABLE reminders ADD COLUMN repeatInterval INTEGER'); } catch (e) {}
 try { db.exec('ALTER TABLE reminders ADD COLUMN repeatUnit TEXT'); } catch (e) {}
+try { db.exec('ALTER TABLE reminders ADD COLUMN title TEXT'); } catch (e) {}
 
 // Default Settings
 const defaultSettings = {
@@ -110,9 +112,9 @@ export async function logAudit(userId: string, action: string, details: any) {
     console.log(`[Audit Logged] ${action} for user ${userId}`);
 }
 
-export async function createReminder(userId: string, chatId: string, text: string, time: string, mediaPath?: string, mediaType?: string, repeat: string = 'none', repeatInterval?: number, repeatUnit?: string) {
-    const stmt = db.prepare('INSERT INTO reminders (userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-    return stmt.run(userId, chatId, text, time, mediaPath || null, mediaType || null, repeat, repeatInterval || null, repeatUnit || null).lastInsertRowid;
+export async function createReminder(userId: string, chatId: string, text: string, time: string, mediaPath?: string, mediaType?: string, repeat: string = 'none', repeatInterval?: number, repeatUnit?: string, title?: string) {
+    const stmt = db.prepare('INSERT INTO reminders (userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    return stmt.run(userId, chatId, text, time, mediaPath || null, mediaType || null, repeat, repeatInterval || null, repeatUnit || null, title || null).lastInsertRowid;
 }
 
 export async function listReminders(userId: string, includeProcessed: boolean = false) {

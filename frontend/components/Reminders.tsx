@@ -7,13 +7,14 @@ import { VariableTextarea } from './VariableTextarea';
 
 interface RemindersProps {
     reminders: Reminder[];
-    onAdd: (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string) => Promise<void>;
+    onAdd: (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string, title?: string) => Promise<void>;
     onDelete: (id: number) => Promise<void>;
     initialTime?: string;
 }
 
 export function Reminders({ reminders, onAdd, onDelete, initialTime }: RemindersProps) {
     const [chatId, setChatId] = useState('');
+    const [title, setTitle] = useState('');
     const [text, setText] = useState('');
     const [time, setTime] = useState(initialTime || '');
 
@@ -48,13 +49,14 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
             await fetch(`/api/reminders/${editingId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit })
+                body: JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit, title })
             });
             setEditingId(null);
         } else {
-            await onAdd(chatId, text, time, media, repeat, repeatInterval, repeatUnit);
+            await onAdd(chatId, text, time, media, repeat, repeatInterval, repeatUnit, title);
         }
         setChatId('');
+        setTitle('');
         setText('');
         setTime('');
         setMedia(null);
@@ -67,6 +69,7 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
     const handleEdit = (r: Reminder) => {
         setEditingId(r.id);
         setChatId(r.chatId);
+        setTitle(r.title || '');
         setText(r.text);
         // Date format handling for datetime-local
         setTime(r.time); 
@@ -119,6 +122,16 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-4">
+                        <div>
+                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">Nombre del Recordatorio (Opcional)</label>
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
+                                placeholder="Ej: Cumpleaños de Juan..."
+                            />
+                        </div>
                         <div>
                             <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">WhatsApp ID / Grupo (separados por coma)</label>
                             <input
@@ -205,6 +218,7 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
                                 onClick={() => {
                                     setEditingId(null);
                                     setChatId('');
+                                    setTitle('');
                                     setText('');
                                     setTime('');
                                 }}

@@ -10,6 +10,7 @@ export interface Reminder {
     id: number;
     userId: string;
     chatId: string;
+    title?: string;
     text: string;
     time: string;
     status: 'pending' | 'processing' | 'sent' | 'failed';

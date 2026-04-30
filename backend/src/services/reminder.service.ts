@@ -8,8 +8,8 @@ import {
 import { Reminder } from '../types';
 
 export class ReminderService {
-    async create(userId: string, chatId: string, text: string, time: string, mediaPath?: string, mediaType?: string, repeat?: string, repeatInterval?: number, repeatUnit?: string) {
-        return await createReminder(userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit);
+    async create(userId: string, chatId: string, text: string, time: string, mediaPath?: string, mediaType?: string, repeat?: string, repeatInterval?: number, repeatUnit?: string, title?: string) {
+        return await createReminder(userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit, title);
     }
 
     async list(userId: string, includeProcessed: boolean = false): Promise<Reminder[]> {
