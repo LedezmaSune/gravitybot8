@@ -58,38 +58,42 @@ export class WhatsAppClient {
 
             this.socket.ev.on('creds.update', saveCreds);
 
-            // Forward to Handler if attached
-            if (this.eventHandler) {
-                this.eventHandler.listen(this.socket, () => this.init());
-            } else {
-                // Fallback basic connection handling if no handler (for bootstrap)
-                this.socket.ev.on('connection.update', (update: Partial<ConnectionState>) => {
-                    const { connection, lastDisconnect, qr } = update;
-                    if (qr) this.qr = qr;
-                    if (connection === 'open') {
-                        this.state = 'connected';
-                        this.qr = null;
-                    } else if (connection === 'close') {
-                        this.state = 'disconnected';
-                        const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
-                        if (statusCode !== DisconnectReason.loggedOut) void this.init();
-                    }
-                });
-            }
-
-            // Sync internal state with connection updates
+            // Unified Connection Handling
             this.socket.ev.on('connection.update', (update: Partial<ConnectionState>) => {
-                const { connection, qr } = update;
-                if (qr) this.qr = qr;
+                const { connection, lastDisconnect, qr } = update;
+                
+                if (qr) {
+                    this.qr = qr;
+                    this.io.emit('qr', qr);
+                }
+
                 if (connection === 'open') {
                     this.state = 'connected';
                     this.qr = null;
-                } else if (connection === 'close') {
-                    this.state = 'disconnected';
+                    this.io.emit('status', 'connected');
+                    console.log('[WA] Conectado exitosamente');
                 } else if (connection === 'connecting') {
                     this.state = 'connecting';
+                    this.io.emit('status', 'connecting');
+                } else if (connection === 'close') {
+                    this.state = 'disconnected';
+                    this.io.emit('status', 'disconnected');
+                    
+                    const statusCode = (lastDisconnect?.error as any)?.output?.statusCode;
+                    const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+                    
+                    console.log(`[WA] Conexión cerrada. Razón: ${statusCode}. Reconectando: ${shouldReconnect}`);
+                    
+                    if (shouldReconnect) {
+                        void this.init();
+                    }
                 }
             });
+
+            // Forward events to handler if attached
+            if (this.eventHandler) {
+                this.eventHandler.listen(this.socket, () => this.init());
+            }
 
         } finally {
             this.isInitializing = false;

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useWhatsApp } from '@/hooks/useWhatsApp';
+import { useBotData, TabId } from '@/hooks/useBotData';
 import { History, Bell, Brain, Megaphone, CalendarDays, Layout } from 'lucide-react';
 
 import { StatusHeader } from '@/components/StatusHeader';
@@ -13,157 +12,35 @@ import { ConnectionOverlay } from '@/components/ConnectionOverlay';
 import { CalendarView } from '@/components/CalendarView';
 import { Templates } from '@/components/Templates';
 
-import { Audit, Reminder, Settings, Template } from '../types';
-
-const API_BASE = '/api';
-type TabId = 'mass' | 'scheduling' | 'calendar' | 'templates' | 'personality' | 'audits';
-
-const tabs: Array<{ id: TabId; icon: typeof Megaphone; label: string }> = [
-    { id: 'mass', icon: Megaphone, label: 'Difusion' },
+const tabs: Array<{ id: TabId; icon: any; label: string }> = [
+    { id: 'mass', icon: Megaphone, label: 'Difusión' },
     { id: 'scheduling', icon: Bell, label: 'Recordatorios' },
-    { id: 'calendar', icon: CalendarDays as any, label: 'Calendario' },
-    { id: 'templates', icon: Layout as any, label: 'Plantillas' },
-    { id: 'personality', icon: Brain as any, label: 'Cerebro IA' },
-    { id: 'audits', icon: History as any, label: 'Auditoria' }
+    { id: 'calendar', icon: CalendarDays, label: 'Calendario' },
+    { id: 'templates', icon: Layout, label: 'Plantillas' },
+    { id: 'personality', icon: Brain, label: 'Cerebro IA' },
+    { id: 'audits', icon: History, label: 'Auditoría' }
 ];
 
 export default function Home() {
-    const { status, qr } = useWhatsApp();
-    const [activeTab, setActiveTab] = useState<TabId>('mass');
-    const [audits, setAudits] = useState<Audit[]>([]);
-    const [reminders, setReminders] = useState<Reminder[]>([]);
-    const [templates, setTemplates] = useState<Template[]>([]);
-    const [settings, setSettings] = useState<Settings | null>(null);
-    const [prefillDate, setPrefillDate] = useState<string>('');
-
-    const fetchData = async (currentTab: TabId, currentSettings: Settings | null) => {
-        try {
-            const [auditsRes, remindersRes, templatesRes] = await Promise.all([
-                fetch(`${API_BASE}/system/audits`),
-                fetch(`${API_BASE}/reminders`),
-                fetch(`${API_BASE}/templates`)
-            ]);
-
-            if (auditsRes.ok) setAudits(await auditsRes.json());
-            if (remindersRes.ok) setReminders(await remindersRes.json());
-            if (templatesRes.ok) setTemplates(await templatesRes.json());
-
-            if (!currentSettings || currentTab === 'personality') {
-                const settingsRes = await fetch(`${API_BASE}/settings`);
-                if (settingsRes.ok) setSettings(await settingsRes.json());
-            }
-        } catch (error) {
-            console.error('Fetch error:', error);
-        }
-    };
-
-    useEffect(() => {
-        const initialLoad = setTimeout(() => {
-            void fetchData(activeTab, settings);
-        }, 0);
-        const interval = setInterval(() => {
-            void fetchData(activeTab, settings);
-        }, 5000);
-        return () => {
-            clearTimeout(initialLoad);
-            clearInterval(interval);
-        };
-    }, [activeTab, settings]);
-
-    const handleCleanUploads = async () => {
-        if (!confirm('Deseas limpiar archivos temporales no utilizados?')) return;
-        await fetch(`${API_BASE}/system/clean-uploads`, { method: 'DELETE' });
-    };
-
-    const handleSendMass = async (contacts: string, message: string, media: File | null) => {
-        const formData = new FormData();
-        const contactList = contacts
-            .split('\n')
-            .filter(line => line.trim())
-            .map(line => {
-                const cleanLine = line.trim();
-                if (cleanLine.includes(',')) {
-                    const parts = cleanLine.split(',');
-                    const part1 = parts[0].trim();
-                    const part2 = parts.slice(1).join(',').trim();
-                    if (/\d{8,}/.test(part1)) return { number: part1, name: part2 };
-                    return { number: part2, name: part1 };
-                }
-                const numberMatch = cleanLine.match(/\+?\d{8,15}/);
-                if (numberMatch) {
-                    const number = numberMatch[0];
-                    const name = cleanLine.replace(number, '').replace(/^[-\s]+|[-\s]+$/g, '').trim();
-                    return { number, name };
-                }
-                return { number: cleanLine, name: '' };
-            });
-
-        formData.append('contacts', JSON.stringify(contactList));
-        formData.append('message', message);
-        if (media) formData.append('media', media);
-
-        const res = await fetch(`${API_BASE}/send-mass`, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await res.json();
-        if (data.success) alert(`Cola iniciada. Procesando ${contactList.length} contactos.`);
-        else alert(`Error: ${data.error}`);
-    };
-
-    const handleAIGeneration = async (text: string) => {
-        const res = await fetch(`${API_BASE}/ai/review-message`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text })
-        });
-        const data = await res.json();
-        return data.success ? data.corrected : null;
-    };
-
-    const handleAddReminder = async (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string, title?: string) => {
-        const formData = new FormData();
-        formData.append('chatId', chatId);
-        formData.append('text', text);
-        formData.append('time', time);
-        if (title) formData.append('title', title);
-        if (media) formData.append('media', media);
-
-        if (repeat) formData.append('repeat', repeat);
-        if (repeatInterval) formData.append('repeatInterval', repeatInterval.toString());
-        if (repeatUnit) formData.append('repeatUnit', repeatUnit);
-
-        const url = media ? `${API_BASE}/reminders/with-media` : `${API_BASE}/reminders`;
-        const res = await fetch(url, {
-            method: 'POST',
-            body: media ? formData : JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit, title }),
-            headers: media ? {} : { 'Content-Type': 'application/json' }
-        });
-
-        if (res.ok) {
-            void fetchData(activeTab, settings);
-            alert('Recordatorio programado con exito.');
-        }
-    };
-
-    const handleDeleteReminder = async (id: number) => {
-        if (!confirm('Seguro que quieres eliminar este recordatorio?')) return;
-        const res = await fetch(`${API_BASE}/reminders/${id}`, { method: 'DELETE' });
-        if (res.ok) void fetchData(activeTab, settings);
-    };
-
-    const handleUpdateSettings = async (newSettings: Settings) => {
-        const res = await fetch(`${API_BASE}/settings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newSettings)
-        });
-        if (res.ok) {
-            setSettings(newSettings);
-            alert('Configuracion guardada.');
-        }
-    };
+    const {
+        status,
+        qr,
+        activeTab,
+        setActiveTab,
+        audits,
+        reminders,
+        templates,
+        settings,
+        prefillDate,
+        setPrefillDate,
+        fetchData,
+        handleCleanUploads,
+        handleSendMass,
+        handleAIGeneration,
+        handleAddReminder,
+        handleDeleteReminder,
+        handleUpdateSettings
+    } = useBotData();
 
     return (
         <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden selection:bg-cyan-500/30 transition-colors duration-300">
@@ -203,7 +80,11 @@ export default function Home() {
 
                 <main className="min-h-[600px]">
                     {activeTab === 'mass' && (
-                        <MassMessaging onSend={handleSendMass} onReview={handleAIGeneration} templates={templates} />
+                        <MassMessaging 
+                            onSend={handleSendMass} 
+                            onReview={handleAIGeneration} 
+                            templates={templates} 
+                        />
                     )}
 
                     {activeTab === 'scheduling' && (
@@ -237,7 +118,7 @@ export default function Home() {
                     {activeTab === 'templates' && (
                         <Templates 
                             templates={templates} 
-                            onRefresh={() => void fetchData(activeTab, settings)} 
+                            onRefresh={() => void fetchData(activeTab)} 
                             onReview={handleAIGeneration}
                         />
                     )}
