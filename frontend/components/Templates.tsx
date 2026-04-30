@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Layout, Plus, Trash2, Save, FileText, X, Wand2, Loader2 } from 'lucide-react';
+import { Layout, Plus, Trash2, Save, FileText, X, Wand2, Loader2, Edit2 } from 'lucide-react';
 import { Template } from '../types';
 import { VariableTextarea } from './VariableTextarea';
 
@@ -16,6 +16,7 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(false);
     const [reviewing, setReviewing] = useState(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
     const [showForm, setShowForm] = useState(false);
 
     const handleReview = async () => {
@@ -26,17 +27,29 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
         setReviewing(false);
     };
 
+    const handleEdit = (t: Template) => {
+        setEditingId(t.id);
+        setName(t.name);
+        setContent(t.content);
+        setShowForm(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await fetch('/api/templates', {
-                method: 'POST',
+            const url = editingId ? `/api/templates/${editingId}` : '/api/templates';
+            const method = editingId ? 'PUT' : 'POST';
+            
+            await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, content })
             });
             setName('');
             setContent('');
+            setEditingId(null);
             setShowForm(false);
             onRefresh();
         } finally {
@@ -62,8 +75,17 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
                         <p className="text-app-text-muted text-xs uppercase tracking-widest font-bold">Mensajes predefinidos para difusión y recordatorios</p>
                     </div>
                 </div>
-                <button
-                    onClick={() => setShowForm(!showForm)}
+                 <button
+                    onClick={() => {
+                        if (showForm) {
+                            setShowForm(false);
+                            setEditingId(null);
+                            setName('');
+                            setContent('');
+                        } else {
+                            setShowForm(true);
+                        }
+                    }}
                     className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-bold transition-all shadow-lg active:scale-95 ${showForm ? 'bg-slate-200 dark:bg-slate-800 text-app-text' : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/20'}`}
                 >
                     {showForm ? <X size={20} /> : <Plus size={20} />}
@@ -111,8 +133,8 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
                             disabled={loading}
                             className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
                         >
-                            <Save size={20} />
-                            {loading ? 'Guardando...' : 'Guardar Plantilla'}
+                            {editingId ? <Edit2 size={20} /> : <Save size={20} />}
+                            {loading ? 'Guardando...' : editingId ? 'Actualizar Plantilla' : 'Guardar Plantilla'}
                         </button>
                     </form>
                 </section>
@@ -126,12 +148,22 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
                                 <FileText size={18} className="text-indigo-500" />
                                 <h3 className="font-bold text-app-text uppercase text-xs tracking-wider">{t.name}</h3>
                             </div>
-                            <button
-                                onClick={() => handleDelete(t.id)}
-                                className="text-red-500/40 hover:text-red-500 transition-colors p-1"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                             <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleEdit(t)}
+                                    className="text-app-text-muted hover:text-indigo-500 transition-colors p-1"
+                                    title="Editar"
+                                >
+                                    <Edit2 size={16} />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(t.id)}
+                                    className="text-red-500/40 hover:text-red-500 transition-colors p-1"
+                                    title="Eliminar"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
                         </div>
                         <p className="text-sm text-app-text-muted line-clamp-3 leading-relaxed whitespace-pre-wrap italic bg-app-bg dark:bg-background/40 p-3 rounded-xl border border-app-border/10 group-hover:border-indigo-500/10">
                             {t.content}
