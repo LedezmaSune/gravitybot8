@@ -81,6 +81,8 @@ export function useBotData() {
             .filter(line => line.trim())
             .map(line => {
                 const cleanLine = line.trim();
+                
+                // Case 1: Comma separated
                 if (cleanLine.includes(',')) {
                     const parts = cleanLine.split(',');
                     const part1 = parts[0].trim();
@@ -88,12 +90,15 @@ export function useBotData() {
                     if (/\d{8,}/.test(part1)) return { number: part1, name: part2 };
                     return { number: part2, name: part1 };
                 }
+
+                // Case 2: No comma, search for number in string
                 const numberMatch = cleanLine.match(/\+?\d{8,15}/);
                 if (numberMatch) {
                     const number = numberMatch[0];
                     const name = cleanLine.replace(number, '').replace(/^[-\s]+|[-\s]+$/g, '').trim();
                     return { number, name };
                 }
+
                 return { number: cleanLine, name: '' };
             });
 
