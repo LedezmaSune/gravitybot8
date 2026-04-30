@@ -72,7 +72,7 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
             </div>
 
             {showForm && (
-                <section className="bg-app-card border border-app-border rounded-3xl p-6 mb-8 shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-300">
+                <section className="relative z-50 bg-app-card border border-app-border rounded-3xl p-6 mb-8 shadow-2xl backdrop-blur-xl animate-in zoom-in-95 duration-300">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="text-[10px] uppercase font-black text-app-text-muted mb-1 block tracking-widest">Nombre de la Plantilla</label>

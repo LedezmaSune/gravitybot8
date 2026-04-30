@@ -115,7 +115,7 @@ export function VariableTextarea({ value, onChange, placeholder, required, class
             {showSuggestions && filteredVars.length > 0 && (
                 <div 
                     ref={popupRef}
-                    className="absolute z-[100] mt-1 max-h-48 w-full overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl"
+                    className="absolute z-[100] mt-1 max-h-48 w-full overflow-y-auto bg-white/90 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-indigo-500/30 dark:border-indigo-500/40 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-top-2 duration-200"
                 >
                     {filteredVars.map((v, idx) => (
                         <button
