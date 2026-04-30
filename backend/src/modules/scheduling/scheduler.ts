@@ -40,11 +40,21 @@ export class Scheduler {
                 console.log(`[Scheduler] Procesando recordatorio ${r.id} para ${r.chatId}`);
                 
                 // Phase 2: Send
-                const personalizedText = processVariables(r.text, '');
+                // Phase 2: Send
+                const lines = r.chatId.split('\n').map((l: string) => l.trim()).filter((l: string) => l);
                 
-                const chatIds = r.chatId.split(',').map((id: string) => id.trim()).filter((id: string) => id);
-                
-                for (const targetId of chatIds) {
+                for (const line of lines) {
+                    let targetId = line;
+                    let targetName = '';
+                    
+                    if (line.includes(',')) {
+                        const parts = line.split(',');
+                        targetId = parts[0].trim();
+                        targetName = parts.slice(1).join(',').trim();
+                    }
+
+                    const personalizedText = processVariables(r.text, targetName);
+
                     if (r.mediaPath) {
                         await this.waService.sendMedia(targetId, r.mediaPath, personalizedText);
                     } else {

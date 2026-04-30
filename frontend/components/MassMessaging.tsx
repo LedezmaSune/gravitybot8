@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { Megaphone, Upload, Wand2, Loader2, Send } from 'lucide-react';
 import { VariableTextarea } from './VariableTextarea';
+import { Template } from '../types';
 
 interface MassMessagingProps {
     onSend: (contacts: string, message: string, media: File | null) => Promise<void>;
     onReview: (text: string) => Promise<string | null>;
+    templates: Template[];
 }
 
-export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
+export function MassMessaging({ onSend, onReview, templates }: MassMessagingProps) {
     const [contacts, setContacts] = useState('');
     const [message, setMessage] = useState('');
     const [media, setMedia] = useState<File | null>(null);
@@ -94,6 +96,25 @@ export function MassMessaging({ onSend, onReview }: MassMessagingProps) {
                                 Perfeccionar con IA
                             </button>
                         </div>
+
+                        {templates.length > 0 && (
+                            <div className="mb-4">
+                                <select
+                                    onChange={(e) => {
+                                        const t = templates.find(temp => temp.id === Number(e.target.value));
+                                        if (t) setMessage(t.content);
+                                        e.target.value = "";
+                                    }}
+                                    className="w-full bg-slate-100 dark:bg-slate-800/50 border border-app-border rounded-xl px-4 py-2 text-[10px] font-bold text-app-text-muted outline-none transition-all uppercase tracking-widest cursor-pointer hover:border-orange-500/30"
+                                >
+                                    <option value="">-- Seleccionar Plantilla --</option>
+                                    {templates.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
                         <VariableTextarea 
                             value={message}
                             onChange={(val) => setMessage(val)}

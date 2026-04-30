@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { Bell, Loader2, Send, Clock, Trash2, CheckCircle, Edit3, Zap, Save, Wand2, Sparkles } from 'lucide-react';
-import { Reminder } from '../types';
+import { Reminder, Template } from '../types';
 import { VariableTextarea } from './VariableTextarea';
 
 interface RemindersProps {
     reminders: Reminder[];
+    templates: Template[];
     onAdd: (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string, title?: string) => Promise<void>;
     onDelete: (id: number) => Promise<void>;
     initialTime?: string;
 }
 
-export function Reminders({ reminders, onAdd, onDelete, initialTime }: RemindersProps) {
+export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }: RemindersProps) {
     const [chatId, setChatId] = useState('');
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
@@ -133,15 +134,24 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] uppercase font-bold text-app-text-muted mb-1 block tracking-widest">WhatsApp ID / Grupo (separados por coma)</label>
-                            <input
-                                type="text"
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest">Destinatarios</label>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-black text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 uppercase tracking-tighter">
+                                        {chatId.split('\n').filter(x => x.trim()).length} contactos
+                                    </span>
+                                </div>
+                            </div>
+                            <textarea
                                 value={chatId}
                                 onChange={(e) => setChatId(e.target.value)}
-                                className="w-full bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none transition-all text-app-text"
-                                placeholder="Ej: 10 dígitos o 521..."
+                                className="w-full h-24 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all text-app-text custom-scrollbar"
+                                placeholder="8181234567, Nombre&#10;521234567890, Cliente&#10;..."
                                 required
                             />
+                            <p className="text-[9px] text-app-text-muted mt-1 leading-tight px-1 italic">
+                                Pon un contacto por línea. Formato: <span className="text-cyan-500 font-bold">Número, Nombre</span> para usar <span className="text-violet-500 font-bold">{`{NOMBRE}`}</span>.
+                            </p>
                         </div>
                         <div>
                             <div className="flex items-center justify-between mb-1">
@@ -155,6 +165,25 @@ export function Reminders({ reminders, onAdd, onDelete, initialTime }: Reminders
                                     Perfeccionar con IA
                                 </button>
                             </div>
+
+                            {templates.length > 0 && (
+                                <div className="mb-2">
+                                    <select
+                                        onChange={(e) => {
+                                            const t = templates.find(temp => temp.id === Number(e.target.value));
+                                            if (t) setText(t.content);
+                                            e.target.value = "";
+                                        }}
+                                        className="w-full bg-slate-100 dark:bg-slate-800/50 border border-app-border rounded-xl px-3 py-2 text-[10px] font-bold text-app-text-muted outline-none transition-all uppercase tracking-widest cursor-pointer hover:border-cyan-500/30"
+                                    >
+                                        <option value="">-- Seleccionar Plantilla --</option>
+                                        {templates.map(t => (
+                                            <option key={t.id} value={t.id}>{t.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
                             <VariableTextarea
                                 value={text}
                                 onChange={(val) => setText(val)}

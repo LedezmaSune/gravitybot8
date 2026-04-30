@@ -28,3 +28,10 @@ export interface Settings {
 }
 
 export type ConnectionState = 'connecting' | 'connected' | 'disconnected';
+
+export interface Template {
+    id: number;
+    name: string;
+    content: string;
+    timestamp: string;
+}

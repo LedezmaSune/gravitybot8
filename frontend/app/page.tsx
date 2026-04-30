@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWhatsApp } from '@/hooks/useWhatsApp';
-import { History, Bell, Brain, Megaphone, CalendarDays } from 'lucide-react';
+import { History, Bell, Brain, Megaphone, CalendarDays, Layout } from 'lucide-react';
 
 import { StatusHeader } from '@/components/StatusHeader';
 import { MassMessaging } from '@/components/MassMessaging';
@@ -11,16 +11,18 @@ import { Personality } from '@/components/Personality';
 import { AuditLogs } from '@/components/AuditLogs';
 import { ConnectionOverlay } from '@/components/ConnectionOverlay';
 import { CalendarView } from '@/components/CalendarView';
+import { Templates } from '@/components/Templates';
 
-import { Audit, Reminder, Settings } from '../types';
+import { Audit, Reminder, Settings, Template } from '../types';
 
 const API_BASE = '/api';
-type TabId = 'mass' | 'scheduling' | 'calendar' | 'personality' | 'audits';
+type TabId = 'mass' | 'scheduling' | 'calendar' | 'templates' | 'personality' | 'audits';
 
 const tabs: Array<{ id: TabId; icon: typeof Megaphone; label: string }> = [
     { id: 'mass', icon: Megaphone, label: 'Difusion' },
     { id: 'scheduling', icon: Bell, label: 'Recordatorios' },
     { id: 'calendar', icon: CalendarDays as any, label: 'Calendario' },
+    { id: 'templates', icon: Layout as any, label: 'Plantillas' },
     { id: 'personality', icon: Brain as any, label: 'Cerebro IA' },
     { id: 'audits', icon: History as any, label: 'Auditoria' }
 ];
@@ -30,18 +32,21 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState<TabId>('mass');
     const [audits, setAudits] = useState<Audit[]>([]);
     const [reminders, setReminders] = useState<Reminder[]>([]);
+    const [templates, setTemplates] = useState<Template[]>([]);
     const [settings, setSettings] = useState<Settings | null>(null);
     const [prefillDate, setPrefillDate] = useState<string>('');
 
     const fetchData = async (currentTab: TabId, currentSettings: Settings | null) => {
         try {
-            const [auditsRes, remindersRes] = await Promise.all([
+            const [auditsRes, remindersRes, templatesRes] = await Promise.all([
                 fetch(`${API_BASE}/system/audits`),
-                fetch(`${API_BASE}/reminders`)
+                fetch(`${API_BASE}/reminders`),
+                fetch(`${API_BASE}/templates`)
             ]);
 
             if (auditsRes.ok) setAudits(await auditsRes.json());
             if (remindersRes.ok) setReminders(await remindersRes.json());
+            if (templatesRes.ok) setTemplates(await templatesRes.json());
 
             if (!currentSettings || currentTab === 'personality') {
                 const settingsRes = await fetch(`${API_BASE}/settings`);
@@ -193,7 +198,7 @@ export default function Home() {
 
                 <main className="min-h-[600px]">
                     {activeTab === 'mass' && (
-                        <MassMessaging onSend={handleSendMass} onReview={handleAIGeneration} />
+                        <MassMessaging onSend={handleSendMass} onReview={handleAIGeneration} templates={templates} />
                     )}
 
                     {activeTab === 'scheduling' && (
@@ -202,6 +207,7 @@ export default function Home() {
                             onAdd={handleAddReminder}
                             onDelete={handleDeleteReminder}
                             initialTime={prefillDate}
+                            templates={templates}
                         />
                     )}
 
@@ -221,6 +227,10 @@ export default function Home() {
 
                     {activeTab === 'audits' && (
                         <AuditLogs audits={audits} />
+                    )}
+
+                    {activeTab === 'templates' && (
+                        <Templates templates={templates} onRefresh={() => void fetchData(activeTab, settings)} />
                     )}
                 </main>
 

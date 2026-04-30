@@ -17,6 +17,7 @@ import { AIController } from '../controllers/ai.controller';
 import { DiffusionController } from '../controllers/diffusion.controller';
 import { SettingsController } from '../controllers/settings.controller';
 import { SystemController } from '../controllers/system.controller';
+import { TemplateController } from '../controllers/template.controller';
 
 // Routes
 import { createWhatsAppRouter } from './whatsapp.routes';
@@ -25,6 +26,7 @@ import { createAIRouter } from './ai.routes';
 import { createDiffusionRouter } from './diffusion.routes';
 import { createSettingsRouter } from './settings.routes';
 import { createSystemRouter } from './system.routes';
+import { createTemplateRouter } from './template.routes';
 
 // Shared Multer Setup
 const uploadDir = path.resolve('data/uploads');
@@ -58,6 +60,7 @@ export function createMainRouter(waClient: WhatsAppClient) {
     const diffusionController = new DiffusionController(diffusionService);
     const settingsController = new SettingsController();
     const systemController = new SystemController(waClient);
+    const templateController = new TemplateController();
 
     // 3. Mount Routes
     router.use('/whatsapp', createWhatsAppRouter(waController));
@@ -66,6 +69,7 @@ export function createMainRouter(waClient: WhatsAppClient) {
     router.use('/send-mass', createDiffusionRouter(diffusionController, upload));
     router.use('/settings', createSettingsRouter(settingsController));
     router.use('/system', createSystemRouter(systemController));
+    router.use('/templates', createTemplateRouter(templateController));
 
     return router;
 }

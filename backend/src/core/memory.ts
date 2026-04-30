@@ -49,6 +49,13 @@ db.exec(`
         key TEXT PRIMARY KEY,
         value TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS templates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        content TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
 `);
 
 // Database Migrations (in case table already exists without columns)
@@ -58,6 +65,7 @@ try { db.exec("ALTER TABLE reminders ADD COLUMN repeat TEXT DEFAULT 'none'"); } 
 try { db.exec('ALTER TABLE reminders ADD COLUMN repeatInterval INTEGER'); } catch (e) {}
 try { db.exec('ALTER TABLE reminders ADD COLUMN repeatUnit TEXT'); } catch (e) {}
 try { db.exec('ALTER TABLE reminders ADD COLUMN title TEXT'); } catch (e) {}
+try { db.exec('CREATE TABLE IF NOT EXISTS templates (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, content TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)'); } catch (e) {}
 
 // Default Settings
 const defaultSettings = {
@@ -132,4 +140,22 @@ export async function deleteReminder(id: number) {
 export async function updateReminderStatus(id: number, status: 'pending' | 'processing' | 'sent' | 'failed') {
     const stmt = db.prepare("UPDATE reminders SET status = ? WHERE id = ?");
     return stmt.run(status, id);
+}
+
+// Templates API
+export async function listTemplates() {
+    return db.prepare('SELECT * FROM templates ORDER BY name ASC').all();
+}
+
+export async function createTemplate(name: string, content: string) {
+    const stmt = db.prepare('INSERT INTO templates (name, content) VALUES (?, ?)');
+    return stmt.run(name, content).lastInsertRowid;
+}
+
+export async function deleteTemplate(id: number) {
+    db.prepare('DELETE FROM templates WHERE id = ?').run(id);
+}
+
+export async function updateTemplate(id: number, name: string, content: string) {
+    db.prepare('UPDATE templates SET name = ?, content = ? WHERE id = ?').run(name, content, id);
 }
