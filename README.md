@@ -38,7 +38,6 @@ BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada p
 - **Control en Tiempo Real**: Monitorea el estado de la conexión y las estadísticas desde una consola intuitiva.
 
 ### 📱 Panel de Control Vía Telegram
-
 - **Modo Administrador de Bolsillo**: Vincula un bot de Telegram como panel de control exclusivo y privado.
 - **Menú Principal Interactivo**: Escribe `/start` para desplegar un menú con botones navegables para controlar todo el sistema.
 - **Asistentes Paso a Paso**: Olvídate de comandos complejos. Toca "Crear Nuevo" en Recordatorios o "Difusión Masiva" y el bot te guiará preguntando destinatarios, mensaje, fecha y opciones de repetición con botones visuales.
