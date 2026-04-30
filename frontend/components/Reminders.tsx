@@ -187,7 +187,7 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
                             <VariableTextarea
                                 value={text}
                                 onChange={(val) => setText(val)}
-                                className="w-full h-24 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all text-app-text"
+                                className="w-full h-44 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-cyan-500/50 outline-none resize-none transition-all text-app-text shadow-inner"
                                 placeholder="Escribe tu mensaje..."
                                 required
                             />

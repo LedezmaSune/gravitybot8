@@ -101,8 +101,8 @@ export function Templates({ templates, onRefresh, onReview }: TemplatesProps) {
                             <VariableTextarea
                                 value={content}
                                 onChange={(val) => setContent(val)}
-                                className="h-44"
-                                placeholder="Hola {NOMBRE}, ..."
+                                className="w-full h-64 bg-app-bg dark:bg-background border border-app-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none resize-none transition-all text-app-text custom-scrollbar shadow-inner"
+                                placeholder="Escribe el contenido de tu plantilla aquí... Usa {NOMBRE} para personalizar."
                                 required
                             />
                         </div>
