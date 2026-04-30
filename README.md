@@ -1,186 +1,98 @@
-# 🦊 BotFree AI - Individual Edition 🚀
+# 🦊 BotMaRe - Gravity Dashboard 🚀
 
 > **La plataforma definitiva de automatización para WhatsApp impulsada por Inteligencia Artificial.**
 
-BotFree AI (powered by **Kitsune Engine**) es una solución integral diseñada para transformar tu WhatsApp en una herramienta de negocios inteligente. Combina potencia, velocidad y una interfaz de usuario premium para ofrecerte el control total sobre tus comunicaciones.
+BotMaRe (powered by **Kitsune Engine**) es una solución integral diseñada para transformar tu WhatsApp en una herramienta de negocios inteligente. Combina potencia, velocidad y una interfaz de usuario premium con efectos de **Glassmorphism** y **Gravity Design**.
 
 ---
 
 ## ✨ Características Principales
 
-### 🧠 Cerebro IA Avanzado
+### 🧠 Inteligencia Artificial Avanzada
+- **Personalización Dinámica**: Define el nombre, la personalidad y las reglas del bot desde el panel.
+- **Perfeccionamiento con IA**: Un botón mágico en cada cuadro de texto para mejorar la redacción de tus mensajes antes de enviarlos.
+- **RAG & Aprendizaje**: Sube documentos (PDF, TXT, MD) o pega URLs para que el bot aprenda y responda basado en tu conocimiento.
 
-- **Multi-Modelo**: Soporte nativo para Groq, Gemini, OpenAI y OpenRouter.
-- **Personalización Total**: Define el nombre, personalidad y reglas de comportamiento (Prompt) desde el panel.
-- **RAG (Retrieval-Augmented Generation)**: Tu bot aprende de tus datos.
+### 📢 Gestión de Mensajes y Plantillas
+- **Sistema de Plantillas Profesional**: Crea, edita y elimina plantillas de mensajes. Úsalas al instante en Difusión o Recordatorios.
+- **Variables Inteligentes**: Usa etiquetas como `{NOMBRE}`, `{FECHA}`, `{HORA}` con un selector asistido.
+- **Detección Inteligente de Contactos**: Soporta formatos como `Nombre Número`, `Número, Nombre`, etc. El bot detecta automáticamente quién es quién.
 
-### 🌐 Aprendizaje Inteligente
+### 📅 Recordatorios y Calendario
+- **Programación Flexible**: Rutinas horarias, diarias, semanales, mensuales o personalizadas (ej: cada 3 días).
+- **Calendario "Gravity"**: Una vista profesional tipo Google Calendar para gestionar tus tareas programadas visualmente.
+- **Multi-Destinatario**: Programa un solo mensaje para múltiples contactos a la vez.
 
-- **Jina Reader Integration**: Pega una URL y el bot procesará el contenido, incluso en sitios complejos (React/Next.js).
-- **Document Knowledge Base**: Sube archivos (PDF, TXT, CSV, Markdown) para que la IA responda basándose en tu propia documentación.
-
-### 📢 Difusión y Marketing
-
-- **Envíos Masivos con Variables Dinámicas**: Personaliza mensajes al instante usando etiquetas automáticas (`{NOMBRE}`, `{FECHA}`, `{HORA_12}`, etc.) con menú de autocompletado inteligente.
-- **Programación Avanzada de Recordatorios**: Define rutinas con extrema flexibilidad (cada hora, día, saltando fines de semana, semanalmente o mensualmente).
-- **Multi-Destinatario en Recordatorios**: Envía la misma tarea programada a varios grupos o contactos simultáneamente separando los números por coma.
-
-### 📅 Calendario Profesional (Gravity Dashboard)
-- **Vista Multi-Temporal**: Visualiza tus recordatorios en 5 modos dinámicos: Mes, Semana, Día, Año y Agenda.
-- **Sincronización Total**: Alineación perfecta entre cabeceras y rejilla horaria con soporte para desplazamientos verticales y horizontales.
-- **Diseño de Alta Fidelidad**: Interfaz inspirada en Google Calendar con efectos de desenfoque, micro-animaciones y paleta de colores "Gravity" (Cian-Violeta) optimizada para alta legibilidad en modo claro y oscuro.
-
-### ✍️ Perfeccionamiento con IA
-- **Botón "Perfeccionar con IA"**: Optimiza tus mensajes de difusión y recordatorios con un solo clic. El sistema reescribe tus borradores para hacerlos más profesionales, persuasivos o claros usando los modelos de lenguaje configurados.
-
-### 🎨 Experiencia de Usuario Premium
-- **Kitsune Dashboard**: Interfaz moderna con modo oscuro/claro, efectos de glassmorphism y micro-animaciones.
-- **Control en Tiempo Real**: Monitorea el estado de la conexión y las estadísticas desde una consola intuitiva.
-
-### 📱 Panel de Control Vía Telegram
-- **Modo Administrador de Bolsillo**: Vincula un bot de Telegram como panel de control exclusivo y privado.
-- **Menú Principal Interactivo**: Escribe `/start` para desplegar un menú con botones navegables para controlar todo el sistema.
-- **Asistentes Paso a Paso**: Olvídate de comandos complejos. Toca "Crear Nuevo" en Recordatorios o "Difusión Masiva" y el bot te guiará preguntando destinatarios, mensaje, fecha y opciones de repetición con botones visuales.
-- **Paridad Total**: Permite enviar mensajes masivos, programar e interactuar con recordatorios, revisar bitácoras de auditoría (`/auditoria`) y editar el "Cerebro" de la IA (`/cerebro`) directo desde tu chat de Telegram de forma interactiva.
+### 🎨 UI/UX de Nueva Generación
+- **Dashboard Refactorizado**: Código limpio, rápido y optimizado con React Hooks modernos.
+- **Modo Oscuro/Claro**: Adaptado a tus preferencias visuales.
+- **Efectos Premium**: Desenfoques de fondo (Backdrop Blur), micro-animaciones y sombras suaves.
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ Instalación Rápida (Windows)
 
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+Si estás en Windows, hemos simplificado todo el proceso a dos clics:
 
-## 📋 Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado:
-
-- **[Node.js](https://nodejs.org/)**: Versión 18 o superior (Recomendado 20+).
-- **[Git](https://git-scm.com/)**: Para clonar el repositorio.
-- **[Docker](https://www.docker.com/)**: (Opcional) Si prefieres usar contenedores.
-- **API Keys**: Necesitarás al menos una llave de Groq, Gemini, OpenAI o OpenRouter.
+1. **Clona el repositorio**:
+   ```bash
+   git clone https://github.com/LedezmaSune/BotMaRe.git
+   cd BotMaRe
+   ```
+2. **Instala todo**: Ejecuta el archivo `instalar.bat`. Este script instalará Node.js (si no lo tienes), creará las carpetas necesarias y bajará todas las dependencias.
+3. **Configura tu IA**: Abre el archivo `backend/.env` y pon tu `OPENAI_API_KEY`.
+4. **Inicia el sistema**: Ejecuta el archivo `iniciar.bat`.
 
 ---
 
-## 🛠️ Guía de Instalación Paso a Paso
+## 📋 Requisitos Previos (Manual)
 
-Sigue estos pasos en orden para tener tu bot funcionando en menos de 5 minutos:
+Si prefieres instalarlo manualmente o estás en Linux/Mac:
 
-### 1️⃣ Clonar el Proyecto
+- **Node.js**: v18 o superior.
+- **Git**: Para clonar el código.
+- **API Key**: Groq, Gemini, OpenAI o DeepSeek (vía NVIDIA).
 
-Abre una terminal (PowerShell, CMD o Bash) y ejecuta:
-
-```bash
-git clone https://github.com/LedezmaSune/BotMaRe.git
-cd BotMaRe
-```
-
-### 2️⃣ Instalar Dependencias
-
-Este proyecto es un monorepositorio. Hemos creado un comando para instalar todo (raíz, backend y frontend) de una sola vez:
-
-```bash
-npm run install-all
-```
-
-> [!TIP]
-> Si este comando falla, puedes instalar manualmente entrando en cada carpeta: `npm install`, luego `cd backend && npm install`, y finalmente `cd ../frontend && npm install`.
-
-### 3️⃣ Configurar Variables de Entorno
-
-1. Ve a la carpeta `backend/`.
-2. Renombra el archivo `.env.example` a `.env` (o crea uno nuevo).
-3. Pega tus llaves API:
-
-```env
-PORT=3001
-
-# --- IA PROVIDERS ---
-GROQ_API_KEY=tu_llave_aqui
-GEMINI_API_KEY=tu_llave_aqui
-OPENAI_API_KEY=tu_llave_aqui
-OPENROUTER_API_KEY=tu_llave_aqui
-
-# NVIDIA DeepSeek (Alta Prioridad si se configura)
-NVIDIA_API_KEY=tu_llave_aqui
-NVIDIA_MODEL=deepseek-ai/deepseek-v4-pro
-
-# --- TELEGRAM BOT (Opcional) ---
-TELEGRAM_BOT_TOKEN="tu_token_de_botfather_aqui"
-TELEGRAM_ALLOWED_USER_IDS="tu_id_de_telegram_aqui"
-```
-
-4. Ve a la carpeta `frontend/` y crea o edita el archivo `.env`.
-5. Configura la contraseña de tu panel de control (Dashboard):
-
-```env
-DASHBOARD_USER="admin"
-DASHBOARD_PASS="admin123"
-```
-
-> [!NOTE]
-> Para usar Telegram: Crea un bot usando a [@BotFather](https://t.me/BotFather) en Telegram para obtener el `TELEGRAM_BOT_TOKEN`. Para obtener tu ID numérico y ponerlo en `TELEGRAM_ALLOWED_USER_IDS`, puedes usar bots como @userinfobot. Puedes separar varios IDs con comas.
-
-### 4️⃣ Iniciar el Sistema
-
-Regresa a la raíz del proyecto (`BotMaRe`) y arranca el motor:
-
-```bash
-npm run dev
-```
-
-Esto iniciará el backend y el frontend simultáneamente. Verás logs en diferentes colores indicando que todo está listo.
+### Pasos Manuales:
+1. `npm run install-all` (Instala dependencias en raíz, backend y frontend).
+2. Configura `backend/.env` basado en `.env.example`.
+3. `npm run dev` para arrancar ambos servidores.
 
 ---
 
 ## 📱 Cómo Vincular tu WhatsApp
 
-1. Una vez el sistema esté corriendo, abre tu navegador en: **[http://localhost:3001](http://localhost:3001)**.
-2. Verás el **Panel de Control de Kitsune**.
-3. Haz clic en el botón de **Vincular WhatsApp**.
-4. Aparecerá un **Código QR**.
-5. En tu celular: Abre WhatsApp -> Menú (tres puntos) -> Dispositivos Vinculados -> Vincular un dispositivo.
-6. Escanea el código de la pantalla.
-7. **¡Listo!** El estado cambiará a "Conectado" y tu bot empezará a responder.
+1. Abre tu navegador en: **[http://localhost:3000](http://localhost:3000)** (Frontend).
+2. Verás el **Dashboard de Gravity**.
+3. Si no estás vinculado, aparecerá un **Código QR** en la esquina superior.
+4. En tu celular: Ve a Dispositivos Vinculados y escanea el código.
+5. El estado cambiará a **Conectado** y el bot estará vivo.
 
 ---
 
-## 🐳 Despliegue con Docker (Recomendado para Servidores)
-
-Si quieres correr el bot 24/7 en un VPS o servidor, Docker es tu mejor aliado:
-
-1. **Configura el .env** en la carpeta `backend/` como se explicó arriba.
-2. **Lanza los contenedores**:
-   ```bash
-   docker-compose up -d --build
-   ```
-3. **Accede**: El panel estará disponible en el puerto 3001 de tu servidor.
-
-> [!IMPORTANT]
-> Docker crea volúmenes automáticos para que tu sesión de WhatsApp no se cierre aunque reinicies el servidor.
+## 🏷️ Variables Disponibles
+Al redactar mensajes, puedes usar las siguientes variables (aparecen automáticamente al escribir `{`):
+- `{NOMBRE}`: Nombre completo del contacto.
+- `{NOMBRE_PILA}`: Primer nombre.
+- `{APELLIDO}`: Apellidos.
+- `{FECHA}`: Fecha actual (DD/MM/YYYY).
+- `{HORA_12}` / `{HORA_24}`: Hora actual.
+- `{DIA_SEMANA}`: Lunes, Martes, etc.
 
 ---
 
-## ❓ Solución de Problemas Comunes
-
-- **Error al instalar dependencias**: Asegúrate de tener Node v18+ y haber cerrado otros procesos que usen el puerto 3000 o 3001.
-- **El QR no carga**: Verifica que el backend esté corriendo correctamente y que no haya errores de "Address already in use" en la terminal.
-- **El bot no responde**: Revisa que tu `API_KEY` sea válida y tengas créditos en el proveedor seleccionado.
-
-## 🔒 Seguridad y Privacidad
-
-- **Sesiones Locales**: Tu conexión de WhatsApp se cifra y almacena en `backend/data/`.
-- **Zero Cloud Storage**: No almacenamos tus mensajes ni llaves API en servidores externos; todo corre en tu infraestructura.
-- **Protección Anti-Ban**: Incluye lógica de presencia dinámica y retrasos aleatorios en envíos masivos.
+## 🐳 Docker (Servidores)
+Para despliegues 24/7 en servidores Linux:
+```bash
+docker-compose up -d --build
+```
 
 ---
 
-## 🌐 Exposición Segura (Cloudflare)
-
-El sistema incluye soporte para **Cloudflare Quick Tunnels**, permitiéndote exponer tu backend a una URL pública segura de forma automática sin configurar puertos en tu router.
+## ❓ FAQ / Solución de Problemas
+- **¿Por qué dice "Usuario" en mis mensajes?**: Asegúrate de poner el nombre del contacto en la lista (ej: `Juan 521...`). Si no hay nombre, el bot usa "Usuario" por defecto.
+- **El QR no aparece**: Verifica que el puerto 3001 esté libre y el backend esté corriendo.
+- **Error de API Key**: Revisa que tu llave de OpenAI/DeepSeek tenga créditos y esté bien escrita en el `.env`.
 
 ---
 
