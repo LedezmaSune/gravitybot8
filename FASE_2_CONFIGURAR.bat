@@ -8,12 +8,26 @@ echo ============================================================
 echo   BOTMARE - Configuracion de Variables de Entorno
 echo ============================================================
 echo.
-echo Deja en blanco las API keys que no uses (presiona Enter).
-echo Puedes poner varias keys separadas por comas: key1,key2
-echo.
 
 set "ENV_FILE=backend\.env"
 set "ENV_FRONT=frontend\.env"
+
+rem ── Detectar si los .env ya existen ──────────────────────────
+if exist "%ENV_FILE%" (
+    echo [!] Se detecto que ya existe: %ENV_FILE%
+    set /p OVERWRITE="    ¿Sobreescribir? Perderas tus keys actuales (s/n): "
+    if /i "!OVERWRITE!" neq "s" (
+        echo [OK] Se conservaron los archivos .env existentes.
+        echo.
+        pause
+        exit /b
+    )
+)
+
+echo.
+echo Deja en blanco las API keys que no uses (presiona Enter).
+echo Puedes poner varias keys separadas por comas: key1,key2
+echo.
 
 rem ── Datos basicos ────────────────────────────────────────────
 set /p GROQ_KEY="   [Groq]        API Key (gratis en console.groq.com): "
