@@ -28,20 +28,57 @@ if not exist "backend\data" mkdir "backend\data"
 if not exist "backend\data\uploads" mkdir "backend\data\uploads"
 echo [OK] Directorios listos.
 
-:: 3. Instalar dependencias
-echo [3/3] Instalando dependencias (esto puede tardar)...
+:: 3. Instalar dependencias paso a paso
+echo [3/3] Instalando dependencias por modulos...
 echo.
-call npm run install-all
 
+:: --- RAÍZ ---
+echo [PASO 1/3] Instalando herramientas del sistema (Raiz)...
+call npm install
 if %errorlevel% neq 0 (
     echo.
-    echo [ERROR] Algo salio mal durante la instalacion.
+    echo [ERROR] Fallo la instalacion en la Raiz.
     pause
     exit /b
 )
+echo [OK] Raiz lista.
+echo.
+
+:: --- BACKEND ---
+echo [PASO 2/3] Instalando dependencias del Servidor (Backend)...
+cd backend
+call npm install
+cd ..
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Fallo la instalacion en el Backend.
+    pause
+    exit /b
+)
+echo [OK] Backend listo.
+echo.
+
+:: --- FRONTEND ---
+echo [PASO 3/3] Instalando dependencias del Dashboard (Frontend)...
+cd frontend
+call npm install
+cd ..
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Fallo la instalacion en el Frontend.
+    pause
+    exit /b
+)
+echo [OK] Frontend listo.
 
 echo.
-echo  [OK] FASE 1 COMPLETADA CON EXITO.
-echo  Ahora procede a la FASE 2 para configurar tus llaves API.
+echo  ######################################################
+echo  #                                                    #
+echo  #  [OK] FASE 1 COMPLETADA CON EXITO                  #
+echo  #  Todos los modulos se instalaron correctamente.    #
+echo  #                                                    #
+echo  ######################################################
+echo.
+echo  Procede a la FASE 2 para configurar tus llaves API.
 echo.
 pause

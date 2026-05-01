@@ -23,8 +23,21 @@ if "%MISSING_DEPS%"=="1" (
         if not exist "backend\data" mkdir "backend\data"
         if not exist "backend\data\uploads" mkdir "backend\data\uploads"
         
-        echo [2/2] Instalando dependencias (esto puede tardar varios minutos)...
-        call npm run install-all
+        echo [2/2] Instalando dependencias por modulos (esto puede tardar)...
+        
+        echo [PASO 1/3] Raiz...
+        call npm install
+        
+        echo [PASO 2/3] Backend...
+        cd backend
+        call npm install
+        cd ..
+        
+        echo [PASO 3/3] Frontend...
+        cd frontend
+        call npm install
+        cd ..
+        
         if %errorlevel% neq 0 (
             echo.
             echo [ERROR] Hubo un problema instalando las dependencias.
