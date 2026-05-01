@@ -1,68 +1,30 @@
 @echo off
-echo.
-echo  ######################################################
-echo  #                                                    #
-echo  #          FASE 4: ACTUALIZADOR DESDE GITHUB         #
-echo  #                                                    #
-echo  ######################################################
-echo.
+setlocal enabledelayedexpansion
+title BOTMARE - FASE 4: ACTUALIZAR
 
-git pull origin main
-if %errorlevel% neq 0 goto error_git
+:fase4
+cls
+echo [FASE 4] Sincronizando con Repositorio (Git)...
+git pull origin main || goto error_ia
 
 echo.
-echo [2/2] Actualizando dependencias por modulos...
+echo [OK] Cambios descargados. 
+echo Reinstalando dependencias para asegurar compatibilidad...
 echo.
-echo [ACTUALIZANDO] Raiz...
-call npm install
-if %errorlevel% neq 0 goto error_raiz
-
-:: --- BACKEND ---
-echo [ACTUALIZANDO] Backend...
-cd backend
-call npm install
-cd ..
-if %errorlevel% neq 0 goto error_backend
-
-:: --- FRONTEND ---
-echo [ACTUALIZANDO] Frontend...
-cd frontend
-call npm install
-cd ..
-if %errorlevel% neq 0 goto error_frontend
+call FASE_1_INSTALAR.bat
 
 echo.
-echo  [OK] FASE 4 COMPLETADA. El sistema esta al dia.
-echo.
+echo [OK] ACTUALIZACION COMPLETADA.
 pause
 exit /b
 
-:error_git
-echo [ERROR] Error al descargar. Revisa tu conexion.
-goto preguntar_ia
-
-:error_raiz
+:error_ia
 echo.
-echo [ERROR] Fallo al actualizar la Raiz.
-goto preguntar_ia
-
-:error_backend
-echo.
-echo [ERROR] Fallo al actualizar el Backend.
-goto preguntar_ia
-
-:error_frontend
-echo.
-echo [ERROR] Fallo al actualizar el Frontend.
-goto preguntar_ia
-
-:preguntar_ia
-echo.
-echo [?] ¿Quieres que el Asistente de IA te ayude con este error?
-set /p help="Presiona 's' para consultar o cualquier otra tecla para salir: "
+echo [!] Ocurrio un problema con Git.
+set /p help="¿Quieres consultar al Asistente de IA? (s/n): "
 if /i "%help%"=="s" (
-    echo [IA] Analizando error...
-    codex "Ayuda con error Git o NPM en Windows. Codigo: %ERRORLEVEL%"
+    echo [IA] Analizando conflictos...
+    codex "Error al hacer git pull en Windows. Codigo: %ERRORLEVEL%"
 )
 pause
 exit /b

@@ -1,75 +1,34 @@
 @echo off
 setlocal enabledelayedexpansion
-echo.
-echo  ######################################################
-echo  #                                                    #
-echo  #          FASE 3: INICIO DEL SISTEMA                #
-echo  #                                                    #
-echo  ######################################################
-echo.
-:: --- CHEQUEO DE DEPENDENCIAS ---
-set "MISSING_DEPS=0"
-if not exist "node_modules" set "MISSING_DEPS=1"
-if not exist "backend\node_modules" set "MISSING_DEPS=1"
-if not exist "frontend\node_modules" set "MISSING_DEPS=1"
+title BOTMARE - FASE 3: INICIO DEL SISTEMA
 
-if "%MISSING_DEPS%"=="1" (
-    echo.
-    echo [!] ADVERTENCIA: Parecen faltar las dependencias del sistema.
-    set /p install="¿Quieres instalarlas ahora? (s/n): "
-    if /i "!install!"=="s" (
-        echo.
-        echo [1/2] Preparando directorios...
-        if not exist "backend\data" mkdir "backend\data"
-        if not exist "backend\data\uploads" mkdir "backend\data\uploads"
-        
-        echo [2/2] Instalando dependencias por modulos (esto puede tardar)...
-        
-        echo [PASO 1/3] Raiz...
-        call npm install
-        
-        echo [PASO 2/3] Backend...
-        cd backend
-        call npm install
-        cd ..
-        
-        echo [PASO 3/3] Frontend...
-        cd frontend
-        call npm install
-        cd ..
-        
-        if %errorlevel% neq 0 goto error_deps
-        echo.
-        echo [OK] Dependencias instaladas correctamente.
-    ) else (
-        echo.
-        echo [!] Es posible que el sistema no inicie correctamente sin dependencias.
-        pause
+:fase3
+cls
+echo [FASE 3] Iniciando servicios independientes...
+echo.
+
+:: Verificacion rapida de deps
+if not exist "node_modules" (
+    echo [!] Advertencia: No se detectan dependencias.
+    set /p ins="¿Deseas ejecutar la FASE 1 primero? (s/n): "
+    if /i "!ins!"=="s" (
+        call FASE_1_INSTALAR.bat
+        goto fase3
     )
 )
-:: -------------------------------
 
-echo  Iniciando servidores...
-echo  Dashboard: http://localhost:3000
+echo [INFO] Se abriran ventanas independientes para Backend y Frontend.
 echo.
-echo  Presiona Ctrl+C para detener.
-echo.
-npm run dev
-pause
-exit /b
 
-:error_deps
-echo.
-echo [ERROR] Hubo un problema instalando las dependencias.
-goto preguntar_ia
+echo Lanzando Backend (Puerto 3001)...
+start "BOTMARE_BACKEND" /D backend cmd /c "npm run dev"
 
-:preguntar_ia
+echo Lanzando Frontend (Puerto 3000)...
+start "BOTMARE_FRONTEND" /D frontend cmd /c "npm run dev"
+
 echo.
-echo [?] ¿Quieres que el Asistente de IA te ayude con este error?
-set /p help="Presiona 's' para consultar o cualquier otra tecla para salir: "
-if /i "%help%"=="s" (
-    echo [IA] Analizando error...
-    codex "Error al instalar dependencias de Node.js en Windows. Codigo: %ERRORLEVEL%"
-)
+echo [LISTO] Dashboard accesible en: http://localhost:3000
+echo Los procesos seguiran corriendo aunque cierres esta ventana.
+echo.
 pause
 exit /b
