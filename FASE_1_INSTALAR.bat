@@ -21,6 +21,22 @@ if %errorlevel% neq 0 (
     exit /b
 )
 echo [OK] Node.js detectado correctamente.
+echo.
+
+:: 1.5 Instalar Asistente de IA (Opcional)
+echo [OPCIONAL] ¿Deseas instalar el Asistente de IA para ayuda en tiempo real?
+echo           (Requiere npm install -g @openai/codex)
+set /p inst_ai="¿Instalar Asistente? (s/n): "
+if /i "%inst_ai%"=="s" (
+    echo [INFO] Instalando Asistente de IA globalmente...
+    call npm install -g @openai/codex
+    if %errorlevel% neq 0 (
+        echo [!] No se pudo instalar el asistente, pero continuaremos con el proyecto.
+    ) else (
+        echo [OK] Asistente de IA listo.
+    )
+)
+echo.
 
 :: 2. Crear carpetas de persistencia
 echo [2/3] Preparando directorios de datos...
@@ -72,17 +88,25 @@ exit /b
 :error_raiz
 echo.
 echo [ERROR] Fallo la instalacion en la Raiz.
-pause
-exit /b
+goto preguntar_ia
 
 :error_backend
 echo.
 echo [ERROR] Fallo la instalacion en el Backend.
-pause
-exit /b
+goto preguntar_ia
 
 :error_frontend
 echo.
 echo [ERROR] Fallo la instalacion en el Frontend.
+goto preguntar_ia
+
+:preguntar_ia
+echo.
+echo [?] ¿Quieres que el Asistente de IA te ayude con este error?
+set /p help="Presiona 's' para consultar o cualquier otra tecla para salir: "
+if /i "%help%"=="s" (
+    echo [IA] Analizando error... Por favor, describe brevemente que paso si el mensaje no es claro.
+    codex "Ayudame a solucionar este error en una instalacion de Node.js en Windows: %ERRORLEVEL%. El comando fallo en la carpeta actual."
+)
 pause
 exit /b

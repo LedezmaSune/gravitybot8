@@ -39,23 +39,30 @@ exit /b
 
 :error_git
 echo [ERROR] Error al descargar. Revisa tu conexion.
-pause
-exit /b
+goto preguntar_ia
 
 :error_raiz
 echo.
 echo [ERROR] Fallo al actualizar la Raiz.
-pause
-exit /b
+goto preguntar_ia
 
 :error_backend
 echo.
 echo [ERROR] Fallo al actualizar el Backend.
-pause
-exit /b
+goto preguntar_ia
 
 :error_frontend
 echo.
 echo [ERROR] Fallo al actualizar el Frontend.
+goto preguntar_ia
+
+:preguntar_ia
+echo.
+echo [?] ¿Quieres que el Asistente de IA te ayude con este error?
+set /p help="Presiona 's' para consultar o cualquier otra tecla para salir: "
+if /i "%help%"=="s" (
+    echo [IA] Analizando error...
+    codex "Ayuda con error Git o NPM en Windows. Codigo: %ERRORLEVEL%"
+)
 pause
 exit /b

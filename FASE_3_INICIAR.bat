@@ -61,5 +61,15 @@ exit /b
 :error_deps
 echo.
 echo [ERROR] Hubo un problema instalando las dependencias.
+goto preguntar_ia
+
+:preguntar_ia
+echo.
+echo [?] ¿Quieres que el Asistente de IA te ayude con este error?
+set /p help="Presiona 's' para consultar o cualquier otra tecla para salir: "
+if /i "%help%"=="s" (
+    echo [IA] Analizando error...
+    codex "Error al instalar dependencias de Node.js en Windows. Codigo: %ERRORLEVEL%"
+)
 pause
 exit /b
