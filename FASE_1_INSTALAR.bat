@@ -82,3 +82,4 @@ echo.
 echo  Procede a la FASE 2 para configurar tus llaves API.
 echo.
 pause
+exit /b

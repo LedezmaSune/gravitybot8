@@ -57,3 +57,4 @@ echo.
 echo  [OK] FASE 4 COMPLETADA. El sistema esta al dia.
 echo.
 pause
+exit /b

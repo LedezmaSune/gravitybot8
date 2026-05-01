@@ -39,3 +39,4 @@ echo  [OK] FASE 2 COMPLETADA.
 echo  Configuracion guardada. Ahora puedes iniciar el bot con la FASE 3.
 echo.
 pause
+exit /b
