@@ -2,14 +2,14 @@
 echo.
 echo  ######################################################
 echo  #                                                    #
-echo  #             INICIANDO BOTMARE                      #
+echo  #          FASE 3: INICIO DEL SISTEMA                #
 echo  #                                                    #
 echo  ######################################################
 echo.
-echo  Backend: http://localhost:3001
-echo  Frontend: http://localhost:3000
+echo  Iniciando servidores...
+echo  Dashboard: http://localhost:3000
 echo.
-echo  Presiona Ctrl+C para detener el sistema.
+echo  Presiona Ctrl+C para detener.
 echo.
 npm run dev
 pause
