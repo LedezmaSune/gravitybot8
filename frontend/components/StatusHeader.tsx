@@ -14,43 +14,47 @@ interface StatusHeaderProps {
 export function StatusHeader({ status, qr, onCleanUploads, botName }: StatusHeaderProps) {
     void qr;
     return (
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-            <div className="space-y-2">
-                <h1 className="text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">
-                    {botName || 'OpenGravity Individual'}
-                </h1>
-                <div className="flex items-center gap-2 text-app-text-muted">
-                    <ShieldCheck size={16} className="text-cyan-600 dark:text-cyan-500" />
-                    <span className="text-xs font-semibold uppercase tracking-widest opacity-80">
-                        Cerebro de {botName || 'GravityBot8'} con Protección Anti-Baneo
-                    </span>
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
+            <div className="flex items-center gap-5">
+                <div className="w-14 h-14 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-cyan-500/20 rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <span className="text-white text-3xl font-black italic">G</span>
+                </div>
+                <div className="space-y-1">
+                    <h1 className="text-3xl lg:text-4xl font-black tracking-tighter bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm">
+                        {botName || 'Gravity Individual'}
+                    </h1>
+                    <div className="flex items-center gap-2 text-app-text-muted">
+                        <ShieldCheck size={14} className="text-cyan-500" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
+                            Cerebro de {botName || 'GravityBot'} • Anti-Ban v2.4
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <div className="flex items-center gap-3">
-                <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all duration-500 bg-slate-200/50 dark:bg-slate-900/40 backdrop-blur-md shadow-inner ${
+                <div className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl border transition-all duration-500 bg-app-card backdrop-blur-xl shadow-xl ${
                     status === 'connected' 
-                    ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shadow-emerald-500/5' 
-                    : 'border-red-500/30 text-red-600 dark:text-red-400 animate-pulse'
+                    ? 'border-emerald-500/20 text-emerald-400 shadow-emerald-500/5' 
+                    : 'border-red-500/20 text-red-400 animate-pulse'
                 }`}>
-                    {status === 'connected' ? <Wifi size={20} strokeWidth={2.5} /> : 
-                     status === 'connecting' ? <Loader2 size={20} className="animate-spin" /> : 
-                     <WifiOff size={20} />}
-                    <span className="text-sm font-black uppercase tracking-widest">
+                    <div className={`w-2 h-2 rounded-full ${status === 'connected' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]'}`}></div>
+                    <span className="text-[10px] font-black uppercase tracking-[0.15em]">
                         {status}
                     </span>
                 </div>
                 
-                <ThemeToggle />
-                <UpdateChecker />
-
-                <button 
-                    onClick={onCleanUploads}
-                    title="Limpiar archivos temporales"
-                    className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
-                >
-                    <Trash2 size={20} />
-                </button>
+                <div className="flex items-center gap-2 bg-app-card p-1.5 rounded-2xl border border-app-border backdrop-blur-xl">
+                    <ThemeToggle />
+                    <UpdateChecker />
+                    <button 
+                        onClick={onCleanUploads}
+                        title="Limpiar archivos temporales"
+                        className="p-2.5 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all active:scale-95"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                </div>
             </div>
         </header>
     );
@@ -79,10 +83,10 @@ function ThemeToggle() {
     return (
         <button 
             onClick={toggle}
-            className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
+            className="p-2.5 hover:text-amber-400 hover:bg-amber-500/10 rounded-xl transition-all active:scale-95"
             title={isDark ? "Modo Claro" : "Modo Oscuro"}
         >
-            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
     );
 }
@@ -130,10 +134,10 @@ function UpdateChecker() {
         <button 
             onClick={check}
             disabled={checking}
-            className="p-3 bg-slate-200/50 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-2xl text-app-text-muted hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-all active:scale-95 shadow-lg backdrop-blur-md"
+            className="p-2.5 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-xl transition-all active:scale-95"
             title="Buscar actualizaciones"
         >
-            {checking ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}
+            {checking ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />}
         </button>
     );
 }

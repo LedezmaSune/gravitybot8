@@ -46,16 +46,17 @@ export function MassMessaging({ onSend, onReview, templates }: MassMessagingProp
     const contactCount = contacts.split(/[\n,]+/).filter(c => c.trim()).length;
 
     return (
-        <section className="bg-app-card border border-app-border rounded-3xl p-6 lg:p-8 backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-5xl mx-auto shadow-2xl relative overflow-hidden transition-colors">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+        <section className="glass-effect border border-app-border rounded-[2.5rem] p-6 lg:p-10 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-6 duration-700 max-w-6xl mx-auto shadow-[0_32px_64px_rgba(0,0,0,0.2)] relative overflow-hidden transition-all">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3"></div>
             
-            <div className="flex items-center gap-4 mb-10 relative z-10">
-                <div className="w-16 h-16 bg-gradient-to-tr from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-500/20">
-                    <Megaphone size={32} strokeWidth={2.5} />
+            <div className="flex items-center gap-5 mb-12 relative z-10">
+                <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 rounded-[1.75rem] flex items-center justify-center text-white shadow-[0_15px_30px_rgba(6,182,212,0.3)] transform -rotate-2 hover:rotate-0 transition-all duration-500">
+                    <Megaphone size={40} strokeWidth={2} />
                 </div>
                 <div>
-                    <h2 className="text-2xl font-extrabold text-app-text">Difusión Masiva con IA</h2>
-                    <p className="text-app-text-muted text-sm font-medium mt-1">Envía mensajes enriquecidos y archivos a multitudes.</p>
+                    <h2 className="text-3xl font-black text-app-text tracking-tighter">Difusión Masiva con IA</h2>
+                    <p className="text-app-text-muted text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 opacity-70">Campañas enriquecidas y personalización automática</p>
                 </div>
             </div>
 
@@ -135,10 +136,11 @@ export function MassMessaging({ onSend, onReview, templates }: MassMessagingProp
                     <button 
                         onClick={handleSubmit}
                         disabled={loading || !contacts || !message}
-                        className="w-full py-5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-orange-900/10 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 group"
+                        className="w-full py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-[0_15px_30px_rgba(79,70,229,0.3)] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4 group relative overflow-hidden"
                     >
-                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                        {loading ? 'Lanzando...' : 'Iniciar Difusión Massiva'}
+                        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                        {loading ? 'Lanzando...' : 'Iniciar Difusión'}
                     </button>
                 </div>
             </div>

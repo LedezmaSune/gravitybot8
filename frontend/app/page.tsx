@@ -47,8 +47,8 @@ export default function Home() {
             <ConnectionOverlay qr={qr} status={status} />
 
             <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 dark:bg-blue-600/5 rounded-full blur-[120px] opacity-70 dark:opacity-100"></div>
-                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-purple-600/10 dark:bg-purple-600/5 rounded-full blur-[100px] opacity-70 dark:opacity-100"></div>
+                <div className="absolute top-[-15%] left-[-15%] w-[50%] h-[50%] bg-blue-600/10 dark:bg-cyan-500/10 rounded-full blur-[140px] animate-pulse"></div>
+                <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 dark:bg-indigo-500/10 rounded-full blur-[120px] animation-delay-2000"></div>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -59,20 +59,28 @@ export default function Home() {
                     botName={settings?.bot_name} 
                 />
 
-                <nav className="flex items-center justify-center mb-12">
-                    <div className="flex bg-app-card p-1.5 rounded-3xl border border-app-border backdrop-blur-xl shadow-2xl transition-colors">
+                <nav className="flex items-center justify-center mb-12 relative z-20">
+                    <div className="flex bg-app-card/30 p-2 rounded-[2rem] border border-app-border backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                                className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 relative group overflow-hidden ${
                                     activeTab === tab.id
-                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 scale-105'
-                                        : 'text-app-text-muted hover:text-app-text hover:bg-slate-200/50 dark:hover:bg-white/5'
+                                        ? 'text-white scale-105'
+                                        : 'text-app-text-muted hover:text-app-text'
                                 }`}
                             >
-                                <tab.icon size={16} />
-                                <span className="hidden sm:inline">{tab.label}</span>
+                                {activeTab === tab.id && (
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 z-0 animate-in fade-in zoom-in duration-300"></div>
+                                )}
+                                <div className="relative z-10 flex items-center gap-2.5">
+                                    <tab.icon size={15} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
+                                    <span className="hidden md:inline">{tab.label}</span>
+                                </div>
+                                {activeTab !== tab.id && (
+                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-cyan-500 transition-all duration-300 group-hover:w-1/2"></div>
+                                )}
                             </button>
                         ))}
                     </div>

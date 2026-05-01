@@ -1,13 +1,9 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-/* 
-  Kitsune Engine Theme Variables
-  Tailwind v4 detects --color-* variables as theme colors automatically.
-  Standard CSS syntax avoids IDE warnings.
-*/
 :root {
   --app-bg: #f8fafc;
-  --app-card: #ffffff;
+  --app-card: rgba(255, 255, 255, 0.8);
   --app-border: #e2e8f0;
   --app-text: #0f172a;
   --app-text-muted: #64748b;
@@ -24,30 +20,78 @@
 }
 
 .dark {
-  --app-bg: #020617;
-  --app-card: rgba(15, 23, 42, 0.5); /* slate-900/50 */
-  --app-border: #1e293b;
+  --app-bg: #030712; /* Deep Slate */
+  --app-card: rgba(15, 23, 42, 0.6); /* Slate-900 with transparency */
+  --app-border: rgba(255, 255, 255, 0.08); /* Subtle white border */
   --app-text: #f8fafc;
   --app-text-muted: #94a3b8;
 
-  --background: #020617;
+  --background: #030712;
   --foreground: #f8fafc;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
 }
 
-/* 
-  Glassmorphism without @apply to avoid IDE warnings 
-*/
+h1, h2, h3, h4, .font-black {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
 .glass-effect {
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-width: 1px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   background-color: var(--app-card);
-  border-color: var(--app-border);
+  border: 1px solid var(--app-border);
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
 }
