@@ -38,12 +38,7 @@ if "%MISSING_DEPS%"=="1" (
         call npm install
         cd ..
         
-        if %errorlevel% neq 0 (
-            echo.
-            echo [ERROR] Hubo un problema instalando las dependencias.
-            pause
-            exit /b
-        )
+        if %errorlevel% neq 0 goto error_deps
         echo.
         echo [OK] Dependencias instaladas correctamente.
     ) else (
@@ -60,5 +55,11 @@ echo.
 echo  Presiona Ctrl+C para detener.
 echo.
 npm run dev
+pause
+exit /b
+
+:error_deps
+echo.
+echo [ERROR] Hubo un problema instalando las dependencias.
 pause
 exit /b

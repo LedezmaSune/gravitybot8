@@ -35,12 +35,7 @@ echo.
 :: --- RAÍZ ---
 echo [PASO 1/3] Instalando herramientas del sistema (Raiz)...
 call npm install
-if %errorlevel% neq 0 (
-    echo.
-    echo [ERROR] Fallo la instalacion en la Raiz.
-    pause
-    exit /b
-)
+if %errorlevel% neq 0 goto error_raiz
 echo [OK] Raiz lista.
 echo.
 
@@ -49,12 +44,7 @@ echo [PASO 2/3] Instalando dependencias del Servidor (Backend)...
 cd backend
 call npm install
 cd ..
-if %errorlevel% neq 0 (
-    echo.
-    echo [ERROR] Fallo la instalacion en el Backend.
-    pause
-    exit /b
-)
+if %errorlevel% neq 0 goto error_backend
 echo [OK] Backend listo.
 echo.
 
@@ -63,12 +53,7 @@ echo [PASO 3/3] Instalando dependencias del Dashboard (Frontend)...
 cd frontend
 call npm install
 cd ..
-if %errorlevel% neq 0 (
-    echo.
-    echo [ERROR] Fallo la instalacion en el Frontend.
-    pause
-    exit /b
-)
+if %errorlevel% neq 0 goto error_frontend
 echo [OK] Frontend listo.
 
 echo.
@@ -81,5 +66,23 @@ echo  ######################################################
 echo.
 echo  Procede a la FASE 2 para configurar tus llaves API.
 echo.
+pause
+exit /b
+
+:error_raiz
+echo.
+echo [ERROR] Fallo la instalacion en la Raiz.
+pause
+exit /b
+
+:error_backend
+echo.
+echo [ERROR] Fallo la instalacion en el Backend.
+pause
+exit /b
+
+:error_frontend
+echo.
+echo [ERROR] Fallo la instalacion en el Frontend.
 pause
 exit /b

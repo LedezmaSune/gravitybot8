@@ -29,24 +29,29 @@ if "%MISSING_DEPS%"=="1" (
 echo.
 set /p opt="Selecciona una opcion (1-5): "
 
-if "%opt%"=="1" (
-    call FASE_1_INSTALAR.bat
-    goto menu
-)
-if "%opt%"=="2" (
-    call FASE_2_CONFIGURAR.bat
-    goto menu
-)
-if "%opt%"=="3" (
-    call FASE_3_INICIAR.bat
-    goto menu
-)
-if "%opt%"=="4" (
-    call FASE_4_ACTUALIZAR.bat
-    goto menu
-)
+if "%opt%"=="1" goto fase1
+if "%opt%"=="2" goto fase2
+if "%opt%"=="3" goto fase3
+if "%opt%"=="4" goto fase4
 if "%opt%"=="5" exit
 
+:invalido
 echo Opcion no valida.
 pause
+goto menu
+
+:fase1
+call FASE_1_INSTALAR.bat
+goto menu
+
+:fase2
+call FASE_2_CONFIGURAR.bat
+goto menu
+
+:fase3
+call FASE_3_INICIAR.bat
+goto menu
+
+:fase4
+call FASE_4_ACTUALIZAR.bat
 goto menu
