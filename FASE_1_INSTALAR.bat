@@ -24,16 +24,21 @@ echo [OK] Node.js detectado correctamente.
 echo.
 
 :: 1.5 Instalar Asistente de IA (Opcional)
-echo [OPCIONAL] ¿Deseas instalar el Asistente de IA para ayuda en tiempo real?
-echo           (Requiere npm install -g @openai/codex)
-set /p inst_ai="¿Instalar Asistente? (s/n): "
-if /i "%inst_ai%"=="s" (
-    echo [INFO] Instalando Asistente de IA globalmente...
-    call npm install -g @openai/codex
-    if %errorlevel% neq 0 (
-        echo [!] No se pudo instalar el asistente, pero continuaremos con el proyecto.
-    ) else (
-        echo [OK] Asistente de IA listo.
+codex --version >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [OK] Asistente de IA (Codex) ya esta instalado.
+) else (
+    echo [OPCIONAL] ¿Deseas instalar el Asistente de IA para ayuda en tiempo real?
+    echo           (Requiere npm install -g @openai/codex)
+    set /p inst_ai="¿Instalar Asistente? (s/n): "
+    if /i "!inst_ai!"=="s" (
+        echo [INFO] Instalando Asistente de IA globalmente...
+        call npm install -g @openai/codex
+        if %errorlevel% neq 0 (
+            echo [!] No se pudo instalar el asistente, pero continuaremos con el proyecto.
+        ) else (
+            echo [OK] Asistente de IA listo.
+        )
     )
 )
 echo.
