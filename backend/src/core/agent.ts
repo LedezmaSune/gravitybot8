@@ -54,7 +54,14 @@ ${settings.possible_responses}
     const MAX_ITERATIONS = 5;
 
     while (iterations < MAX_ITERATIONS) {
-        const response = await callLLM(messages, toolsDefinition);
+        console.log(`[Agent] 🔄 Llamando LLM (iteración ${iterations + 1})...`);
+        let response: any;
+        try {
+            response = await callLLM(messages, toolsDefinition);
+        } catch (llmError: any) {
+            console.error(`[Agent] ❌ LLM falló: ${llmError.message}`);
+            throw llmError;
+        }
 
         messages.push(response);
 

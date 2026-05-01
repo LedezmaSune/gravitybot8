@@ -30,7 +30,13 @@ export class WhatsAppService {
         try {
             // 1. Show 'composing' (typing) status
             const socket = this.client.getSocket();
-            if (socket) await socket.sendPresenceUpdate('composing', jid);
+            if (socket) {
+                try {
+                    await socket.sendPresenceUpdate('composing', jid);
+                } catch (_) {
+                    // @lid JIDs don't support presence updates — safe to ignore
+                }
+            }
 
             // 2. Run AI Agent
             const response = await runAgent(jid, text, imageBase64);

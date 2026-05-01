@@ -5,6 +5,9 @@ function getApiKeys(envValue: string | undefined): string[] {
     return envValue.split(',').map(k => k.trim().replace(/^["']|["']$/g, ''));
 }
 
+const LLM_TIMEOUT_MS = 15000;        // 15s para la mayoría de proveedores
+const LLM_TIMEOUT_NVIDIA_MS = 5000;  // 5s para NVIDIA (suele estar congestionado)
+
 async function tryProvider(
     providerName: string,
     keys: string[],
@@ -29,19 +32,26 @@ async function tryProvider(
             if (config.temperature) payload.temperature = config.temperature;
             if (config.top_p) payload.top_p = config.top_p;
 
-            const response = await client.chat.completions.create(payload);
+            // Race between the LLM call and a timeout (NVIDIA gets a shorter timeout)
+            const timeout = providerName === 'Nvidia' ? LLM_TIMEOUT_NVIDIA_MS : LLM_TIMEOUT_MS;
+            const timeoutPromise = new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error(`Timeout after ${timeout}ms`)), timeout)
+            );
+
+            const response = await Promise.race([
+                client.chat.completions.create(payload),
+                timeoutPromise
+            ]) as any;
+
             console.log(`[LLM] ${providerName} (${config.model}) Responded successfully.`);
             return response.choices[0]?.message;
         } catch (error: any) {
-            console.warn(`[LLM] ${providerName} Key Failed:`, error.message);
-            // If it's a rate limit or auth error, continue to next key
-            if (error.status === 401 || error.status === 429 || error.message.includes("tokens")) {
-                continue;
-            }
-            throw error; // Other errors might be model issues, etc.
+            console.warn(`[LLM] ${providerName} Key Failed: ${error.message}`);
+            // Always continue to next key on any error
+            continue;
         }
     }
-    throw new Error(`All ${providerName} keys failed`);
+    throw new Error(`All ${providerName} keys failed or timed out`);
 }
 
 function cleanMessages(messages: any[]): any[] {

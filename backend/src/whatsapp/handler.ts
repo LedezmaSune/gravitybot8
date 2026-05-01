@@ -53,9 +53,28 @@ export class WhatsAppEventHandler {
             const msg = messages[0];
             if (msg.key.fromMe || !msg.message) return;
 
-            const jid = msg.key.remoteJid!;
+            // Resolve the correct JID for replying
+            // @lid JIDs are internal linked-device identifiers — Baileys supports sending to them
+            // but sendPresenceUpdate does NOT, so we keep both: rawJid for sending, safeJid for presence
+            const rawJid = msg.key.remoteJid!;
+            const participant = msg.key.participant; // only set in group messages
+            let jid = rawJid;
+
+            if (jid.endsWith('@lid')) {
+                // For group messages, participant has the real sender JID
+                if (participant && !participant.endsWith('@lid')) {
+                    jid = participant;
+                }
+                // For individual chats keep rawJid — Baileys handles @lid for sendMessage
+                console.log(`[WA Handler] JID @lid detectado: ${rawJid} (usando para envío)`);
+            }
+
             const messageData = msg.message;
-            const text = messageData.conversation || messageData.extendedTextMessage?.text || '';
+            const text = messageData.conversation
+                || messageData.extendedTextMessage?.text
+                || messageData.listResponseMessage?.singleSelectReply?.selectedRowId
+                || messageData.buttonsResponseMessage?.selectedButtonId
+                || '';
 
             // Handle Media if present
             let imageBase64: string | undefined;
@@ -73,10 +92,16 @@ export class WhatsAppEventHandler {
                 }
             }
 
+            if (!text && !imageBase64) {
+                console.log(`[WA Handler] Mensaje ignorado (tipo no soportado) de ${jid}`);
+                return;
+            }
+
             console.log(`[WA Handler] Nuevo mensaje de ${jid}: ${text.substring(0, 50)}...`);
             
             // Delegate to Service for Business Logic (AI, TTS, etc.)
-            void this.waService.handleIncomingMessage(jid, text, imageBase64);
+            this.waService.handleIncomingMessage(jid, text, imageBase64)
+                .catch(err => console.error('[WA Handler] Error crítico en handleIncomingMessage:', err));
         });
     }
 }
