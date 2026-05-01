@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 :menu
 cls
 echo.
@@ -14,6 +15,17 @@ echo  [2] FASE 2: CONFIGURAR (API Keys e IA)
 echo  [3] FASE 3: INICIAR EL BOT (Encender Dashboard)
 echo  [4] FASE 4: ACTUALIZAR (Descargar mejoras de GitHub)
 echo  [5] SALIR
+set "MISSING_DEPS=0"
+if not exist "node_modules" set "MISSING_DEPS=1"
+if not exist "backend\node_modules" set "MISSING_DEPS=1"
+if not exist "frontend\node_modules" set "MISSING_DEPS=1"
+
+if "%MISSING_DEPS%"=="1" (
+    echo  [ESTADO] IMPORTANTE: Dependencias NO instaladas.
+    echo           Se recomienda ejecutar la opcion [1] primero.
+) else (
+    echo  [ESTADO] Listo para iniciar.
+)
 echo.
 set /p opt="Selecciona una opcion (1-5): "
 

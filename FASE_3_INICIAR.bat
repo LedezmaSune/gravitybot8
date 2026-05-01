@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo.
 echo  ######################################################
 echo  #                                                    #
@@ -6,6 +7,40 @@ echo  #          FASE 3: INICIO DEL SISTEMA                #
 echo  #                                                    #
 echo  ######################################################
 echo.
+:: --- CHEQUEO DE DEPENDENCIAS ---
+set "MISSING_DEPS=0"
+if not exist "node_modules" set "MISSING_DEPS=1"
+if not exist "backend\node_modules" set "MISSING_DEPS=1"
+if not exist "frontend\node_modules" set "MISSING_DEPS=1"
+
+if "%MISSING_DEPS%"=="1" (
+    echo.
+    echo [!] ADVERTENCIA: Parecen faltar las dependencias del sistema.
+    set /p install="¿Quieres instalarlas ahora? (s/n): "
+    if /i "!install!"=="s" (
+        echo.
+        echo [1/2] Preparando directorios...
+        if not exist "backend\data" mkdir "backend\data"
+        if not exist "backend\data\uploads" mkdir "backend\data\uploads"
+        
+        echo [2/2] Instalando dependencias (esto puede tardar varios minutos)...
+        call npm run install-all
+        if %errorlevel% neq 0 (
+            echo.
+            echo [ERROR] Hubo un problema instalando las dependencias.
+            pause
+            exit /b
+        )
+        echo.
+        echo [OK] Dependencias instaladas correctamente.
+    ) else (
+        echo.
+        echo [!] Es posible que el sistema no inicie correctamente sin dependencias.
+        pause
+    )
+)
+:: -------------------------------
+
 echo  Iniciando servidores...
 echo  Dashboard: http://localhost:3000
 echo.
