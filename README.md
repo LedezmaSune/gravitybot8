@@ -23,6 +23,10 @@ BotMaRe (powered by **Kitsune Engine**) es una solución integral diseñada para
 - **Calendario "Gravity"**: Una vista profesional tipo Google Calendar para gestionar tus tareas programadas visualmente.
 - **Multi-Destinatario**: Programa un solo mensaje para múltiples contactos a la vez.
 
+### 🤖 Integración con Telegram
+- **Control Remoto**: Gestiona el sistema desde cualquier lugar a través de un bot de Telegram.
+- **Sincronización Total**: Recibe alertas y administra tus campañas de WhatsApp desde Telegram.
+
 ### 🎨 UI/UX de Nueva Generación
 - **Dashboard Refactorizado**: Código limpio, rápido y optimizado con React Hooks modernos.
 - **Modo Oscuro/Claro**: Adaptado a tus preferencias visuales.
@@ -32,16 +36,19 @@ BotMaRe (powered by **Kitsune Engine**) es una solución integral diseñada para
 
 ## 🛠️ Instalación Rápida (Windows)
 
-Si estás en Windows, hemos simplificado todo el proceso a dos clics:
+Si estás en Windows, hemos simplificado todo el proceso con un menú interactivo:
 
 1. **Clona el repositorio**:
    ```bash
    git clone https://github.com/LedezmaSune/BotMaRe.git
    cd BotMaRe
    ```
-2. **Instala todo**: Ejecuta el archivo `instalar.bat`. Este script instalará Node.js (si no lo tienes), creará las carpetas necesarias y bajará todas las dependencias.
-3. **Configura tu IA**: Abre el archivo `backend/.env` y pon tu `OPENAI_API_KEY`.
-4. **Inicia el sistema**: Ejecuta el archivo `iniciar.bat`.
+2. **Usa el Menú Principal**: Ejecuta `MENU_PRINCIPAL.bat`.
+3. **Sigue las fases**:
+   - **Opción 1**: Instala dependencias y Node.js.
+   - **Opción 2**: Configura tus API Keys.
+   - **Opción 3**: Inicia el sistema completo.
+   - **Opción 4**: Actualiza a la última versión.
 
 ---
 
