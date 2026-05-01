@@ -9,33 +9,33 @@ Set-StrictMode -Off
 $ErrorActionPreference = "Stop"
 $Host.UI.RawUI.WindowTitle = "BotMaRe - Gravity Dashboard Pro"
 
-# ── Colores y utilidades ─────────────────────────────────────
+# -- Colores y utilidades ------------------------------------
 function Write-Header {
     Clear-Host
     Write-Host ""
-    Write-Host "  ╔══════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "  ║                                                      ║" -ForegroundColor Cyan
-    Write-Host "  ║        BOTMARE - GRAVITY DASHBOARD PRO               ║" -ForegroundColor Cyan
-    Write-Host "  ║             PowerShell Edition v2.0                  ║" -ForegroundColor Cyan
-    Write-Host "  ║                                                      ║" -ForegroundColor Cyan
-    Write-Host "  ╚══════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "  +======================================================+" -ForegroundColor Cyan
+    Write-Host "  |                                                      |" -ForegroundColor Cyan
+    Write-Host "  |        BOTMARE - GRAVITY DASHBOARD PRO               |" -ForegroundColor Cyan
+    Write-Host "  |             PowerShell Edition v2.0                  |" -ForegroundColor Cyan
+    Write-Host "  |                                                      |" -ForegroundColor Cyan
+    Write-Host "  +======================================================+" -ForegroundColor Cyan
     Write-Host ""
 }
 
-function Write-OK    { param($msg) Write-Host "  [✓] $msg" -ForegroundColor Green }
-function Write-Info  { param($msg) Write-Host "  [i] $msg" -ForegroundColor Cyan }
-function Write-Warn  { param($msg) Write-Host "  [!] $msg" -ForegroundColor Yellow }
-function Write-Err   { param($msg) Write-Host "  [✗] $msg" -ForegroundColor Red }
-function Write-Step  { param($msg) Write-Host "  --> $msg" -ForegroundColor White }
-function Write-Sep   { Write-Host "  ──────────────────────────────────────────────────────" -ForegroundColor DarkGray }
+function Write-OK   { param($msg) Write-Host "  [OK] $msg"   -ForegroundColor Green }
+function Write-Info { param($msg) Write-Host "  [i]  $msg"   -ForegroundColor Cyan }
+function Write-Warn { param($msg) Write-Host "  [!]  $msg"   -ForegroundColor Yellow }
+function Write-Err  { param($msg) Write-Host "  [X]  $msg"   -ForegroundColor Red }
+function Write-Step { param($msg) Write-Host "  --> $msg"    -ForegroundColor White }
+function Write-Sep  { Write-Host "  ------------------------------------------------------" -ForegroundColor DarkGray }
 
-function Pause-Menu {
+function Wait-Prompt {
     Write-Host ""
     Write-Host "  Presiona cualquier tecla para volver al menu..." -ForegroundColor DarkGray
     $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 }
 
-# ── Estado del proyecto ──────────────────────────────────────
+# -- Estado del proyecto -------------------------------------
 function Get-ProjectStatus {
     $missing = @()
     @("node_modules", "backend\node_modules", "frontend\node_modules") | ForEach-Object {
@@ -45,9 +45,9 @@ function Get-ProjectStatus {
     return @{ MissingDeps = $missing; EnvReady = $envOk }
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  MENU PRINCIPAL
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Show-Menu {
     while ($true) {
         Write-Header
@@ -55,12 +55,12 @@ function Show-Menu {
 
         Write-Host "  MENU PRINCIPAL" -ForegroundColor White
         Write-Sep
-        Write-Host "   [1]  FASE 1 - Instalar dependencias" -ForegroundColor Yellow
-        Write-Host "   [2]  FASE 2 - Configurar variables .env" -ForegroundColor Yellow
-        Write-Host "   [3]  FASE 3 - Iniciar sistema (dev)" -ForegroundColor Green
-        Write-Host "   [4]  FASE 4 - Actualizar desde GitHub" -ForegroundColor Magenta
-        Write-Host "   [5]  Ver estado del proyecto" -ForegroundColor Cyan
-        Write-Host "   [6]  Salir" -ForegroundColor DarkGray
+        Write-Host "   [1]  FASE 1 - Instalar dependencias"        -ForegroundColor Yellow
+        Write-Host "   [2]  FASE 2 - Configurar variables .env"     -ForegroundColor Yellow
+        Write-Host "   [3]  FASE 3 - Iniciar sistema (dev)"         -ForegroundColor Green
+        Write-Host "   [4]  FASE 4 - Actualizar desde GitHub"       -ForegroundColor Magenta
+        Write-Host "   [5]  Ver estado del proyecto"                 -ForegroundColor Cyan
+        Write-Host "   [6]  Salir"                                   -ForegroundColor DarkGray
         Write-Sep
 
         # Estado rapido
@@ -74,7 +74,7 @@ function Show-Menu {
             Write-Host " - Ejecuta la opcion [2]" -ForegroundColor DarkGray
         } else {
             Write-Host "  ESTADO: " -NoNewline -ForegroundColor White
-            Write-Host "LISTO ✓" -ForegroundColor Green
+            Write-Host "LISTO" -ForegroundColor Green
         }
 
         Write-Host ""
@@ -87,14 +87,14 @@ function Show-Menu {
             "4" { Invoke-Fase4 }
             "5" { Show-Status }
             "6" { Write-Host "  Hasta luego!" -ForegroundColor Cyan; exit 0 }
-            default { Write-Warn "Opcion no valida. Intenta de nuevo." ; Start-Sleep 1 }
+            default { Write-Warn "Opcion no valida. Intenta de nuevo."; Start-Sleep 1 }
         }
     }
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  FASE 1 - INSTALACION
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Invoke-Fase1 {
     Write-Header
     Write-Host "  FASE 1 - Instalacion de Dependencias" -ForegroundColor Yellow
@@ -107,7 +107,7 @@ function Invoke-Fase1 {
         Write-OK "Node.js detectado: $nodeVer"
     } catch {
         Write-Err "Node.js no encontrado. Descargalo en https://nodejs.org"
-        Pause-Menu; return
+        Wait-Prompt; return
     }
 
     # Verificar Git
@@ -139,13 +139,13 @@ function Invoke-Fase1 {
         Write-Step "Instalando dependencias [$($mod.Label)]..."
         try {
             Push-Location $mod.Path
-            $result = npm install --quiet 2>&1
+            npm install --quiet 2>&1 | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "npm install fallo en $($mod.Label)" }
             Write-OK "$($mod.Label) listo"
         } catch {
             Write-Err "Error en $($mod.Label): $_"
             Pop-Location
-            Pause-Menu; return
+            Wait-Prompt; return
         } finally {
             Pop-Location
         }
@@ -153,12 +153,12 @@ function Invoke-Fase1 {
 
     Write-Host ""
     Write-OK "FASE 1 completada exitosamente."
-    Pause-Menu
+    Wait-Prompt
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  FASE 2 - CONFIGURACION .env
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Invoke-Fase2 {
     Write-Header
     Write-Host "  FASE 2 - Configuracion de Variables de Entorno" -ForegroundColor Yellow
@@ -170,10 +170,10 @@ function Invoke-Fase2 {
     # Detectar .env existente
     if (Test-Path $envBackend) {
         Write-Warn "Ya existe: $envBackend"
-        $ow = Read-Host "  ¿Sobreescribir? Perderas tus keys actuales (s/n)"
+        $ow = Read-Host "  Sobreescribir? Perderas tus keys actuales (s/n)"
         if ($ow -ne "s") {
             Write-OK "Archivos .env conservados sin cambios."
-            Pause-Menu; return
+            Wait-Prompt; return
         }
     }
 
@@ -182,17 +182,16 @@ function Invoke-Fase2 {
     Write-Info "Puedes poner varias keys separadas por comas: key1,key2"
     Write-Host ""
 
-    # Recolectar API keys
-    Write-Host "  ── Proveedores de IA ──────────────────────────────────" -ForegroundColor DarkGray
-    $groq      = Read-Host "  [Groq]       API Key (gratis: console.groq.com)"
-    $gemini    = Read-Host "  [Gemini]     API Key (gratis: aistudio.google.com)"
-    $openai    = Read-Host "  [OpenAI]     API Key (platform.openai.com)"
-    $nvidia    = Read-Host "  [NVIDIA/DS]  API Key (integrate.api.nvidia.com)"
-    $openrouter= Read-Host "  [OpenRouter] API Key (openrouter.ai)"
+    Write-Host "  -- Proveedores de IA --" -ForegroundColor DarkGray
+    $groq       = Read-Host "  [Groq]       API Key (gratis: console.groq.com)"
+    $gemini     = Read-Host "  [Gemini]     API Key (gratis: aistudio.google.com)"
+    $openai     = Read-Host "  [OpenAI]     API Key (platform.openai.com)"
+    $nvidia     = Read-Host "  [NVIDIA/DS]  API Key (integrate.api.nvidia.com)"
+    $openrouter = Read-Host "  [OpenRouter] API Key (openrouter.ai)"
 
     Write-Host ""
-    Write-Host "  ── Telegram Bot ───────────────────────────────────────" -ForegroundColor DarkGray
-    $useTg = Read-Host "  ¿Usar Telegram Bot? (s/n)"
+    Write-Host "  -- Telegram Bot --" -ForegroundColor DarkGray
+    $useTg   = Read-Host "  Usar Telegram Bot? (s/n)"
     $tgToken = ""
     $tgIds   = ""
     if ($useTg -eq "s") {
@@ -201,50 +200,59 @@ function Invoke-Fase2 {
     }
 
     Write-Host ""
-    Write-Host "  ── Dashboard ──────────────────────────────────────────" -ForegroundColor DarkGray
+    Write-Host "  -- Dashboard --" -ForegroundColor DarkGray
     $dashUser = Read-Host "  Usuario del Dashboard [default: admin]"
     $dashPass = Read-Host "  Password del Dashboard [default: admin123]"
     if (-not $dashUser) { $dashUser = "admin" }
     if (-not $dashPass) { $dashPass = "admin123" }
 
     # Escribir backend\.env
-    $backendEnv = @"
-PORT=3001
-
-# IA Providers
-GROQ_API_KEY=$groq
-GEMINI_API_KEY=$gemini
-OPENAI_API_KEY=$openai
-NVIDIA_API_KEY=$nvidia
-OPENROUTER_API_KEY=$openrouter
-
-# Dashboard
-DASHBOARD_URL=http://localhost:3000
-NODE_ENV=development
-LOGGER_LEVEL=error
-"@
+    $lines = @(
+        "PORT=3001",
+        "",
+        "# IA Providers",
+        "GROQ_API_KEY=$groq",
+        "GEMINI_API_KEY=$gemini",
+        "OPENAI_API_KEY=$openai",
+        "NVIDIA_API_KEY=$nvidia",
+        "OPENROUTER_API_KEY=$openrouter",
+        "",
+        "# Dashboard",
+        "DASHBOARD_URL=http://localhost:3000",
+        "NODE_ENV=development",
+        "LOGGER_LEVEL=error"
+    )
 
     if ($useTg -eq "s") {
-        $backendEnv += @"
-
-# Telegram
-TELEGRAM_BOT_TOKEN=$tgToken
-TELEGRAM_ALLOWED_USER_IDS=$tgIds
-"@
+        $lines += @(
+            "",
+            "# Telegram",
+            "TELEGRAM_BOT_TOKEN=$tgToken",
+            "TELEGRAM_ALLOWED_USER_IDS=$tgIds"
+        )
     }
 
-    Set-Content -Path $envBackend  -Value $backendEnv  -Encoding UTF8
-    Set-Content -Path $envFrontend -Value "DASHBOARD_USER=`"$dashUser`"`nDASHBOARD_PASS=`"$dashPass`"" -Encoding UTF8
+    [System.IO.File]::WriteAllLines(
+        (Join-Path $PWD $envBackend),
+        $lines,
+        [System.Text.UTF8Encoding]::new($false)
+    )
+
+    [System.IO.File]::WriteAllLines(
+        (Join-Path $PWD $envFrontend),
+        @("DASHBOARD_USER=`"$dashUser`"", "DASHBOARD_PASS=`"$dashPass`""),
+        [System.Text.UTF8Encoding]::new($false)
+    )
 
     Write-Host ""
     Write-OK "backend\.env  generado correctamente"
     Write-OK "frontend\.env generado correctamente"
-    Pause-Menu
+    Wait-Prompt
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  FASE 3 - INICIAR SISTEMA
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Invoke-Fase3 {
     Write-Header
     Write-Host "  FASE 3 - Iniciar Sistema" -ForegroundColor Green
@@ -254,22 +262,20 @@ function Invoke-Fase3 {
     $status = Get-ProjectStatus
     if ($status.MissingDeps.Count -gt 0) {
         Write-Warn "Faltan dependencias: $($status.MissingDeps -join ', ')"
-        $ins = Read-Host "  ¿Ejecutar FASE 1 primero? (s/n)"
+        $ins = Read-Host "  Ejecutar FASE 1 primero? (s/n)"
         if ($ins -eq "s") { Invoke-Fase1 }
     }
 
     if (-not $status.EnvReady) {
         Write-Warn "No se detectaron archivos .env."
-        $cfg = Read-Host "  ¿Ejecutar FASE 2 primero? (s/n)"
+        $cfg = Read-Host "  Ejecutar FASE 2 primero? (s/n)"
         if ($cfg -eq "s") { Invoke-Fase2 }
     }
 
     Write-Host ""
-
-    $mode = Read-Host "  Modo de inicio: [1] Dev (recomendado)  [2] Ventanas separadas"
+    $mode = Read-Host "  Modo: [1] Dev unificado (recomendado)  [2] Ventanas separadas"
 
     if ($mode -eq "2") {
-        # Modo ventanas separadas
         Write-Step "Lanzando Backend en nueva ventana (Puerto 3001)..."
         Start-Process powershell -ArgumentList "-NoExit -Command `"Set-Location '$PWD\backend'; npm run dev`"" -WindowStyle Normal
 
@@ -279,8 +285,8 @@ function Invoke-Fase3 {
         Write-Host ""
         Write-OK "Procesos lanzados en ventanas independientes."
         Write-Info "Dashboard: http://localhost:3000"
+        Wait-Prompt
     } else {
-        # Modo dev unificado (concurrently)
         Write-Step "Iniciando con concurrently (Backend + Frontend)..."
         Write-Info "Presiona Ctrl+C para detener."
         Write-Host ""
@@ -289,14 +295,13 @@ function Invoke-Fase3 {
         } catch {
             Write-Err "El proceso fue interrumpido."
         }
+        Wait-Prompt
     }
-
-    Pause-Menu
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  FASE 4 - ACTUALIZAR DESDE GITHUB
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Invoke-Fase4 {
     Write-Header
     Write-Host "  FASE 4 - Actualizar desde GitHub" -ForegroundColor Magenta
@@ -307,7 +312,7 @@ function Invoke-Fase4 {
         git --version | Out-Null
     } catch {
         Write-Err "Git no esta instalado o no esta en el PATH."
-        Pause-Menu; return
+        Wait-Prompt; return
     }
 
     Write-Step "Ejecutando git pull origin main..."
@@ -320,22 +325,22 @@ function Invoke-Fase4 {
     } catch {
         Write-Err "Error al hacer git pull: $_"
         Write-Warn "Posibles causas: sin conexion, conflictos locales, o sin permiso."
-        Pause-Menu; return
+        Wait-Prompt; return
     }
 
     Write-Host ""
-    $reinstall = Read-Host "  ¿Reinstalar dependencias para asegurar compatibilidad? (s/n)"
+    $reinstall = Read-Host "  Reinstalar dependencias para asegurar compatibilidad? (s/n)"
     if ($reinstall -eq "s") {
         Invoke-Fase1
     } else {
         Write-OK "Actualizacion completada."
-        Pause-Menu
+        Wait-Prompt
     }
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  VER ESTADO DEL PROYECTO
-# ════════════════════════════════════════════════════════════
+# ============================================================
 function Show-Status {
     Write-Header
     Write-Host "  ESTADO DEL PROYECTO" -ForegroundColor Cyan
@@ -367,24 +372,22 @@ function Show-Status {
     Write-Host "  Puertos (servicios activos):" -ForegroundColor White
     @(3000, 3001) | ForEach-Object {
         $conn = Get-NetTCPConnection -LocalPort $_ -State Listen -ErrorAction SilentlyContinue
-        if ($conn) { Write-OK "Puerto $_ en uso (servicio activo)" }
-        else        { Write-Warn "Puerto $_ libre (servicio no iniciado)" }
+        if ($conn) { Write-OK "Puerto $_ - ACTIVO" }
+        else       { Write-Warn "Puerto $_ - libre (servicio no iniciado)" }
     }
 
     Write-Host ""
-    # Ultimo commit
     try {
         $commit = git log --oneline -1 2>&1
         Write-Info "Ultimo commit: $commit"
     } catch {}
 
-    Pause-Menu
+    Wait-Prompt
 }
 
-# ════════════════════════════════════════════════════════════
+# ============================================================
 #  PUNTO DE ENTRADA
-# ════════════════════════════════════════════════════════════
-# Verificar que estamos en el directorio correcto
+# ============================================================
 if (-not (Test-Path "package.json")) {
     Write-Host "[ERROR] Ejecuta este script desde la raiz del proyecto BotMaRe." -ForegroundColor Red
     exit 1
