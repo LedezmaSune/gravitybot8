@@ -10,6 +10,9 @@
 **/*.pem
 **/credentials.json
 
+# Permitir archivos de ejemplo (sin datos reales)
+!**/.env.example
+
 # WhatsApp Sessions & Data
 **/auth_info_baileys
 **/data/*.db
