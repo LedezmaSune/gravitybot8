@@ -1,4 +1,3 @@
-
 <h1 align="center">🦊 BotMaRe - Gravity Dashboard</h1>
 
 <p align="center">
@@ -29,17 +28,17 @@ BotMaRe (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramient
 
 ## ✨ Características
 
-| Módulo | Funcionalidades |
-|---|---|
+| Módulo                    | Funcionalidades                                                               |
+| ------------------------- | ----------------------------------------------------------------------------- |
 | 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek (NVIDIA), OpenRouter — con failover automático |
-| 📱 **WhatsApp Bot** | Respuestas inteligentes, imágenes, audio, documentos |
-| 📢 **Difusión Masiva** | Envía mensajes personalizados a listas de contactos |
-| 📅 **Recordatorios** | Programa mensajes: cada hora, día, semana, mes o personalizado |
-| 🗓️ **Calendario Gravity** | Vista tipo Google Calendar para gestionar recordatorios |
-| ✈️ **Telegram Bot** | Controla el sistema remotamente desde Telegram |
-| 📄 **Plantillas** | Crea, edita y reutiliza mensajes con variables inteligentes |
-| 🌐 **Tunnel Automático** | Cloudflare Tunnel integrado para acceso remoto |
-| 🎨 **Dashboard Premium** | Glassmorphism, modo oscuro/claro, micro-animaciones |
+| 📱 **WhatsApp Bot**       | Respuestas inteligentes, imágenes, audio, documentos                          |
+| 📢 **Difusión Masiva**    | Envía mensajes personalizados a listas de contactos                           |
+| 📅 **Recordatorios**      | Programa mensajes: cada hora, día, semana, mes o personalizado                |
+| 🗓️ **Calendario Gravity** | Vista tipo Google Calendar para gestionar recordatorios                       |
+| ✈️ **Telegram Bot**       | Controla el sistema remotamente desde Telegram                                |
+| 📄 **Plantillas**         | Crea, edita y reutiliza mensajes con variables inteligentes                   |
+| 🌐 **Tunnel Automático**  | Cloudflare Tunnel integrado para acceso remoto                                |
+| 🎨 **Dashboard Premium**  | Glassmorphism, modo oscuro/claro, micro-animaciones                           |
 
 ---
 
@@ -47,11 +46,11 @@ BotMaRe (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramient
 
 ### Requisitos Previos
 
-| Software | Versión Mínima | Enlace |
-|---|---|---|
-| **Node.js** | v18+ | [nodejs.org](https://nodejs.org) |
-| **Git** | Cualquiera | [git-scm.com](https://git-scm.com) |
-| **API Key** | Al menos 1 | Ver [Proveedores de IA](#-proveedores-de-ia) |
+| Software    | Versión Mínima | Enlace                                       |
+| ----------- | -------------- | -------------------------------------------- |
+| **Node.js** | v18+           | [nodejs.org](https://nodejs.org)             |
+| **Git**     | Cualquiera     | [git-scm.com](https://git-scm.com)           |
+| **API Key** | Al menos 1     | Ver [Proveedores de IA](#-proveedores-de-ia) |
 
 ### Paso 1 — Clonar el repositorio
 
@@ -60,46 +59,29 @@ git clone https://github.com/LedezmaSune/BotMaRe.git
 cd BotMaRe
 ```
 
-### Paso 2 — Ejecutar el setup
+### Paso 2 — Instalar dependencias
 
-<details>
-<summary>🪟 <strong>Windows</strong></summary>
+<details open>
+<summary>⭐ <strong>Instalación Manual</strong> (Recomendada)</summary>
 
-Haz **doble clic** en `setup.bat` o ejecuta en la terminal:
-
-```cmd
-setup.bat
-```
-
-El script automáticamente:
-1. ✅ Verifica que Node.js esté instalado
-2. ✅ Crea los directorios necesarios
-3. ✅ Instala todas las dependencias (raíz, backend, frontend)
-4. ✅ Te guía para configurar tus API Keys
-5. ✅ Genera los archivos `.env`
-
-</details>
-
-<details>
-<summary>🐧 <strong>Linux / 🍎 Mac</strong></summary>
+Ejecuta los siguientes comandos en la terminal desde la raíz del proyecto:
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+npm install
+cd backend && npm install && cd ..
+cd frontend && npm install && cd ..
 ```
 
-El script hace exactamente lo mismo que la versión de Windows, adaptado para Bash.
+Luego configura tus variables de entorno:
 
-> **Ubuntu/Debian**: Si no tienes Node.js:
-> ```bash
-> curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-> sudo apt install -y nodejs
-> ```
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
 
-> **Mac con Homebrew**:
-> ```bash
-> brew install node
-> ```
+Edita `backend/.env` con tus API Keys (ver [Proveedores de IA](#-proveedores-de-ia)) y `frontend/.env` con tus credenciales del dashboard.
+
+> **💡 Tip:** Este es el método más confiable y funciona en **cualquier sistema operativo** (Windows, Linux, Mac).
 
 </details>
 
@@ -111,6 +93,48 @@ docker-compose up -d --build
 ```
 
 Ideal para despliegues en producción con VPS.
+
+</details>
+
+<details>
+<summary>🐧 <strong>Linux / 🍎 Mac</strong> — Notas adicionales</summary>
+
+> **Ubuntu/Debian**: Si no tienes Node.js:
+>
+> ```bash
+> curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+> sudo apt install -y nodejs
+> ```
+
+> **Mac con Homebrew**:
+>
+> ```bash
+> brew install node
+> ```
+
+</details>
+
+<details>
+<summary>🧪 <strong>Scripts Automáticos</strong> (Experimental — en desarrollo)</summary>
+
+> [!WARNING]
+> Estos scripts están **en desarrollo activo** y pueden presentar comportamientos inesperados.
+> Se recomienda usar la **instalación manual** descrita arriba.
+
+**Windows** — `setup.bat`:
+
+```cmd
+setup.bat
+```
+
+**Linux/Mac** — `setup.sh`:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Los scripts intentan automatizar la instalación de dependencias y la configuración de archivos `.env`, pero aún no son estables para todos los entornos.
 
 </details>
 
@@ -143,18 +167,20 @@ Esto arranca **Backend (puerto 3001)** y **Frontend (puerto 3000)** simultáneam
 
 BotMaRe soporta **5 proveedores** con failover automático. Solo necesitas **al menos 1**:
 
-| Proveedor | Gratuito | Obtener Key | Variable en `.env` |
-|---|---|---|---|
-| **Groq** ⭐ | ✅ Sí | [console.groq.com/keys](https://console.groq.com/keys) | `GROQ_API_KEY` |
-| **Google Gemini** | ✅ Sí | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY` |
-| **OpenRouter** | ✅ Free tier | [openrouter.ai/keys](https://openrouter.ai/keys) | `OPENROUTER_API_KEY` |
-| **OpenAI** | ❌ Pago | [platform.openai.com](https://platform.openai.com/api-keys) | `OPENAI_API_KEY` |
-| **DeepSeek (NVIDIA)** | ❌ Pago | [integrate.api.nvidia.com](https://integrate.api.nvidia.com) | `NVIDIA_API_KEY` |
+| Proveedor             | Gratuito     | Obtener Key                                                   | Variable en `.env`   |
+| --------------------- | ------------ | ------------------------------------------------------------- | -------------------- |
+| **Groq** ⭐           | ✅ Sí        | [console.groq.com/keys](https://console.groq.com/keys)        | `GROQ_API_KEY`       |
+| **Google Gemini**     | ✅ Sí        | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY`     |
+| **OpenRouter**        | ✅ Free tier | [openrouter.ai/keys](https://openrouter.ai/keys)              | `OPENROUTER_API_KEY` |
+| **OpenAI**            | ❌ Pago      | [platform.openai.com](https://platform.openai.com/api-keys)   | `OPENAI_API_KEY`     |
+| **DeepSeek (NVIDIA)** | ❌ Pago      | [integrate.api.nvidia.com](https://integrate.api.nvidia.com)  | `NVIDIA_API_KEY`     |
 
 > **💡 Tip:** Puedes poner **múltiples keys separadas por comas** para mayor capacidad:
+>
 > ```
 > GROQ_API_KEY=key1,key2,key3
 > ```
+>
 > Si una key alcanza su límite, el sistema pasa automáticamente a la siguiente.
 
 ---
@@ -237,26 +263,26 @@ BotMaRe/
 
 Al redactar mensajes en el dashboard, puedes usar variables que se reemplazan automáticamente:
 
-| Variable | Resultado | Ejemplo |
-|---|---|---|
-| `{NOMBRE}` | Nombre completo | Juan Pérez |
-| `{NOMBRE_PILA}` | Primer nombre | Juan |
-| `{APELLIDO}` | Apellidos | Pérez |
-| `{FECHA}` | Fecha actual | 01/05/2026 |
-| `{HORA_12}` | Hora 12h | 2:30 PM |
-| `{HORA_24}` | Hora 24h | 14:30 |
-| `{DIA_SEMANA}` | Día de la semana | Jueves |
+| Variable        | Resultado        | Ejemplo    |
+| --------------- | ---------------- | ---------- |
+| `{NOMBRE}`      | Nombre completo  | Juan Pérez |
+| `{NOMBRE_PILA}` | Primer nombre    | Juan       |
+| `{APELLIDO}`    | Apellidos        | Pérez      |
+| `{FECHA}`       | Fecha actual     | 01/05/2026 |
+| `{HORA_12}`     | Hora 12h         | 2:30 PM    |
+| `{HORA_24}`     | Hora 24h         | 14:30      |
+| `{DIA_SEMANA}`  | Día de la semana | Jueves     |
 
 ---
 
 ## 📜 Scripts Disponibles
 
-| Comando | Descripción |
-|---|---|
-| `npm run dev` | Inicia Backend + Frontend juntos |
-| `npm run install-all` | Instala dependencias en los 3 módulos |
-| `npm run dev --prefix backend` | Solo el backend |
-| `npm run dev --prefix frontend` | Solo el frontend |
+| Comando                         | Descripción                           |
+| ------------------------------- | ------------------------------------- |
+| `npm run dev`                   | Inicia Backend + Frontend juntos      |
+| `npm run install-all`           | Instala dependencias en los 3 módulos |
+| `npm run dev --prefix backend`  | Solo el backend                       |
+| `npm run dev --prefix frontend` | Solo el frontend                      |
 
 ---
 
