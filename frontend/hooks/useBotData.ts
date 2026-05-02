@@ -5,7 +5,7 @@ import { Audit, Reminder, Settings, Template, ConnectionState } from '../types';
 const API_BASE = '/api';
 const SOCKET_URL = ''; // Connects back to the same host
 
-export type TabId = 'mass' | 'scheduling' | 'calendar' | 'templates' | 'personality' | 'audits';
+export type TabId = 'mass' | 'scheduling' | 'calendar' | 'templates' | 'personality' | 'settings' | 'audits';
 
 export function useBotData() {
     // 1. Connection State (Socket.io)
@@ -33,7 +33,7 @@ export function useBotData() {
             if (remindersRes.ok) setReminders(await remindersRes.json());
             if (templatesRes.ok) setTemplates(await templatesRes.json());
 
-            if (!settings || currentTab === 'personality') {
+            if (!settings || currentTab === 'personality' || currentTab === 'settings') {
                 const settingsRes = await fetch(`${API_BASE}/settings`);
                 if (settingsRes.ok) setSettings(await settingsRes.json());
             }
@@ -157,7 +157,7 @@ export function useBotData() {
         if (res.ok) void fetchData(activeTab);
     };
 
-    const handleUpdateSettings = async (newSettings: Settings) => {
+    const handleUpdateSettings = async (newSettings: Settings | any) => {
         const res = await fetch(`${API_BASE}/settings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -166,7 +166,22 @@ export function useBotData() {
         if (res.ok) {
             setSettings(newSettings);
             alert('Configuración guardada.');
+        } else {
+            alert('Error al guardar configuración.');
         }
+    };
+
+    const handleParseEnv = async (content: string) => {
+        const res = await fetch(`${API_BASE}/settings/parse-env`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+        });
+        if (res.ok) {
+            void fetchData('settings');
+            return true;
+        }
+        return false;
     };
 
     return {
@@ -186,6 +201,7 @@ export function useBotData() {
         handleAIGeneration,
         handleAddReminder,
         handleDeleteReminder,
-        handleUpdateSettings
+        handleUpdateSettings,
+        handleParseEnv
     };
 }

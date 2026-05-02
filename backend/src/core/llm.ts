@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 
+import { getConfig } from "./config";
+
 function getApiKeys(envValue: string | undefined): string[] {
     if (!envValue) return [];
     return envValue.split(',').map(k => k.trim().replace(/^["']|["']$/g, ''));
@@ -22,7 +24,7 @@ async function tryProvider(
             const payload: any = {
                 model: config.model,
                 messages: messages,
-                max_tokens: config.max_tokens || 300,
+                max_tokens: config.max_tokens || 400,
                 ...(tools && tools.length > 0 && !(hasVision && providerName === 'Groq') ? { tools } : {}),
             };
             
@@ -32,7 +34,6 @@ async function tryProvider(
             if (config.temperature) payload.temperature = config.temperature;
             if (config.top_p) payload.top_p = config.top_p;
 
-            // Race between the LLM call and a timeout (NVIDIA gets a shorter timeout)
             const timeout = providerName === 'Nvidia' ? LLM_TIMEOUT_NVIDIA_MS : LLM_TIMEOUT_MS;
             const timeoutPromise = new Promise<never>((_, reject) =>
                 setTimeout(() => reject(new Error(`Timeout after ${timeout}ms`)), timeout)
@@ -47,7 +48,6 @@ async function tryProvider(
             return response.choices[0]?.message;
         } catch (error: any) {
             console.warn(`[LLM] ${providerName} Key Failed: ${error.message}`);
-            // Always continue to next key on any error
             continue;
         }
     }
@@ -58,14 +58,13 @@ function cleanMessages(messages: any[]): any[] {
     return messages.map((msg: any) => {
         let content = msg.content;
         
-        // Fix for Groq expecting text parts with images, or non-null content
         if (Array.isArray(content)) {
             const hasText = content.some((c: any) => c.type === 'text');
             if (!hasText) {
                 content = [...content, { type: 'text', text: 'Imagen adjunta' }];
             }
         } else if (!content && msg.role !== 'assistant') {
-            content = " "; // Prevent empty content errors for users
+            content = " "; 
         }
 
         return {
@@ -86,12 +85,12 @@ export async function callLLM(
     const hasVision = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
 
     // 0. Try Nvidia (DeepSeek)
-    const nvidiaKeys = getApiKeys(process.env.NVIDIA_API_KEY);
+    const nvidiaKeys = getApiKeys(await getConfig('NVIDIA_API_KEY'));
     if (nvidiaKeys.length > 0) {
         try {
             return await tryProvider('Nvidia', nvidiaKeys, {
                 baseURL: "https://integrate.api.nvidia.com/v1",
-                model: process.env.NVIDIA_MODEL || "deepseek-ai/deepseek-v4-pro",
+                model: await getConfig('NVIDIA_MODEL', "deepseek-ai/deepseek-v4-pro"),
                 max_tokens: 4000,
                 temperature: 1,
                 top_p: 0.95,
@@ -101,7 +100,7 @@ export async function callLLM(
     }
 
     // 1. Try Groq
-    const groqKeys = getApiKeys(process.env.GROQ_API_KEY);
+    const groqKeys = getApiKeys(await getConfig('GROQ_API_KEY'));
     if (groqKeys.length > 0) {
         try {
             return await tryProvider('Groq', groqKeys, {
@@ -112,35 +111,35 @@ export async function callLLM(
     }
 
     // 2. Try Gemini
-    const geminiKeys = getApiKeys(process.env.GEMINI_API_KEY);
+    const geminiKeys = getApiKeys(await getConfig('GEMINI_API_KEY'));
     if (geminiKeys.length > 0) {
         try {
             return await tryProvider('Gemini', geminiKeys, {
                 baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
-                model: process.env.GEMINI_MODEL || "gemini-1.5-flash"
+                model: await getConfig('GEMINI_MODEL', "gemini-1.5-flash")
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
 
     // 3. Try OpenAI
-    const openaiKeys = getApiKeys(process.env.OPENAI_API_KEY);
+    const openaiKeys = getApiKeys(await getConfig('OPENAI_API_KEY'));
     if (openaiKeys.length > 0) {
         try {
             return await tryProvider('OpenAI', openaiKeys, {
-                model: process.env.OPENAI_MODEL || "gpt-4o-mini"
+                model: await getConfig('OPENAI_MODEL', "gpt-4o-mini")
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
 
-    const orKeys = getApiKeys(process.env.OPENROUTER_API_KEY);
+    const orKeys = getApiKeys(await getConfig('OPENROUTER_API_KEY'));
     if (orKeys.length > 0) {
         try {
             return await tryProvider('OpenRouter', orKeys, {
                 baseURL: "https://openrouter.ai/api/v1",
-                model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct:free",
+                model: await getConfig('OPENROUTER_MODEL', "meta-llama/llama-3.1-8b-instruct:free"),
                 defaultHeaders: {
                     "HTTP-Referer": "http://localhost:3000",
-                    "X-Title": "BotFree AI",
+                    "X-Title": "BotMaRe AI",
                 }
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
@@ -150,7 +149,7 @@ export async function callLLM(
 }
 
 export async function transcribeAudio(audioBuffer: Buffer) {
-    const groqKeys = getApiKeys(process.env.GROQ_API_KEY);
+    const groqKeys = getApiKeys(await getConfig('GROQ_API_KEY'));
     if (groqKeys.length === 0) throw new Error("Groq API key required for transcription");
     
     try {

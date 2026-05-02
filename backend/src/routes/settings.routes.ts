@@ -8,6 +8,7 @@ export function createSettingsRouter(controller: SettingsController) {
     router.post('/', controller.updateSettings);
     router.delete('/clean-uploads', controller.cleanUploads);
     
+    router.post('/parse-env', controller.parseEnvFile);
     router.post('/learn-url', controller.learnFromUrl);
     
     return router;

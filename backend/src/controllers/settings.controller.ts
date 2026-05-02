@@ -1,21 +1,44 @@
 import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { getSettings, updateSettings, listReminders, addMessage } from '../core/memory';
+import { getSettings, updateSettings, listReminders } from '../core/memory';
 import { asyncHandler } from '../middleware/errorHandler';
 import { scrapeUrl } from '../core/scraper';
+import { getAllConfig } from '../core/config';
 
 const uploadDir = path.resolve('data/uploads');
 
 export class SettingsController {
     getSettings = asyncHandler(async (req: Request, res: Response) => {
-        const settings = await getSettings();
+        const settings = await getAllConfig();
         res.json(settings);
     });
 
     updateSettings = asyncHandler(async (req: Request, res: Response) => {
         await updateSettings(req.body);
         res.json({ success: true });
+    });
+
+    parseEnvFile = asyncHandler(async (req: Request, res: Response) => {
+        const { content } = req.body;
+        if (!content) throw new Error("Content is required");
+
+        const lines = content.split('\n');
+        const parsed: Record<string, string> = {};
+        
+        lines.forEach((line: string) => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) return;
+            
+            const [key, ...valueParts] = trimmed.split('=');
+            if (key && valueParts.length > 0) {
+                const value = valueParts.join('=').trim().replace(/^["']|["']$/g, '');
+                parsed[key.trim()] = value;
+            }
+        });
+
+        await updateSettings(parsed);
+        res.json({ success: true, count: Object.keys(parsed).length });
     });
 
     cleanUploads = asyncHandler(async (req: Request, res: Response) => {

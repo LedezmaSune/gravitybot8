@@ -1,7 +1,7 @@
 'use client';
 
 import { useBotData, TabId } from '@/hooks/useBotData';
-import { History, Bell, Brain, Megaphone, CalendarDays, Layout } from 'lucide-react';
+import { History, Bell, Brain, Megaphone, CalendarDays, Layout, Settings as SettingsIcon } from 'lucide-react';
 
 import { StatusHeader } from '@/components/StatusHeader';
 import { MassMessaging } from '@/components/MassMessaging';
@@ -11,6 +11,7 @@ import { AuditLogs } from '@/components/AuditLogs';
 import { ConnectionOverlay } from '@/components/ConnectionOverlay';
 import { CalendarView } from '@/components/CalendarView';
 import { Templates } from '@/components/Templates';
+import { Settings } from '@/components/Settings';
 
 const tabs: Array<{ id: TabId; icon: any; label: string }> = [
     { id: 'mass', icon: Megaphone, label: 'Difusión' },
@@ -18,6 +19,7 @@ const tabs: Array<{ id: TabId; icon: any; label: string }> = [
     { id: 'calendar', icon: CalendarDays, label: 'Calendario' },
     { id: 'templates', icon: Layout, label: 'Plantillas' },
     { id: 'personality', icon: Brain, label: 'Cerebro IA' },
+    { id: 'settings', icon: SettingsIcon, label: 'Configuración' },
     { id: 'audits', icon: History, label: 'Auditoría' }
 ];
 
@@ -39,7 +41,8 @@ export default function Home() {
         handleAIGeneration,
         handleAddReminder,
         handleDeleteReminder,
-        handleUpdateSettings
+        handleUpdateSettings,
+        handleParseEnv
     } = useBotData();
 
     return (
@@ -117,6 +120,10 @@ export default function Home() {
 
                     {activeTab === 'personality' && settings && (
                         <Personality initialSettings={settings} onUpdate={handleUpdateSettings} />
+                    )}
+
+                    {activeTab === 'settings' && settings && (
+                        <Settings settings={settings} onUpdate={handleUpdateSettings} onParseEnv={handleParseEnv} />
                     )}
 
                     {activeTab === 'audits' && (
