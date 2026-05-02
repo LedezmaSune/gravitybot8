@@ -223,6 +223,10 @@ DASHBOARD_USER="admin"
 DASHBOARD_PASS="tu_password_seguro"
 ```
 
+> **💡 Tip:** Si no configuras estas variables, el sistema usará por defecto:
+> - **Usuario:** `admin`
+> - **Contraseña:** `admin123`
+
 ---
 
 ## 📁 Estructura del Proyecto

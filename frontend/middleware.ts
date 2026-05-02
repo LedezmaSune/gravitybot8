@@ -8,9 +8,9 @@ export function middleware(req: NextRequest) {
     const authValue = basicAuth.split(' ')[1]
     const [user, pwd] = atob(authValue).split(':')
 
-    // Leemos exclusivamente desde las variables de entorno en frontend/.env
-    const validUser = process.env.DASHBOARD_USER;
-    const validPass = process.env.DASHBOARD_PASS;
+    // Leemos desde las variables de entorno o usamos defaults
+    const validUser = process.env.DASHBOARD_USER || 'admin';
+    const validPass = process.env.DASHBOARD_PASS || 'admin123';
 
     if (user === validUser && pwd === validPass) {
       return NextResponse.next()
