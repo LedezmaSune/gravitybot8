@@ -23,4 +23,9 @@ export class WhatsAppController {
         await this.waService.disconnect();
         res.json({ success: true });
     });
+
+    getGroups = asyncHandler(async (req: Request, res: Response) => {
+        const groups = await this.waService.getGroups();
+        res.json(Object.values(groups));
+    });
 }

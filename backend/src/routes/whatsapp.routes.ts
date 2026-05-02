@@ -7,6 +7,7 @@ export function createWhatsAppRouter(controller: WhatsAppController) {
     router.get('/status', controller.getStatus);
     router.post('/send', controller.sendMessage);
     router.post('/disconnect', controller.disconnect);
+    router.get('/groups', controller.getGroups);
     
     return router;
 }

@@ -42,6 +42,28 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
     const dayOfMonth = selectedDate.getDate();
     const dayAndMonth = selectedDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
 
+    const [showGroupModal, setShowGroupModal] = useState(false);
+    const [groups, setGroups] = useState<any[]>([]);
+    const [groupLoading, setGroupLoading] = useState(false);
+
+    const fetchGroups = async () => {
+        setGroupLoading(true);
+        try {
+            const res = await fetch('/api/whatsapp/groups');
+            const data = await res.json();
+            setGroups(data);
+        } catch (error) {
+            console.error('Error fetching groups:', error);
+        } finally {
+            setGroupLoading(false);
+        }
+    };
+
+    const handleSelectGroup = (g: any) => {
+        setChatId(g.id);
+        setShowGroupModal(false);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -135,8 +157,18 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
                         </div>
                         <div>
                             <div className="flex items-center justify-between mb-1">
-                                <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest">Destinatarios</label>
+                                <label className="text-[10px] uppercase font-bold text-app-text-muted tracking-widest">Destinatarios / Grupos</label>
                                 <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowGroupModal(true);
+                                            fetchGroups();
+                                        }}
+                                        className="text-[9px] font-black text-violet-500 bg-violet-500/10 px-2 py-0.5 rounded-full border border-violet-500/20 uppercase tracking-tighter hover:bg-violet-500/20 transition-all"
+                                    >
+                                        Buscar Grupos
+                                    </button>
                                     <span className="text-[9px] font-black text-cyan-500 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 uppercase tracking-tighter">
                                         {chatId.split('\n').filter(x => x.trim()).length} contactos
                                     </span>
@@ -150,7 +182,7 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
                                 required
                             />
                             <p className="text-[9px] text-app-text-muted mt-1 leading-tight px-1 italic">
-                                Pon un contacto por línea. Formato: <span className="text-cyan-500 font-bold">Número, Nombre</span> para usar <span className="text-violet-500 font-bold">{`{NOMBRE}`}</span>.
+                                Pon un contacto por línea o usa el botón <span className="text-violet-500 font-bold">Buscar Grupos</span>.
                             </p>
                         </div>
                         <div>
@@ -510,6 +542,55 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
                                 className="bg-cyan-400 hover:bg-cyan-300 text-slate-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-cyan-500/20 active:scale-95"
                             >
                                 Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showGroupModal && (
+                <div className="fixed inset-0 z-[250] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-app-card border border-app-border w-full max-w-md rounded-3xl p-6 shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[80vh] flex flex-col">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-app-text font-bold text-lg">Seleccionar Grupo</h3>
+                            <button onClick={() => setShowGroupModal(false)} className="text-app-text-muted hover:text-app-text">
+                                <Trash2 size={20} className="rotate-45" />
+                            </button>
+                        </div>
+
+                        {groupLoading ? (
+                            <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                <Loader2 className="animate-spin text-cyan-500" size={40} />
+                                <p className="text-sm text-app-text-muted">Obteniendo grupos...</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-2 overflow-y-auto custom-scrollbar pr-2">
+                                {groups.length === 0 ? (
+                                    <p className="text-center py-10 text-app-text-muted text-sm italic">No se encontraron grupos.</p>
+                                ) : (
+                                    groups.map((g) => (
+                                        <button
+                                            key={g.id}
+                                            onClick={() => handleSelectGroup(g)}
+                                            className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/30 transition-all text-left group"
+                                        >
+                                            <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-app-text-muted group-hover:bg-cyan-500/20 group-hover:text-cyan-500 transition-colors">
+                                                {g.subject?.substring(0, 1).toUpperCase() || '?'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-app-text truncate">{g.subject}</p>
+                                                <p className="text-[10px] text-app-text-muted truncate">{g.id}</p>
+                                            </div>
+                                        </button>
+                                    ))
+                                )}
+                            </div>
+                        )}
+                        <div className="mt-6 pt-4 border-t border-app-border flex justify-end">
+                            <button
+                                onClick={() => setShowGroupModal(false)}
+                                className="px-6 py-2 bg-slate-200 dark:bg-slate-800 text-app-text font-bold rounded-xl text-sm"
+                            >
+                                Cerrar
                             </button>
                         </div>
                     </div>

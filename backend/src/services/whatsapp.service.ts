@@ -22,11 +22,15 @@ export class WhatsAppService {
         return await this.client.disconnect();
     }
 
+    async getGroups() {
+        return await this.client.getGroups();
+    }
+
     /**
      * Internal logic for handling incoming messages.
      * Orchestrates AI Agent and Voice synthesis.
      */
-    async handleIncomingMessage(jid: string, text: string, imageBase64?: string) {
+    async handleIncomingMessage(jid: string, text: string, senderJid: string, imageBase64?: string) {
         try {
             // 1. Show 'composing' (typing) status
             const socket = this.client.getSocket();
@@ -39,7 +43,7 @@ export class WhatsAppService {
             }
 
             // 2. Run AI Agent
-            const response = await runAgent(jid, text, imageBase64);
+            const response = await runAgent(jid, text, senderJid, imageBase64);
 
             // 3. Small delay for realism
             await new Promise(r => setTimeout(r, 500 + Math.random() * 1000));

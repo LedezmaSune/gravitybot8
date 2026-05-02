@@ -120,6 +120,11 @@ export class WhatsAppClient {
         return { state: this.state, qr: this.qr };
     }
 
+    async getGroups() {
+        if (this.state !== 'connected') throw new Error('Not connected');
+        return await this.socket.groupFetchAllParticipating();
+    }
+
     async disconnect() {
         if (this.socket) {
             console.log('[WA] Desconectando socket de WhatsApp...');

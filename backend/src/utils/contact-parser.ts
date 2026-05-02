@@ -15,6 +15,11 @@ export function parseContacts(contactsStr: string): ParsedContact[] {
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .map(line => {
+            // Case 0: WhatsApp JID (Group or User)
+            if (line.endsWith('@g.us') || line.endsWith('@s.whatsapp.net') || line.endsWith('@lid')) {
+                return { number: line, name: '' };
+            }
+
             // Case 1: Comma separated
             if (line.includes(',')) {
                 const parts = line.split(',');
@@ -22,7 +27,7 @@ export function parseContacts(contactsStr: string): ParsedContact[] {
                 const part2 = parts.slice(1).join(',').trim();
 
                 // Guess which one is the number
-                if (/\d{8,}/.test(part1)) {
+                if (/\d{8,}/.test(part1) || part1.endsWith('@s.whatsapp.net') || part1.endsWith('@lid')) {
                     return { number: part1, name: part2 };
                 } else {
                     return { number: part2, name: part1 };

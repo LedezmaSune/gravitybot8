@@ -33,9 +33,10 @@ BotMaRe (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramient
 | 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek (NVIDIA), OpenRouter — con failover automático |
 | 📱 **WhatsApp Bot**       | Respuestas inteligentes, imágenes, audio, documentos                          |
 | 📢 **Difusión Masiva**    | Envía mensajes personalizados a listas de contactos                           |
-| 📅 **Recordatorios**      | Programa mensajes: cada hora, día, semana, mes o personalizado                |
+| 📅 **Recordatorios**      | Programa mensajes en grupos o privados con lógica de reintento                |
 | 🗓️ **Calendario Gravity** | Vista tipo Google Calendar para gestionar recordatorios                       |
 | ✈️ **Telegram Bot**       | Controla el sistema remotamente desde Telegram                                |
+| 👥 **Gestor de Grupos**   | Selector de grupos integrado en el dashboard y detección de menciones mejorada |
 | 📄 **Plantillas**         | Crea, edita y reutiliza mensajes con variables inteligentes                   |
 | 🌐 **Tunnel Automático**  | Cloudflare Tunnel integrado para acceso remoto                                |
 | 🎨 **Dashboard Premium**  | Glassmorphism, modo oscuro/claro, micro-animaciones                           |
@@ -169,11 +170,11 @@ BotMaRe soporta **5 proveedores** con failover automático. Solo necesitas **al 
 
 | Proveedor             | Gratuito     | Obtener Key                                                   | Variable en `.env`   |
 | --------------------- | ------------ | ------------------------------------------------------------- | -------------------- |
-| **Groq** ⭐           | ✅ Sí        | [console.groq.com/keys](https://console.groq.com/keys)        | `GROQ_API_KEY`       |
-| **Google Gemini**     | ✅ Sí        | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY`     |
-| **OpenRouter**        | ✅ Free tier | [openrouter.ai/keys](https://openrouter.ai/keys)              | `OPENROUTER_API_KEY` |
-| **OpenAI**            | ❌ Pago      | [platform.openai.com](https://platform.openai.com/api-keys)   | `OPENAI_API_KEY`     |
-| **DeepSeek (NVIDIA)** | ❌ Pago      | [integrate.api.nvidia.com](https://integrate.api.nvidia.com)  | `NVIDIA_API_KEY`     |
+| **Groq** ⭐ (Prioridad 1) | ✅ Sí        | [console.groq.com/keys](https://console.groq.com/keys)        | `GROQ_API_KEY`       |
+| **Google Gemini**         | ✅ Sí        | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY`     |
+| **OpenAI**                | ❌ Pago      | [platform.openai.com](https://platform.openai.com/api-keys)   | `OPENAI_API_KEY`     |
+| **OpenRouter**            | ✅ Free tier | [openrouter.ai/keys](https://openrouter.ai/keys)              | `OPENROUTER_API_KEY` |
+| **DeepSeek (NVIDIA)**     | ❌ Pago      | [integrate.api.nvidia.com](https://integrate.api.nvidia.com)  | `NVIDIA_API_KEY`     |
 
 > **💡 Tip:** Puedes poner **múltiples keys separadas por comas** para mayor capacidad:
 >

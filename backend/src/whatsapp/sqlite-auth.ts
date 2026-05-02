@@ -66,17 +66,20 @@ export async function useSQLiteAuthState(dbPath: string): Promise<{ state: Authe
                     return data;
                 },
                 set: (data) => {
-                    for (const category in data) {
-                        for (const id in data[category as keyof SignalDataSet]) {
-                            const value = data[category as keyof SignalDataSet]![id];
-                            const key = `${category}-${id}`;
-                            if (value) {
-                                writeData(key, value);
-                            } else {
-                                removeData(key);
+                    const transaction = db.transaction(() => {
+                        for (const category in data) {
+                            for (const id in data[category as keyof SignalDataSet]) {
+                                const value = data[category as keyof SignalDataSet]![id];
+                                const key = `${category}-${id}`;
+                                if (value) {
+                                    writeData(key, value);
+                                } else {
+                                    removeData(key);
+                                }
                             }
                         }
-                    }
+                    });
+                    transaction();
                 }
             }
         },

@@ -1,11 +1,23 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only --ignore-watch auth_info_baileys,data,dist src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "pkg": "pkg dist/index.js --targets node18-win-x64 --output dist/BotMaRe.exe"
+  },
+  "pkg": {
+    "assets": [
+      "dist/**/*",
+      "node_modules/@whiskeysockets/baileys/**/*",
+      "node_modules/lru-cache/**/*"
+    ],
+    "scripts": [
+      "dist/**/*.js"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -44,6 +56,8 @@
     "@types/node": "^25.6.0",
     "@types/pino": "^7.0.4",
     "@types/qrcode": "^1.5.6",
+    "@vercel/ncc": "^0.38.4",
+    "esbuild": "^0.28.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.2"
   }

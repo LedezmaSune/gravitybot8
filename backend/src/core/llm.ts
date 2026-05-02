@@ -84,22 +84,7 @@ export async function callLLM(
     const cleanedMessages = cleanMessages(messages);
     const hasVision = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
 
-    // 0. Try Nvidia (DeepSeek)
-    const nvidiaKeys = getApiKeys(await getConfig('NVIDIA_API_KEY'));
-    if (nvidiaKeys.length > 0) {
-        try {
-            return await tryProvider('Nvidia', nvidiaKeys, {
-                baseURL: "https://integrate.api.nvidia.com/v1",
-                model: await getConfig('NVIDIA_MODEL', "deepseek-ai/deepseek-v4-pro"),
-                max_tokens: 4000,
-                temperature: 1,
-                top_p: 0.95,
-                extraBody: { chat_template_kwargs: { thinking: false } }
-            }, cleanedMessages, tools, hasVision);
-        } catch (e) {}
-    }
-
-    // 1. Try Groq
+    // 1. Try Groq (First Choice - Fast and Reliable)
     const groqKeys = getApiKeys(await getConfig('GROQ_API_KEY'));
     if (groqKeys.length > 0) {
         try {
@@ -131,6 +116,7 @@ export async function callLLM(
         } catch (e) {}
     }
 
+    // 4. Try OpenRouter
     const orKeys = getApiKeys(await getConfig('OPENROUTER_API_KEY'));
     if (orKeys.length > 0) {
         try {
@@ -141,6 +127,21 @@ export async function callLLM(
                     "HTTP-Referer": "http://localhost:3000",
                     "X-Title": "BotMaRe AI",
                 }
+            }, cleanedMessages, tools, hasVision);
+        } catch (e) {}
+    }
+
+    // 5. Try Nvidia (DeepSeek) - Last Choice (Unstable)
+    const nvidiaKeys = getApiKeys(await getConfig('NVIDIA_API_KEY'));
+    if (nvidiaKeys.length > 0) {
+        try {
+            return await tryProvider('Nvidia', nvidiaKeys, {
+                baseURL: "https://integrate.api.nvidia.com/v1",
+                model: await getConfig('NVIDIA_MODEL', "deepseek-ai/deepseek-v4-pro"),
+                max_tokens: 4000,
+                temperature: 1,
+                top_p: 0.95,
+                extraBody: { chat_template_kwargs: { thinking: false } }
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }

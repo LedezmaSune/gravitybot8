@@ -118,16 +118,43 @@ export class Scheduler {
         this.isChecking = true;
 
         try {
-            const now = DateTime.now().setZone('America/Mexico_City').toISO()?.substring(0, 16);
+            const now = DateTime.now().setZone('America/Mexico_City');
+            const nowStr = now.toISO()?.substring(0, 16);
             
-            // Detection Phase - using db directly for specific query but we could also move this to reminderService
-            const pending = db.prepare("SELECT * FROM reminders WHERE status = 'pending' AND time <= ?").all(now);
+            // Detection Phase - get all pending reminders and filter in JS for robustness
+            const allPending = db.prepare("SELECT * FROM reminders WHERE status = 'pending'").all() as any[];
+            
+            const due: any[] = [];
+            for (const r of allPending) {
+                let reminderTime = r.time;
+                
+                // Handle "inmediato" or "ahora"
+                if (reminderTime === 'inmediato' || reminderTime === 'ahora' || reminderTime === 'inmediatamente') {
+                    due.push(r);
+                    continue;
+                }
 
-            if (pending.length > 0) {
-                console.log(`[Scheduler] [Audit] Iniciando proceso para ${pending.length} recordatorios.`);
-                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_START', { count: pending.length });
-                await this.asyncBatch(pending);
-                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_COMPLETE', { count: pending.length });
+                // Handle natural language like "mañana a las 10am" (minimal implementation)
+                if (reminderTime.includes('mañana')) {
+                    const tomorrow = now.plus({ days: 1 }).toFormat('yyyy-MM-dd');
+                    const timeMatch = reminderTime.match(/(\d{1,2}):(\d{2})/);
+                    const timePart = timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : '08:00';
+                    reminderTime = `${tomorrow}T${timePart}`;
+                } else if (reminderTime.length === 5 && reminderTime.includes(':')) {
+                    // Handle "HH:mm" -> prepend today
+                    reminderTime = `${now.toFormat('yyyy-MM-dd')}T${reminderTime}`;
+                }
+
+                if (reminderTime <= nowStr!) {
+                    due.push(r);
+                }
+            }
+
+            if (due.length > 0) {
+                console.log(`[Scheduler] [Audit] Iniciando proceso para ${due.length} recordatorios.`);
+                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_START', { count: due.length });
+                await this.asyncBatch(due);
+                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_COMPLETE', { count: due.length });
             }
         } catch (error: any) {
             console.error("[Scheduler] Error en el ciclo de revisión:", error);

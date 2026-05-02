@@ -11,7 +11,7 @@ export class SystemUtils {
 
     static validateEnv() {
         console.log("[Phase 0] Validating Environment...");
-        const required = ['PORT'];
+        const required: string[] = []; // PORT is optional as it has a default
         const missing = required.filter(key => !process.env[key]);
         
         if (missing.length > 0) {

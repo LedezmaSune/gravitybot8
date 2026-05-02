@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import path from 'path';
 import fs from 'fs';
 import { WhatsAppService } from '../services/whatsapp.service';
+import { getSettings } from '../core/memory';
 
 export class WhatsAppEventHandler {
     constructor(
@@ -53,19 +54,14 @@ export class WhatsAppEventHandler {
             const msg = messages[0];
             if (msg.key.fromMe || !msg.message) return;
 
-            // Resolve the correct JID for replying
-            // @lid JIDs are internal linked-device identifiers — Baileys supports sending to them
-            // but sendPresenceUpdate does NOT, so we keep both: rawJid for sending, safeJid for presence
             const rawJid = msg.key.remoteJid!;
-            const participant = msg.key.participant; // only set in group messages
+            const participant = msg.key.participant;
             let jid = rawJid;
 
             if (jid.endsWith('@lid')) {
-                // For group messages, participant has the real sender JID
                 if (participant && !participant.endsWith('@lid')) {
                     jid = participant;
                 }
-                // For individual chats keep rawJid — Baileys handles @lid for sendMessage
                 console.log(`[WA Handler] JID @lid detectado: ${rawJid} (usando para envío)`);
             }
 
@@ -76,7 +72,6 @@ export class WhatsAppEventHandler {
                 || messageData.buttonsResponseMessage?.selectedButtonId
                 || '';
 
-            // Handle Media if present
             let imageBase64: string | undefined;
             const imageMsg = messageData.imageMessage;
             if (imageMsg) {
@@ -93,14 +88,39 @@ export class WhatsAppEventHandler {
             }
 
             if (!text && !imageBase64) {
-                console.log(`[WA Handler] Mensaje ignorado (tipo no soportado) de ${jid}`);
                 return;
             }
 
             console.log(`[WA Handler] Nuevo mensaje de ${jid}: ${text.substring(0, 50)}...`);
             
-            // Delegate to Service for Business Logic (AI, TTS, etc.)
-            this.waService.handleIncomingMessage(jid, text, imageBase64)
+            const isGroup = jid.endsWith('@g.us');
+            const botJid = socket.user?.id?.split(':')[0] + '@s.whatsapp.net';
+            const botLid = socket.user?.lid;
+            const botName = (await getSettings() as any).bot_name || 'BotMaRe';
+            
+            if (isGroup) {
+                const mentions = msg.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+                const repliedJid = msg.message?.extendedTextMessage?.contextInfo?.participant;
+                const botLidClean = botLid?.split(':')[0]?.split('@')[0];
+                const botJidClean = botJid.split('@')[0];
+                
+                console.log(`[WA Handler] DEBUG: Text="${text}", Mentions=${JSON.stringify(mentions)}, RepliedJid=${repliedJid}, BotJID=${botJid}, BotLid=${botLid}`);
+                
+                const isMentioned = text.includes(`@${botJidClean}`) || 
+                                   (botLidClean && text.includes(`@${botLidClean}`)) ||
+                                   text.toLowerCase().includes(botName.toLowerCase()) ||
+                                   mentions.some((m: string) => {
+                                       const mClean = m.split(':')[0].split('@')[0];
+                                       return mClean === botJidClean || mClean === botLidClean;
+                                   }) ||
+                                   repliedJid?.split(':')[0]?.split('@')[0] === botJidClean ||
+                                   repliedJid?.split(':')[0]?.split('@')[0] === botLidClean;
+
+                console.log(`[WA Handler] Mensaje en grupo ${jid}. Mencionado: ${isMentioned}`);
+                if (!isMentioned) return;
+            }
+
+            this.waService.handleIncomingMessage(jid, text, participant || jid, imageBase64)
                 .catch(err => console.error('[WA Handler] Error crítico en handleIncomingMessage:', err));
         });
     }

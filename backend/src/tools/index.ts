@@ -1,12 +1,19 @@
 import { timeTool } from "./time";
 import { remindersTool } from "./reminders";
 import { webBrowserTool } from "./web_browser";
+import { whatsappTools, initWhatsAppTools } from "./whatsapp";
+import { WhatsAppService } from "../services/whatsapp.service";
 
 export const tools = [
     timeTool,
     remindersTool,
-    webBrowserTool
+    webBrowserTool,
+    whatsappTools.list_groups
 ];
+
+export function initTools(waService: WhatsAppService) {
+    initWhatsAppTools(waService);
+}
 
 export const toolsDefinition = tools.map(t => ({
     type: "function",
