@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="docs/images/dashboard_preview.png" alt="BotMaRe Gravity Dashboard" width="800"/>
-</p>
 
 <h1 align="center">🦊 BotMaRe - Gravity Dashboard</h1>
 
