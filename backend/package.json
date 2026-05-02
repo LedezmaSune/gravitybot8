@@ -31,8 +31,7 @@
     "pino": "^10.3.1",
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0",
-    "socket.io": "^4.8.3",
-    "wamasivos": "file:.."
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
