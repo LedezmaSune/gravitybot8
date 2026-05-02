@@ -185,9 +185,18 @@ BotMaRe soporta **5 proveedores** con failover automático. Solo necesitas **al 
 
 ---
 
-## ⚙️ Configuración Manual del `.env`
+## ⚙️ Configuración del Sistema
 
-Si no usaste el script de setup, copia los archivos de ejemplo:
+BotMaRe ofrece dos formas de configurarse. La **pestaña de Configuración** en el Dashboard es el método recomendado, especialmente si planeas usar el bot de forma portable.
+
+### Método 1 — Panel de Control (Recomendado)
+Una vez iniciado el sistema, ve a la pestaña ⚙️ **Configuración** en el Dashboard. Desde aquí puedes:
+- ✍️ **Editar directamente**: Cambiar API Keys, modelos y puertos visualmente.
+- 📂 **Importar .env**: Arrastrar tu archivo `.env` actual y el sistema absorberá todos los valores automáticamente.
+- 🔐 **Persistencia**: Los cambios se guardan en la base de datos interna y tienen prioridad sobre los archivos de texto.
+
+### Método 2 — Configuración Manual (.env)
+Si prefieres usar archivos de texto, copia los ejemplos:
 
 ```bash
 cp backend/.env.example backend/.env
