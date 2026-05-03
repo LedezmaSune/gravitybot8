@@ -1,7 +1,7 @@
 <h1 align="center">🦊 BotMaRe - Gravity Dashboard</h1>
 
 <p align="center">
-  <strong>La plataforma definitiva de automatización para WhatsApp impulsada por Inteligencia Artificial de alta disponibilidad.</strong>
+  <strong>La plataforma definitiva de automatización para WhatsApp impulsada por Inteligencia Artificial.</strong>
 </p>
 
 <p align="center">
@@ -14,169 +14,161 @@
 
 ---
 
-## 📖 Visión General
+## 📖 ¿Qué es BotMaRe?
 
-**BotMaRe** es un ecosistema de automatización para WhatsApp diseñado para ser robusto, privado y extremadamente inteligente. A diferencia de otros bots, BotMaRe utiliza un **Orquestador de IA con Failover**, asegurando que el bot siempre responda incluso si un proveedor (como OpenAI o Groq) falla.
+**BotMaRe** (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramienta de negocios inteligente. Combina múltiples modelos de IA, automatización de mensajes y un panel de control premium con diseño **Glassmorphism**.
 
-Su diseño **Glassmorphism** premium ("Gravity Design") ofrece una experiencia de usuario de nivel empresarial, permitiendo gestionar difusiones masivas, recordatorios y personalidades de IA desde una interfaz intuitiva y responsiva.
-
----
-
-## 🏗️ Arquitectura del Sistema
-
-El sistema utiliza un flujo de datos asíncrono para garantizar que ninguna petición se pierda y que la IA siempre tenga contexto actualizado:
-
-```mermaid
-graph TD
-    A[Cliente WhatsApp] <--> B[Baileys Socket]
-    B <--> C{Kitsune Engine}
-    C <--> D[Orquestador LLM]
-    D --> E[Groq / Gemini / OpenAI]
-    C <--> F[SQLite Database]
-    G[Dashboard Next.js] <--> C
-    H[Telegram Bot] <--> C
-    C --> I[Sistema de Respaldos]
-```
-
-### Componentes Clave:
-*   **Kitsune Engine (Backend)**: Escrito en TypeScript, maneja la lógica de negocio, colas de mensajes y auditoría.
-*   **Orquestador LLM**: Un sistema inteligente que rota entre 5 proveedores de IA según disponibilidad y costo.
-*   **Gravity UI (Frontend)**: Interfaz Next.js optimizada para el rendimiento con componentes modulares.
-*   **Persistence Layer**: Base de datos SQLite local que garantiza que tus datos nunca salgan de tu servidor.
+### Arquitectura
+<p align="center">
+  <img src="docs/images/architecture.png" alt="Arquitectura del Sistema" width="700"/>
+</p>
 
 ---
 
-## ✨ Características Analíticas
+## ✨ Características
 
-### 🧠 Orquestación de IA (Failover Dinámico)
-BotMaRe no depende de una sola "mente". Si un proveedor de IA experimenta latencia o caídas, el sistema escala automáticamente:
-1.  **Groq**: Velocidad ultra-rápida (Llama 3).
-2.  **Google Gemini**: Análisis de contexto profundo y visión de imágenes.
-3.  **OpenAI**: Estabilidad absoluta y precisión en lógica compleja.
-4.  **OpenRouter / NVIDIA**: Acceso a modelos especializados como DeepSeek V4.
-
-### 🛡️ Seguridad y Escudo de Inyección
-Implementamos un **Escudo de Seguridad** en el prompt del sistema. Cualquier intento del usuario por manipular las instrucciones del bot ("Prompt Injection") es detectado y bloqueado por la arquitectura de capas del mensaje.
-
-### 🔄 Persistencia de Sesión SQLite
-A diferencia del método tradicional de archivos JSON, utilizamos **SQLite para la autenticación de Baileys**. Esto evita la corrupción de archivos, mejora la velocidad de lectura y permite una portabilidad total del sistema sin perder la conexión.
-
-### 📦 Sistema de Mantenimiento Autónomo
-*   **Backups diarios**: Envío automático de la base de datos y config al Telegram del dueño cada madrugada a las 3 AM.
-*   **Purga Inteligente**: El sistema detecta y elimina multimedia huérfana de más de 3 días para optimizar el almacenamiento del servidor.
+| Módulo | Funcionalidades |
+| :--- | :--- |
+| 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek (NVIDIA), OpenRouter — con failover automático |
+| 📱 **WhatsApp Bot** | Respuestas inteligentes, imágenes, audio, documentos |
+| 📢 **Difusión Masiva** | Envía mensajes personalizados a listas de contactos |
+| 📅 **Recordatorios** | Programa mensajes en grupos o privados con lógica de reintento |
+| 🗓️ **Calendario Gravity** | Vista tipo Google Calendar para gestionar recordatorios |
+| ✈️ **Telegram Bot** | Controla el sistema remotamente y recibe respaldos diarios |
+| 🛡️ **Respaldos & Seg.** | Backup diario a Telegram, restauración vía comando o dashboard |
+| 🧹 **Auto-Limpieza** | Limpieza inteligente de multimedia antigua y archivos no usados |
+| 🎨 **Marca Blanca** | Personaliza el nombre y logo del sistema desde el `.env` |
+| 🎨 **Dashboard Premium** | Glassmorphism, modo oscuro/claro, micro-animaciones |
 
 ---
 
-## 🚀 Guía de Instalación
+## 🚀 Instalación Rápida
 
-### 📋 Requisitos Previos
-| Software | Versión | Enlace |
+### Requisitos Previos
+| Software | Versión Mínima | Enlace |
 | :--- | :--- | :--- |
 | **Node.js** | v18+ | [nodejs.org](https://nodejs.org) |
-| **API Key** | Mínimo 1 | [Groq Console](https://console.groq.com/keys) |
+| **Git** | Cualquiera | [git-scm.com](https://git-scm.com) |
+| **API Key** | Al menos 1 | Ver [Proveedores de IA](#-proveedores-de-ia) |
 
-### Paso 1 — Clonar y Setup
-<details open>
-<summary>⭐ <strong>Método Automático (Recomendado)</strong></summary>
-
-1. Descarga el ZIP o clona el repo.
-2. Ejecuta **`setup.bat`**. Este script instalará todas las dependencias de los 3 módulos y preparará tus archivos `.env`.
-</details>
-
-<details>
-<summary>🛠️ <strong>Método Manual (Desarrolladores)</strong></summary>
-
+### Paso 1 — Clonar el repositorio
 ```bash
-npm run install-all
+git clone https://github.com/LedezmaSune/BotMaRe.git
+cd BotMaRe
+```
+
+### Paso 2 — Instalar dependencias
+<details open>
+<summary>⭐ <strong>Instalación Manual</strong> (Recomendada)</summary>
+
+Ejecuta los siguientes comandos en la terminal desde la raíz del proyecto:
+```bash
+npm install
+cd backend && npm install && cd ..
+cd frontend && npm install && cd ..
+```
+Luego configura tus variables de entorno:
+```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
+Edita `backend/.env` con tus API Keys y `frontend/.env` con tus credenciales del dashboard.
+
+> **💡 Tip:** También puedes usar el archivo **`setup.bat`** en Windows para automatizar todo este paso.
 </details>
 
-### Paso 2 — Configuración
-Edita el archivo `backend/.env` y pega tus API Keys. Si quieres habilitar los respaldos, asegúrate de poner tu `TELEGRAM_BOT_TOKEN`.
+<details>
+<summary>🐳 <strong>Docker</strong> (Servidores 24/7)</summary>
 
-### Paso 3 — Iniciar
 ```bash
-# Opción rápida:
-npm_run_dev.bat
+docker-compose up -d --build
+```
+Ideal para despliegues en producción con VPS.
+</details>
 
-# Opción manual:
+<details>
+<summary>🧪 <strong>Scripts Automáticos & Portable</strong> (En desarrollo)</summary>
+
+**Windows — `setup.bat`**:
+Instala dependencias y configura archivos `.env` automáticamente.
+
+**Windows — `build_exe.bat`**:
+Genera un archivo ejecutable (.exe) portátil en la carpeta `En_Desarrollo_Portable`.
+</details>
+
+### Paso 3 — Iniciar el sistema
+```bash
 npm run dev
 ```
+Esto arranca Backend (puerto 3001) y Frontend (puerto 3000) simultáneamente.
+
+### Paso 4 — Vincular WhatsApp
+1. Abre **http://localhost:3000** en tu navegador.
+2. Verás el Dashboard de Gravity.
+3. Aparecerá un **código QR** — escanéalo con tu celular:
+   - WhatsApp → ⋮ Menú → Dispositivos vinculados → Vincular dispositivo.
+4. ¡Listo! El estado cambiará a **Conectado** 🟢.
 
 ---
 
-## 🛡️ Sistema de Respaldo y Seguridad
+## 🔑 Proveedores de IA
+BotMaRe soporta 5 proveedores con failover automático. Solo necesitas al menos 1:
 
-BotMaRe incluye un sistema de backup híbrido para que nunca pierdas tu configuración:
-
-*   **🤖 Backup Automático**: Configura tu ID en Telegram y recibe un `.zip` diario con toda tu información.
-*   **🔄 Restauración Express**: 
-    - **Dashboard**: Sube tu `.zip` en la pestaña de Configuración.
-    - **Telegram**: Reenvía el archivo al bot con el comando `/restaurar`. El sistema se reiniciará automáticamente.
-
----
-
-## 🔑 Proveedores de IA Soportados
-
-| Proveedor | Gratuito | Variable en `.env` | Ventaja |
+| Proveedor | Gratuito | Obtener Key | Variable en `.env` |
 | :--- | :--- | :--- | :--- |
-| **Groq** ⭐ | ✅ Sí | `GROQ_API_KEY` | Velocidad extrema. |
-| **Gemini** | ✅ Sí | `GEMINI_API_KEY` | Visión y contexto largo. |
-| **OpenAI** | ❌ Pago | `OPENAI_API_KEY` | Estabilidad total. |
-| **OpenRouter**| ✅ Sí | `OPENROUTER_API_KEY` | Modelos Free. |
-| **NVIDIA** | ❌ Pago | `NVIDIA_API_KEY` | DeepSeek V4 Pro. |
+| **Groq** ⭐ (Prioridad 1) | ✅ Sí | [console.groq.com](https://console.groq.com/keys) | `GROQ_API_KEY` |
+| **Google Gemini** | ✅ Sí | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY` |
+| **OpenAI** | ❌ Pago | [platform.openai.com](https://platform.openai.com/api-keys) | `OPENAI_API_KEY` |
+| **OpenRouter** | ✅ Sí | [openrouter.ai](https://openrouter.ai/keys) | `OPENROUTER_API_KEY` |
+| **DeepSeek (NVIDIA)** | ❌ Pago | [nvidia.com](https://integrate.api.nvidia.com) | `NVIDIA_API_KEY` |
 
 ---
 
-## 🎨 Marca Blanca (Custom Branding)
+## ⚙️ Configuración del Sistema
+BotMaRe ofrece dos formas de configurarse. La pestaña de **Configuración** en el Dashboard es el método recomendado.
 
-Puedes personalizar la plataforma para tu propio uso o clientes:
-*   `NEXT_PUBLIC_APP_NAME`: Cambia el nombre en el Dashboard y el pie de página.
-*   `bot_name`: Cambia cómo se identifica la IA en el chat.
-*   `system_prompt`: Define la personalidad única de tu bot.
+### Método 1 — Panel de Control (Recomendado)
+Desde la pestaña ⚙️ **Configuración** puedes editar API Keys, modelos y puertos, o importar tu `.env` arrastrándolo.
+
+### Método 2 — Configuración Manual (.env)
+Edita `backend/.env` con tus llaves y `frontend/.env` con tu usuario de acceso.
 
 ---
 
 ## 📁 Estructura del Proyecto
 ```
 BotMaRe/
-├── backend/                  # Motor Kitsune (Express + Sockets)
-│   ├── src/core/             # Lógica de IA, Memoria y Orquestación
-│   ├── src/whatsapp/         # Handlers y Conexión Baileys
-│   ├── src/telegram/         # Bot de Gestión Remota
-│   └── data/                 # Bases de Datos SQLite e Imágenes
-├── frontend/                 # Gravity UI (Next.js 16)
-├── setup.bat                 # Instalador Automático
-└── build_exe.bat             # Generador de Ejecutable (Desarrollo)
+├── backend/                  # API + Motor de IA
+│   ├── src/
+│   │   ├── core/             # Agente IA, LLM, memoria, voz
+│   │   ├── whatsapp/         # Conexión Baileys, handlers
+│   │   ├── telegram/         # Bot de Telegram
+│   │   ├── services/         # Lógica de negocio
+│   │   └── index.ts          # Punto de entrada
+│   ├── data/                 # Base de datos SQLite
+│   └── .env.example          # Plantilla de referencia
+├── frontend/                 # Dashboard Next.js
+├── setup.bat                 # Setup rápido Windows
+├── build_exe.bat             # Generador de EXE portátil
+└── package.json              # Scripts raíz
 ```
 
 ---
 
-## 🏷️ Variables Inteligentes (Plantillas)
-Usa estas etiquetas en tus mensajes para personalizarlos:
-*   `{NOMBRE}`: Nombre completo del contacto.
-*   `{NOMBRE_PILA}`: Solo el primer nombre.
-*   `{FECHA}` / `{HORA_12}`: Información temporal actual.
-*   `{DIA_SEMANA}`: Lunes, Martes, etc.
+## 🏷️ Variables Inteligentes
+Usa estas etiquetas en tus mensajes: `{NOMBRE}`, `{NOMBRE_PILA}`, `{APELLIDO}`, `{FECHA}`, `{HORA_12}`, `{HORA_24}`, `{DIA_SEMANA}`.
 
 ---
 
 ## ❓ Solución de Problemas
 <details>
-<summary><strong>El QR no carga o se queda en blanco</strong></summary>
-Asegúrate de que el puerto 3001 no esté siendo usado por otro programa. Verifica que tengas conexión a internet.
+<summary><strong>El QR no aparece</strong></summary>
+Verifica que el puerto 3001 esté libre e intenta borrar `backend/data/whatsapp_auth.db`.
 </details>
 
 <details>
-<summary><strong>Error de autenticación en el Dashboard</strong></summary>
-Por defecto es Usuario: `admin` y Contraseña: `admin123`. Puedes cambiarlos en `frontend/.env`.
-</details>
-
-<details>
-<summary><strong>La IA no responde</strong></summary>
-Verifica tus API Keys en el Dashboard (Pestaña Configuración). Si usas Groq, asegúrate de no haber excedido el límite de tokens gratuitos.
+<summary><strong>El bot no responde</strong></summary>
+Verifica que tienes al menos 1 API Key válida en el Dashboard o el archivo `.env`.
 </details>
 
 ---
