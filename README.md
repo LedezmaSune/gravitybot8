@@ -1,114 +1,161 @@
-# 🦊 BotMaRe — The Gravity Dashboard
-> **Automatización Inteligente de WhatsApp con Arquitectura de Alta Disponibilidad**
+<h1 align="center">🦊 BotMaRe - Gravity Dashboard</h1>
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)](https://nextjs.org)
-[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
-[![License](https://img.shields.io/badge/License-ISC-blue)](LICENSE)
+<p align="center">
+  <strong>La plataforma definitiva de automatización para WhatsApp impulsada por Inteligencia Artificial de alta disponibilidad.</strong>
+</p>
 
----
-
-## 📖 Visión General
-
-**BotMaRe** es un ecosistema de automatización para WhatsApp diseñado para ser robusto, privado y extremadamente inteligente. A diferencia de otros bots, BotMaRe utiliza un **Orquestador de IA con Failover**, asegurando que el bot siempre responda incluso si un proveedor (como OpenAI o Groq) falla.
-
-Su diseño **Glassmorphism** premium ("Gravity Design") ofrece una experiencia de usuario de nivel empresarial, permitiendo gestionar difusiones masivas, recordatorios y personalidades de IA desde una interfaz intuitiva.
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white" alt="Node.js"/>
+  <img src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Express-5-000000?logo=express" alt="Express"/>
+  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/License-ISC-blue" alt="License"/>
+</p>
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## 📖 ¿Qué es BotMaRe?
 
-El sistema se divide en tres capas fundamentales que trabajan en sincronía:
+**BotMaRe** (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramienta de negocios inteligente. No es solo un bot; es un ecosistema completo que combina múltiples modelos de IA con un orquestador de fallos (Failover), automatización de mensajes y un panel de control premium con diseño **Glassmorphism**.
+
+### 🏗️ Arquitectura de Ingeniería
+
+El sistema utiliza un flujo de datos asíncrono para garantizar que ninguna petición se pierda y que la IA siempre tenga contexto actualizado:
 
 ```mermaid
-graph TD
-    A[Cliente WhatsApp] <--> B[Baileys Socket]
-    B <--> C{Kitsune Engine}
-    C <--> D[Orquestador LLM]
-    D --> E[Groq / Gemini / OpenAI]
-    C <--> F[SQLite Database]
-    G[Dashboard Next.js] <--> C
-    H[Telegram Bot] <--> C
-    C --> I[Sistema de Respaldos]
+graph LR
+    subgraph "Interfaz de Usuario"
+        UI[Gravity Dashboard]
+    end
+
+    subgraph "Kitsune Core"
+        Motor{Orquestador}
+        DB[(SQLite Persistence)]
+        Sec[Escudo de Seguridad]
+    end
+
+    subgraph "Conectividad"
+        WA[WhatsApp Socket]
+        TG[Telegram Backup]
+    end
+
+    subgraph "Cerebros IA"
+        IA1[Groq / Llama 3]
+        IA2[Gemini 1.5]
+        IA3[GPT-4o]
+    end
+
+    UI <--> Motor
+    WA <--> Motor
+    Motor <--> DB
+    Motor --> Sec
+    Sec --> IA1
+    IA1 -.-> IA2
+    IA2 -.-> IA3
+    Motor --> TG
 ```
 
-### Componentes Clave:
-*   **Kitsune Engine (Backend)**: Escrito en TypeScript, maneja la lógica de negocio, colas de mensajes y auditoría.
-*   **Orquestador LLM**: Un sistema inteligente que rota entre 5 proveedores de IA según disponibilidad y costo.
-*   **Gravity UI (Frontend)**: Interfaz Next.js optimizada para el rendimiento con componentes modulares.
-*   **Persistence Layer**: Base de datos SQLite local que garantiza que tus datos nunca salgan de tu servidor.
+---
+
+## ✨ Características Maestras
+
+| Módulo | Funcionalidades Analíticas |
+| :--- | :--- |
+| 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek, OpenRouter — con **Failover automático**. |
+| 🛡️ **Seguridad Avanzada** | Escudo contra Prompt Injection y aislamiento de datos locales. |
+| 📱 **WhatsApp Bot** | Respuestas inteligentes, soporte visual, audio (Whisper) y documentos. |
+| 📢 **Difusión Masiva** | Envío inteligente con limpieza de números y variables dinámicas. |
+| 📅 **Recordatorios** | Programación recurrente en grupos o privados con persistencia SQLite. |
+| 🛡️ **Respaldos & Seg.** | Backup diario a Telegram y restauración en un clic (Dashboard/Telegram). |
+| 🧹 **Auto-Limpieza** | Purga inteligente de archivos multimedia antiguos y backups caducados. |
+| 🎨 **Marca Blanca** | Personalización total de nombre, logos y personalidad desde el `.env`. |
 
 ---
 
-## ✨ Características Analíticas
+## 🚀 Guía de Instalación Rápida
 
-### 🧠 Orquestación de IA (Failover Dinámico)
-BotMaRe no depende de una sola "mente". Si un proveedor de IA experimenta latencia o caídas, el sistema escala automáticamente:
-1.  **Groq**: Velocidad ultra-rápida (Llama 3).
-2.  **Google Gemini**: Análisis de contexto profundo.
-3.  **OpenAI**: Estabilidad y precisión.
-4.  **OpenRouter / NVIDIA**: Acceso a modelos especializados como DeepSeek.
+### Requisitos Previos
+| Software | Versión | Enlace |
+| :--- | :--- | :--- |
+| **Node.js** | v18+ | [nodejs.org](https://nodejs.org) |
+| **API Key** | Mínimo 1 | [Groq Console](https://console.groq.com/keys) |
 
-### 🛡️ Seguridad y Escudo de Inyección
-Implementamos un **Escudo de Seguridad** en el prompt del sistema. Cualquier intento del usuario por manipular las instrucciones del bot ("Prompt Injection") es detectado y bloqueado por la arquitectura de capas del mensaje.
-
-### 🔄 Persistencia de Sesión SQLite
-A diferencia del método tradicional de archivos JSON, utilizamos **SQLite para la autenticación de Baileys**. Esto evita la corrupción de archivos y permite una portabilidad total del sistema sin perder la conexión.
-
-### 📦 Sistema de Mantenimiento Autónomo
-*   **Backups diarios**: Envío automático de la base de datos y config al Telegram del dueño.
-*   **Purga Inteligente**: El sistema detecta y elimina multimedia huérfana de más de 3 días para optimizar el almacenamiento.
-
----
-
-## 🚀 Guía de Instalación
-
-### Opción A: El Método "Un Clic" (Para Todos)
-1.  Descarga el proyecto y descomprímelo.
-2.  Ejecuta **`setup.bat`** (instala todo automáticamente).
-3.  Configura tu API Key en el archivo `.env`.
-4.  Inicia con **`npm_run_dev.bat`**.
-
-### Opción B: Ejecutable Portátil (Beta)
-Si prefieres no instalar nada, ejecuta **`build_exe.bat`**. Esto generará una carpeta `En_Desarrollo_Portable` con un único archivo `.exe` que contiene todo el sistema.
-
-### Opción C: Instalación Profesional (Desarrolladores)
+### Paso 1 — Descarga e Instalación
 ```bash
-# Clonar e instalar
 git clone https://github.com/LedezmaSune/BotMaRe.git
-npm run install-all
+cd BotMaRe
+```
 
-# Configurar
+### Paso 2 — Configuración de Entorno
+<details open>
+<summary>⭐ <strong>Método Automático (Windows)</strong></summary>
+
+1. Haz doble clic en **`setup.bat`**. 
+2. El script instalará las dependencias y creará tus archivos `.env`.
+3. Edita `backend/.env` con tus API Keys.
+</details>
+
+<details>
+<summary>🛠️ <strong>Método Manual (Pro)</strong></summary>
+
+```bash
+npm install
+cd backend && npm install && cd ..
+cd frontend && npm install && cd ..
+
+# Configura los archivos .env
 cp backend/.env.example backend/.env
-# Edita las llaves en el archivo .env
+cp frontend/.env.example frontend/.env
+```
+</details>
 
-# Iniciar
+### Paso 3 — Iniciar el Sistema
+```bash
+# Usa el acceso directo en la raíz:
+npm_run_dev.bat
+
+# O manualmente:
 npm run dev
 ```
 
 ---
 
-## 🎨 Personalización (White-Label)
+## 🛡️ Sistema de Respaldo y Seguridad
 
-BotMaRe está diseñado para ser marca blanca. Puedes personalizarlo editando el archivo `.env`:
+BotMaRe incluye un sistema de backup híbrido para que nunca pierdas tu configuración:
 
-*   `NEXT_PUBLIC_APP_NAME`: Cambia el nombre de toda la plataforma.
-*   `bot_name`: Cambia el nombre con el que la IA se presenta.
-*   `system_prompt`: Define la "chispa" o personalidad de tu asistente.
+*   **🤖 Backup Automático**: Cada madrugada (**3:00 AM**) el sistema envía un `.zip` a tu Telegram.
+*   **🔄 Restauración Express**: Reenvía tu backup al bot con el comando `/restaurar` y el sistema se recuperará solo.
+*   **🧹 Mantenimiento**: El bot limpia automáticamente la carpeta `uploads` de archivos que ya no necesita.
 
 ---
 
-## ❓ Solución de Problemas Frecuentes
+## 🔑 Proveedores de IA Soportados
 
-| Problema | Solución Analítica |
-| :--- | :--- |
-| **Error de Socket** | Revisa que el puerto 3001 esté libre. El sistema usa WebSockets para comunicación en tiempo real. |
-| **IA Lenta** | El orquestador espera 15s por proveedor. Prueba a usar Groq como prioridad 1 para respuestas instantáneas. |
-| **Pérdida de QR** | El QR se refresca automáticamente cada 60s. Asegúrate de tener una conexión estable a internet. |
+| Proveedor | Prioridad | Ventaja Técnica |
+| :--- | :--- | :--- |
+| **Groq** | ⭐ 1 | Latencia ultra-baja y herramientas gratuitas. |
+| **Gemini** | 🔵 2 | Gran ventana de contexto y visión de imágenes. |
+| **OpenAI** | 🟢 3 | Estabilidad absoluta y precisión en lógica. |
+| **NVIDIA** | 🟣 4 | Acceso a modelos potentes como DeepSeek V4. |
+
+---
+
+## 📁 Estructura del Proyecto
+```
+BotMaRe/
+├── backend/                  # Kitsune Engine (API + IA)
+│   ├── src/core/             # El "Cerebro" (Agent, LLM, Config)
+│   ├── src/whatsapp/         # Conexión y Lógica de Sockets
+│   └── data/                 # Bases de Datos SQLite (Sesión y Datos)
+├── frontend/                 # Gravity Dashboard (Next.js)
+├── build_exe.bat             # Generador de Ejecutable Portátil
+└── setup.bat                 # Instalador Rápido
+```
 
 ---
 
 <p align="center">
-  Diseñado con rigor técnico por <strong><a href="https://github.com/LedezmaSune">LedezmaSune</a></strong><br/>
-  Impulsado por el motor <strong>Kitsune Engine</strong> 🦊
+  Desarrollado con ❤️ por <strong><a href="https://github.com/LedezmaSune">LedezmaSune</a></strong><br/>
+  Impulsado por <strong>Kitsune Engine</strong> 🦊
 </p>
