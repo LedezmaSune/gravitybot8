@@ -14,107 +14,94 @@
 
 ---
 
-## 📖 ¿Qué es BotMaRe?
+## 📖 Visión General
 
-**BotMaRe** (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramienta de negocios inteligente. No es solo un bot; es un ecosistema completo que combina múltiples modelos de IA con un orquestador de fallos (Failover), automatización de mensajes y un panel de control premium con diseño **Glassmorphism**.
+**BotMaRe** es un ecosistema de automatización para WhatsApp diseñado para ser robusto, privado y extremadamente inteligente. A diferencia de otros bots, BotMaRe utiliza un **Orquestador de IA con Failover**, asegurando que el bot siempre responda incluso si un proveedor (como OpenAI o Groq) falla.
 
-### 🏗️ Arquitectura de Ingeniería
+Su diseño **Glassmorphism** premium ("Gravity Design") ofrece una experiencia de usuario de nivel empresarial, permitiendo gestionar difusiones masivas, recordatorios y personalidades de IA desde una interfaz intuitiva y responsiva.
+
+---
+
+## 🏗️ Arquitectura del Sistema
 
 El sistema utiliza un flujo de datos asíncrono para garantizar que ninguna petición se pierda y que la IA siempre tenga contexto actualizado:
 
 ```mermaid
-graph LR
-    subgraph "Interfaz de Usuario"
-        UI[Gravity Dashboard]
-    end
-
-    subgraph "Kitsune Core"
-        Motor{Orquestador}
-        DB[(SQLite Persistence)]
-        Sec[Escudo de Seguridad]
-    end
-
-    subgraph "Conectividad"
-        WA[WhatsApp Socket]
-        TG[Telegram Backup]
-    end
-
-    subgraph "Cerebros IA"
-        IA1[Groq / Llama 3]
-        IA2[Gemini 1.5]
-        IA3[GPT-4o]
-    end
-
-    UI <--> Motor
-    WA <--> Motor
-    Motor <--> DB
-    Motor --> Sec
-    Sec --> IA1
-    IA1 -.-> IA2
-    IA2 -.-> IA3
-    Motor --> TG
+graph TD
+    A[Cliente WhatsApp] <--> B[Baileys Socket]
+    B <--> C{Kitsune Engine}
+    C <--> D[Orquestador LLM]
+    D --> E[Groq / Gemini / OpenAI]
+    C <--> F[SQLite Database]
+    G[Dashboard Next.js] <--> C
+    H[Telegram Bot] <--> C
+    C --> I[Sistema de Respaldos]
 ```
 
----
-
-## ✨ Características Maestras
-
-| Módulo | Funcionalidades Analíticas |
-| :--- | :--- |
-| 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek, OpenRouter — con **Failover automático**. |
-| 🛡️ **Seguridad Avanzada** | Escudo contra Prompt Injection y aislamiento de datos locales. |
-| 📱 **WhatsApp Bot** | Respuestas inteligentes, soporte visual, audio (Whisper) y documentos. |
-| 📢 **Difusión Masiva** | Envío inteligente con limpieza de números y variables dinámicas. |
-| 📅 **Recordatorios** | Programación recurrente en grupos o privados con persistencia SQLite. |
-| 🛡️ **Respaldos & Seg.** | Backup diario a Telegram y restauración en un clic (Dashboard/Telegram). |
-| 🧹 **Auto-Limpieza** | Purga inteligente de archivos multimedia antiguos y backups caducados. |
-| 🎨 **Marca Blanca** | Personalización total de nombre, logos y personalidad desde el `.env`. |
+### Componentes Clave:
+*   **Kitsune Engine (Backend)**: Escrito en TypeScript, maneja la lógica de negocio, colas de mensajes y auditoría.
+*   **Orquestador LLM**: Un sistema inteligente que rota entre 5 proveedores de IA según disponibilidad y costo.
+*   **Gravity UI (Frontend)**: Interfaz Next.js optimizada para el rendimiento con componentes modulares.
+*   **Persistence Layer**: Base de datos SQLite local que garantiza que tus datos nunca salgan de tu servidor.
 
 ---
 
-## 🚀 Guía de Instalación Rápida
+## ✨ Características Analíticas
 
-### Requisitos Previos
+### 🧠 Orquestación de IA (Failover Dinámico)
+BotMaRe no depende de una sola "mente". Si un proveedor de IA experimenta latencia o caídas, el sistema escala automáticamente:
+1.  **Groq**: Velocidad ultra-rápida (Llama 3).
+2.  **Google Gemini**: Análisis de contexto profundo y visión de imágenes.
+3.  **OpenAI**: Estabilidad absoluta y precisión en lógica compleja.
+4.  **OpenRouter / NVIDIA**: Acceso a modelos especializados como DeepSeek V4.
+
+### 🛡️ Seguridad y Escudo de Inyección
+Implementamos un **Escudo de Seguridad** en el prompt del sistema. Cualquier intento del usuario por manipular las instrucciones del bot ("Prompt Injection") es detectado y bloqueado por la arquitectura de capas del mensaje.
+
+### 🔄 Persistencia de Sesión SQLite
+A diferencia del método tradicional de archivos JSON, utilizamos **SQLite para la autenticación de Baileys**. Esto evita la corrupción de archivos, mejora la velocidad de lectura y permite una portabilidad total del sistema sin perder la conexión.
+
+### 📦 Sistema de Mantenimiento Autónomo
+*   **Backups diarios**: Envío automático de la base de datos y config al Telegram del dueño cada madrugada a las 3 AM.
+*   **Purga Inteligente**: El sistema detecta y elimina multimedia huérfana de más de 3 días para optimizar el almacenamiento del servidor.
+
+---
+
+## 🚀 Guía de Instalación
+
+### 📋 Requisitos Previos
 | Software | Versión | Enlace |
 | :--- | :--- | :--- |
 | **Node.js** | v18+ | [nodejs.org](https://nodejs.org) |
 | **API Key** | Mínimo 1 | [Groq Console](https://console.groq.com/keys) |
 
-### Paso 1 — Descarga e Instalación
-```bash
-git clone https://github.com/LedezmaSune/BotMaRe.git
-cd BotMaRe
-```
-
-### Paso 2 — Configuración de Entorno
+### Paso 1 — Clonar y Setup
 <details open>
-<summary>⭐ <strong>Método Automático (Windows)</strong></summary>
+<summary>⭐ <strong>Método Automático (Recomendado)</strong></summary>
 
-1. Haz doble clic en **`setup.bat`**. 
-2. El script instalará las dependencias y creará tus archivos `.env`.
-3. Edita `backend/.env` con tus API Keys.
+1. Descarga el ZIP o clona el repo.
+2. Ejecuta **`setup.bat`**. Este script instalará todas las dependencias de los 3 módulos y preparará tus archivos `.env`.
 </details>
 
 <details>
-<summary>🛠️ <strong>Método Manual (Pro)</strong></summary>
+<summary>🛠️ <strong>Método Manual (Desarrolladores)</strong></summary>
 
 ```bash
-npm install
-cd backend && npm install && cd ..
-cd frontend && npm install && cd ..
-
-# Configura los archivos .env
+npm run install-all
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
 </details>
 
-### Paso 3 — Iniciar el Sistema
+### Paso 2 — Configuración
+Edita el archivo `backend/.env` y pega tus API Keys. Si quieres habilitar los respaldos, asegúrate de poner tu `TELEGRAM_BOT_TOKEN`.
+
+### Paso 3 — Iniciar
 ```bash
-# Usa el acceso directo en la raíz:
+# Opción rápida:
 npm_run_dev.bat
 
-# O manualmente:
+# Opción manual:
 npm run dev
 ```
 
@@ -124,34 +111,73 @@ npm run dev
 
 BotMaRe incluye un sistema de backup híbrido para que nunca pierdas tu configuración:
 
-*   **🤖 Backup Automático**: Cada madrugada (**3:00 AM**) el sistema envía un `.zip` a tu Telegram.
-*   **🔄 Restauración Express**: Reenvía tu backup al bot con el comando `/restaurar` y el sistema se recuperará solo.
-*   **🧹 Mantenimiento**: El bot limpia automáticamente la carpeta `uploads` de archivos que ya no necesita.
+*   **🤖 Backup Automático**: Configura tu ID en Telegram y recibe un `.zip` diario con toda tu información.
+*   **🔄 Restauración Express**: 
+    - **Dashboard**: Sube tu `.zip` en la pestaña de Configuración.
+    - **Telegram**: Reenvía el archivo al bot con el comando `/restaurar`. El sistema se reiniciará automáticamente.
 
 ---
 
 ## 🔑 Proveedores de IA Soportados
 
-| Proveedor | Prioridad | Ventaja Técnica |
-| :--- | :--- | :--- |
-| **Groq** | ⭐ 1 | Latencia ultra-baja y herramientas gratuitas. |
-| **Gemini** | 🔵 2 | Gran ventana de contexto y visión de imágenes. |
-| **OpenAI** | 🟢 3 | Estabilidad absoluta y precisión en lógica. |
-| **NVIDIA** | 🟣 4 | Acceso a modelos potentes como DeepSeek V4. |
+| Proveedor | Gratuito | Variable en `.env` | Ventaja |
+| :--- | :--- | :--- | :--- |
+| **Groq** ⭐ | ✅ Sí | `GROQ_API_KEY` | Velocidad extrema. |
+| **Gemini** | ✅ Sí | `GEMINI_API_KEY` | Visión y contexto largo. |
+| **OpenAI** | ❌ Pago | `OPENAI_API_KEY` | Estabilidad total. |
+| **OpenRouter**| ✅ Sí | `OPENROUTER_API_KEY` | Modelos Free. |
+| **NVIDIA** | ❌ Pago | `NVIDIA_API_KEY` | DeepSeek V4 Pro. |
+
+---
+
+## 🎨 Marca Blanca (Custom Branding)
+
+Puedes personalizar la plataforma para tu propio uso o clientes:
+*   `NEXT_PUBLIC_APP_NAME`: Cambia el nombre en el Dashboard y el pie de página.
+*   `bot_name`: Cambia cómo se identifica la IA en el chat.
+*   `system_prompt`: Define la personalidad única de tu bot.
 
 ---
 
 ## 📁 Estructura del Proyecto
 ```
 BotMaRe/
-├── backend/                  # Kitsune Engine (API + IA)
-│   ├── src/core/             # El "Cerebro" (Agent, LLM, Config)
-│   ├── src/whatsapp/         # Conexión y Lógica de Sockets
-│   └── data/                 # Bases de Datos SQLite (Sesión y Datos)
-├── frontend/                 # Gravity Dashboard (Next.js)
-├── build_exe.bat             # Generador de Ejecutable Portátil
-└── setup.bat                 # Instalador Rápido
+├── backend/                  # Motor Kitsune (Express + Sockets)
+│   ├── src/core/             # Lógica de IA, Memoria y Orquestación
+│   ├── src/whatsapp/         # Handlers y Conexión Baileys
+│   ├── src/telegram/         # Bot de Gestión Remota
+│   └── data/                 # Bases de Datos SQLite e Imágenes
+├── frontend/                 # Gravity UI (Next.js 16)
+├── setup.bat                 # Instalador Automático
+└── build_exe.bat             # Generador de Ejecutable (Desarrollo)
 ```
+
+---
+
+## 🏷️ Variables Inteligentes (Plantillas)
+Usa estas etiquetas en tus mensajes para personalizarlos:
+*   `{NOMBRE}`: Nombre completo del contacto.
+*   `{NOMBRE_PILA}`: Solo el primer nombre.
+*   `{FECHA}` / `{HORA_12}`: Información temporal actual.
+*   `{DIA_SEMANA}`: Lunes, Martes, etc.
+
+---
+
+## ❓ Solución de Problemas
+<details>
+<summary><strong>El QR no carga o se queda en blanco</strong></summary>
+Asegúrate de que el puerto 3001 no esté siendo usado por otro programa. Verifica que tengas conexión a internet.
+</details>
+
+<details>
+<summary><strong>Error de autenticación en el Dashboard</strong></summary>
+Por defecto es Usuario: `admin` y Contraseña: `admin123`. Puedes cambiarlos en `frontend/.env`.
+</details>
+
+<details>
+<summary><strong>La IA no responde</strong></summary>
+Verifica tus API Keys en el Dashboard (Pestaña Configuración). Si usas Groq, asegúrate de no haber excedido el límite de tokens gratuitos.
+</details>
 
 ---
 
