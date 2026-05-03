@@ -80,7 +80,13 @@ Object.entries(defaultSettings).forEach(([key, value]) => {
 
 export async function getSettings() {
     const rows = db.prepare('SELECT * FROM settings').all() as any[];
-    return rows.reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+    const dbSettings = rows.reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+    
+    // Fallback a variables de entorno para llaves críticas si no están en la DB
+    return {
+        ...process.env,
+        ...dbSettings
+    };
 }
 
 export async function updateSettings(settings: Record<string, string>) {

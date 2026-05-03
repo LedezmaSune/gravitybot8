@@ -1,4 +1,5 @@
-import { Bot, InlineKeyboard } from "grammy";
+import { Bot, InlineKeyboard, InputFile } from "grammy";
+import path from "path";
 import { DateTime } from "luxon";
 import { authMiddleware } from "./auth";
 import { handleTelegramMessage } from "./handlers/message";
@@ -31,7 +32,8 @@ export function initTelegramBot(
     return;
   }
 
-  bot = new Bot(token) as TelegramBot;
+  const botInstance = new Bot(token) as TelegramBot;
+  bot = botInstance;
   bot.ownerId = 'admin-01';
   bot.use(authMiddleware);
 
@@ -260,6 +262,62 @@ export function initTelegramBot(
 
   bot.on("message:voice", handleTelegramVoice);
   
+  // Manejador de documentos para restauración (Debe ir antes del manejador de texto general)
+  bot.on("message:document", async (ctx) => {
+    const caption = ctx.message.caption || "";
+    if (caption.toLowerCase() === "/restaurar") {
+        const doc = ctx.message.document;
+        if (!doc.file_name?.endsWith(".zip")) {
+            return ctx.reply("❌ Por favor, envía un archivo .zip válido.");
+        }
+
+        await ctx.reply("⏳ Procesando restauración... Esto reemplazará todos tus datos.");
+        
+        try {
+            // 1. Obtener link de descarga
+            const file = await ctx.getFile();
+            const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${file.file_path}`;
+            
+            // 2. Descargar localmente
+            const { BackupService } = require("../services/backup.service");
+            const axios = require("axios");
+            const fs = require("fs");
+            const tempPath = path.join(BackupService.getBackupDir(), 'restore_from_telegram.zip');
+            
+            const response = await axios({
+                url: fileUrl,
+                method: 'GET',
+                responseType: 'stream'
+            });
+
+            const writer = fs.createWriteStream(tempPath);
+            response.data.pipe(writer);
+
+            await new Promise((resolve, reject) => {
+                writer.on('finish', resolve);
+                writer.on('error', reject);
+            });
+
+            // 3. Ejecutar restauración
+            const result = await BackupService.restoreBackup(tempPath);
+            
+            if (result.success) {
+                await ctx.reply("✅ *Restauración Exitosa*\nEl sistema se apagará en 5 segundos. Por favor, vuelve a iniciarlo para aplicar los cambios.", { parse_mode: 'Markdown' });
+                setTimeout(() => process.exit(0), 5000);
+            } else {
+                await ctx.reply("❌ Error: " + result.message);
+            }
+            
+            // Limpiar temporal
+            if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+
+        } catch (error) {
+            console.error("Error en restauración via Telegram:", error);
+            await ctx.reply("❌ Hubo un error crítico durante la restauración.");
+        }
+    }
+  });
+
   bot.on("message:text", async (ctx, next) => {
     const userId = ctx.from?.id.toString();
     if (!userId) return next();

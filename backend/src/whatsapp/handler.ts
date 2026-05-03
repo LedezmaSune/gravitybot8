@@ -32,11 +32,8 @@ export class WhatsAppEventHandler {
                 console.log(`[WA Handler] Connection closed. Status Code: ${statusCode}. Reconnecting: ${shouldReconnect}`);
 
                 if (statusCode === 401 || statusCode === DisconnectReason.loggedOut) {
-                    console.warn('[WA Handler] Session invalid or logged out. Clearing auth data...');
-                    const authDir = path.resolve('auth_info_baileys');
-                    if (fs.existsSync(authDir)) {
-                        fs.rmSync(authDir, { recursive: true, force: true });
-                    }
+                    console.warn('[WA Handler] Sesión inválida o cerrada. Se requerirá un nuevo código QR.');
+                    // La lógica de reconexión con reinitCallback se encargará de pedir el QR
                     await reinitCallback();
                 } else if (shouldReconnect) {
                     await reinitCallback();

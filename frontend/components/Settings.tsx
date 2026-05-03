@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, Upload, Key, Cpu, Shield, Globe, Terminal, Info, Brain } from 'lucide-react';
+import { Save, Upload, Key, Cpu, Shield, Globe, Terminal, Info, Brain, Download, RefreshCw, Trash2 } from 'lucide-react';
 
 interface SettingsProps {
     settings: any;
@@ -24,6 +24,59 @@ export const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onParseE
         setIsSaving(true);
         await onUpdate(localSettings);
         setIsSaving(false);
+    };
+
+    const handleDownloadBackup = async () => {
+        try {
+            window.location.href = '/api/system/backup';
+        } catch (e) {
+            alert('Error al descargar el respaldo');
+        }
+    };
+
+    const handleRestoreBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!confirm('⚠️ ¿Estás seguro? Esto reemplazará todos tus datos actuales con los del respaldo. No podrás deshacer esta acción.')) {
+            e.target.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('backup', file);
+
+        try {
+            const res = await fetch('/api/system/restore', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Respaldo restaurado con éxito. Por favor, reinicia el programa manualmente para aplicar los cambios.');
+                window.location.reload();
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        } catch (error) {
+            alert('❌ Error de conexión al restaurar.');
+        } finally {
+            e.target.value = '';
+        }
+    };
+
+    const handleCleanMultimedia = async () => {
+        if (!confirm('¿Deseas eliminar todos los archivos multimedia que ya no están en uso? Esta acción liberará espacio en el disco.')) return;
+        
+        try {
+            const res = await fetch('/api/system/clean-uploads', { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Multimedia antigua eliminada con éxito.');
+            }
+        } catch (e) {
+            alert('❌ Error al conectar con el servidor.');
+        }
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +171,28 @@ export const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onParseE
                              uploadStatus === 'error' ? 'Error al leer' : 'Importar .env'}
                             <input type="file" className="hidden" onChange={handleFileUpload} accept=".env,text/plain" />
                         </label>
+
+                        <button 
+                            onClick={handleDownloadBackup}
+                            className="flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 px-6 py-3 rounded-2xl font-bold text-sm border border-indigo-500/30 transition-all active:scale-95"
+                        >
+                            <Download size={18} />
+                            Generar Respaldo
+                        </button>
+
+                        <label className="flex items-center gap-2 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 px-6 py-3 rounded-2xl font-bold text-sm border border-emerald-500/30 transition-all active:scale-95 cursor-pointer">
+                            <RefreshCw size={18} />
+                            Importar Respaldo
+                            <input type="file" accept=".zip" className="hidden" onChange={handleRestoreBackup} />
+                        </label>
+
+                        <button 
+                            onClick={handleCleanMultimedia}
+                            className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 px-6 py-3 rounded-2xl font-bold text-sm border border-red-500/30 transition-all active:scale-95"
+                        >
+                            <Trash2 size={18} />
+                            Limpiar Multimedia
+                        </button>
                     </div>
                 </div>
 

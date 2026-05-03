@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useBotData, TabId } from '@/hooks/useBotData';
-import { History, Bell, Brain, Megaphone, CalendarDays, Layout, Settings as SettingsIcon } from 'lucide-react';
+import { History, Bell, Brain, Megaphone, CalendarDays, Layout, Settings as SettingsIcon, Menu, X, Trash2 } from 'lucide-react';
 
-import { StatusHeader } from '@/components/StatusHeader';
+import { StatusHeader, ThemeToggle, UpdateChecker } from '@/components/StatusHeader';
+import { siteConfig } from '@/config';
 import { MassMessaging } from '@/components/MassMessaging';
 import { Reminders } from '@/components/Reminders';
 import { Personality } from '@/components/Personality';
@@ -45,51 +47,117 @@ export default function Home() {
         handleParseEnv
     } = useBotData();
 
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
-        <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden selection:bg-cyan-500/30 transition-colors duration-300">
+        <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/30 transition-colors duration-300">
             <ConnectionOverlay qr={qr} status={status} />
 
+            {/* Fondos Decorativos */}
             <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
                 <div className="absolute top-[-15%] left-[-15%] w-[50%] h-[50%] bg-blue-600/10 dark:bg-cyan-500/10 rounded-full blur-[140px] animate-pulse"></div>
                 <div className="absolute bottom-[5%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 dark:bg-indigo-500/10 rounded-full blur-[120px] animation-delay-2000"></div>
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-                <StatusHeader 
-                    status={status} 
-                    qr={qr} 
-                    onCleanUploads={handleCleanUploads} 
-                    botName={settings?.bot_name} 
-                />
+            {/* --- HEADER SUPERIOR COMPACTO --- */}
+            <header className="fixed top-0 left-0 w-full z-[100] bg-app-card/40 backdrop-blur-3xl border-b border-app-border px-4 md:px-8 py-3 flex items-center justify-between shadow-2xl shadow-black/10">
+                <div className="flex items-center gap-4">
+                    <button 
+                        onClick={() => setIsMenuOpen(true)}
+                        className="p-2.5 hover:bg-app-card/60 rounded-xl border border-app-border transition-all active:scale-95 group shadow-inner"
+                    >
+                        <Menu size={20} className="text-app-text group-hover:text-cyan-500 transition-colors" />
+                    </button>
+                    
+                    <div className="flex items-center gap-3 ml-1">
+                        <div className="w-8 h-8 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-cyan-500/20 rotate-3">
+                            <span className="text-white text-lg font-black italic">{siteConfig.name.charAt(0)}</span>
+                        </div>
+                        <div className="flex flex-col -space-y-1">
+                            <span className="font-black text-sm tracking-tighter bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">{siteConfig.name}</span>
+                            <span className="text-[8px] font-bold text-app-text-muted uppercase tracking-[0.2em] opacity-50">{settings?.bot_name || 'Bot'}</span>
+                        </div>
+                    </div>
+                </div>
 
-                <nav className="flex items-center justify-center mb-12 relative z-20">
-                    <div className="flex bg-app-card/30 p-2 rounded-[2rem] border border-app-border backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all">
+                <div className="flex items-center gap-2 md:gap-4">
+                    {/* Botones de Acción en el Header */}
+                    <div className="hidden sm:flex items-center gap-1 bg-app-card/40 p-1 rounded-xl border border-app-border/50">
+                        <ThemeToggle />
+                        <UpdateChecker />
+                        <button 
+                            onClick={handleCleanUploads}
+                            title="Limpiar temporales"
+                            className="p-2 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all active:scale-95"
+                        >
+                            <Trash2 size={16} />
+                        </button>
+                    </div>
+
+                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[9px] font-black uppercase tracking-widest bg-app-card/50 ${
+                        status === 'connected' ? 'border-emerald-500/20 text-emerald-400' : 'border-red-500/20 text-red-400 animate-pulse'
+                    }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${status === 'connected' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'}`}></div>
+                        <span className="hidden xs:inline">{status}</span>
+                    </div>
+                </div>
+            </header>
+
+            {/* --- MENÚ LATERAL (DRAWER) --- */}
+            <div className={`fixed inset-0 z-[200] transition-all duration-500 ${isMenuOpen ? 'visible' : 'invisible'}`}>
+                <div 
+                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={() => setIsMenuOpen(false)}
+                />
+                
+                <nav className={`absolute top-0 left-0 h-full w-72 md:w-80 bg-app-card/95 backdrop-blur-3xl border-r border-app-border shadow-2xl transition-transform duration-500 ease-out flex flex-col ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <div className="p-8 border-b border-app-border flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white text-lg font-black italic">{siteConfig.name.charAt(0)}</span>
+                            </div>
+                            <span className="font-black text-xl tracking-tighter">{siteConfig.name}</span>
+                        </div>
+                        <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-all">
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 p-4 space-y-1.5 overflow-y-auto custom-scrollbar">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 relative group overflow-hidden ${
+                                onClick={() => {
+                                    setActiveTab(tab.id);
+                                    setIsMenuOpen(false);
+                                }}
+                                className={`flex items-center gap-4 w-full px-5 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 relative group overflow-hidden ${
                                     activeTab === tab.id
-                                        ? 'text-white scale-105'
-                                        : 'text-app-text-muted hover:text-app-text'
+                                        ? 'text-white shadow-xl shadow-cyan-500/20 scale-[1.02]'
+                                        : 'text-app-text-muted hover:text-app-text hover:bg-app-card/50'
                                 }`}
                             >
                                 {activeTab === tab.id && (
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 z-0 animate-in fade-in zoom-in duration-300"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 z-0"></div>
                                 )}
-                                <div className="relative z-10 flex items-center gap-2.5">
-                                    <tab.icon size={15} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
-                                    <span className="hidden md:inline">{tab.label}</span>
+                                <div className="relative z-10 flex items-center gap-4">
+                                    <tab.icon size={18} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
+                                    <span>{tab.label}</span>
                                 </div>
-                                {activeTab !== tab.id && (
-                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-cyan-500 transition-all duration-300 group-hover:w-1/2"></div>
-                                )}
                             </button>
                         ))}
                     </div>
-                </nav>
 
-                <main className="min-h-[600px]">
+                    <div className="p-6 border-t border-app-border opacity-30 text-[8px] font-bold uppercase tracking-widest text-center">
+                        Kitsune Engine v2.4
+                    </div>
+                </nav>
+            </div>
+
+            {/* --- CONTENIDO PRINCIPAL --- */}
+            <main className="relative z-10 pt-24 p-4 sm:p-8 md:p-12 max-w-[1400px] mx-auto w-full min-h-screen">
+                {/* StatusHeader ya no necesita mostrar el logo/nombre redundante */}
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {activeTab === 'mass' && (
                         <MassMessaging 
                             onSend={handleSendMass} 
@@ -137,14 +205,34 @@ export default function Home() {
                             onReview={handleAIGeneration}
                         />
                     )}
-                </main>
+                </div>
 
-                <footer className="mt-20 py-8 border-t border-app-border text-center">
-                    <p className="text-[10px] uppercase font-bold text-app-text/30 tracking-[0.3em] font-mono">
-                        Powered by Kitsune Engine • © 2026
-                    </p>
+                {/* Footer / Status Bar */}
+                <footer className="mt-20 py-10 border-t border-app-border">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            <span className="text-[10px] text-app-text-muted font-black uppercase tracking-widest">
+                                {siteConfig.name} System Active
+                            </span>
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                            <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
+                                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">v1.5-beta</span>
+                            </div>
+                            <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest">En Desarrollo</span>
+                            </div>
+                        </div>
+
+                        <p className="text-[10px] text-app-text-muted font-bold uppercase tracking-widest">
+                            &copy; {new Date().getFullYear()} {siteConfig.name}. Powered by Kitsune Engine.
+                        </p>
+                    </div>
                 </footer>
-            </div>
+            </main>
         </div>
     );
 }

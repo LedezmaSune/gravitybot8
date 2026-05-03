@@ -1,26 +1,29 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const fs = require('fs');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+import express from 'express';
+import http from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
-// Core (Usamos require para asegurar compatibilidad en el bundle)
-const { WhatsAppClient } = require('./whatsapp/connection');
-const { SystemUtils } = require('./core/system');
-const { TunnelService } = require('./core/tunnel');
+// Core
+import { WhatsAppClient } from './whatsapp/connection';
+import { SystemUtils } from './core/system';
+import { TunnelService } from './core/tunnel';
 
-// Refactored Components
-const { createMainRouter } = require('./routes/index');
-const { errorHandler } = require('./middleware/errorHandler');
-const { Scheduler } = require('./modules/scheduling/scheduler');
-const { WhatsAppService } = require('./services/whatsapp.service');
-const { ReminderService } = require('./services/reminder.service');
-const { WhatsAppEventHandler } = require('./whatsapp/handler');
-const { MassDiffusionService } = require('./services/diffusion.service');
-const { initTelegramBot } = require('./telegram/bot');
+// Components
+import { createMainRouter } from './routes/index';
+import { errorHandler } from './middleware/errorHandler';
+import { basicAuth } from './middleware/auth.middleware';
+import { Scheduler } from './modules/scheduling/scheduler';
+import { WhatsAppService } from './services/whatsapp.service';
+import { ReminderService } from './services/reminder.service';
+import { WhatsAppEventHandler } from './whatsapp/handler';
+import { MassDiffusionService } from './services/diffusion.service';
+import { initTelegramBot } from './telegram/bot';
+import { initTools } from './tools/index';
+import { BackupService } from './services/backup.service';
 
 dotenv.config();
 
@@ -33,46 +36,26 @@ const io = new Server(server, {
     }
 });
 
-// Basic Auth Middleware for Dashboard
-const basicAuth = (req: any, res: any, next: any) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
-        return next();
-    }
-
-    const auth = { 
-        login: process.env.DASHBOARD_USER || 'admin', 
-        password: process.env.DASHBOARD_PASS || 'admin123' 
-    };
-    
-    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-    const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
-
-    if (login && password && login === auth.login && password === auth.password) {
-        return next();
-    }
-
-    res.set('WWW-Authenticate', 'Basic realm="BotMaRe Dashboard"');
-    res.status(401).send('Authentication required.');
-};
-
+// Middleware Configuration
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(basicAuth);
 
+// Service Initialization
 const waClient = new WhatsAppClient(io);
 const waService = new WhatsAppService(waClient);
 const reminderService = new ReminderService();
 const diffusionService = new MassDiffusionService(waService);
 const waHandler = new WhatsAppEventHandler(io, waService);
-waClient.setHandler(waHandler);
 
-// Initialize Tools with Services
-const { initTools } = require('./tools/index');
+waClient.setHandler(waHandler);
 initTools(waService);
 
+// Routes Configuration
 app.use('/api', createMainRouter(waClient));
 
+// Static Files & Proxy Logic
 const isPkg = (process as any).pkg;
 const frontendPath = isPkg 
     ? path.join(path.dirname(process.execPath), 'frontend')
@@ -101,6 +84,7 @@ if (process.env.NODE_ENV === 'development' && !isPkg) {
 
 app.use(errorHandler);
 
+// WebSocket Status Handlers
 io.on('connection', (socket: any) => {
     const status = waClient.getStatus();
     socket.emit('status', status.state);
@@ -109,6 +93,9 @@ io.on('connection', (socket: any) => {
 
 const PORT = process.env.PORT || 3001;
 
+/**
+ * Bootstrap Application
+ */
 async function bootstrap() {
     SystemUtils.ensureDirs();
     SystemUtils.validateEnv();
@@ -119,15 +106,18 @@ async function bootstrap() {
         try {
             const tunnelUrl = await TunnelService.getInstance().start(Number(PORT));
             if (tunnelUrl) console.log(`🌍 TUNEL: ${tunnelUrl}`);
-        } catch (e) {}
+        } catch (e) {
+            console.error("[Tunnel] Error starting tunnel:", e);
+        }
         
         await waClient.init();
         initTelegramBot(waService, reminderService, diffusionService);
         Scheduler.init(waService, reminderService);
+        BackupService.initScheduledBackup();
     });
 }
 
 bootstrap().catch(err => {
-    console.error("FATAL:", err);
+    console.error("FATAL ERROR DURING BOOTSTRAP:", err);
     process.exit(1);
 });

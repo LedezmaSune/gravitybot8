@@ -95,3 +95,12 @@ h1, h2, h3, h4, .font-black {
   );
   animation: shimmer 2s infinite;
 }
+
+/* Utility to hide scrollbars but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

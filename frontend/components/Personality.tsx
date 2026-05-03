@@ -22,7 +22,7 @@ export function Personality({ initialSettings, onUpdate }: PersonalityProps) {
     };
 
     return (
-        <section className="bg-app-card border border-app-border rounded-3xl p-6 lg:p-8 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto shadow-2xl transition-colors">
+        <section className="bg-app-card border border-app-border rounded-3xl p-6 lg:p-8 backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto shadow-2xl transition-colors">
             <div className="flex items-center gap-4 mb-8">
                 <div className="w-14 h-14 bg-gradient-to-tr from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
                     <Brain size={32} />

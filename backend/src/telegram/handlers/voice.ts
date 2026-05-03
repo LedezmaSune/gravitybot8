@@ -28,7 +28,7 @@ export async function handleTelegramVoice(ctx: Context) {
 
     // Process with Agent
     await ctx.replyWithChatAction("typing");
-    const agentResponse = await runAgent(userId, text);
+    const agentResponse = await runAgent(userId, text, userId, undefined, true);
     const needsVoice = /voz|audio|habla|dímelo|escuchar/i.test(text);
 
     if (needsVoice) {

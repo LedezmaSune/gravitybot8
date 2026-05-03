@@ -1,15 +1,20 @@
 import OpenAI from "openai";
+import { getAllConfig } from "./config";
 
-import { getConfig } from "./config";
-
+/**
+ * Parsea una cadena de texto con llaves separadas por coma y devuelve un array limpio.
+ */
 function getApiKeys(envValue: string | undefined): string[] {
     if (!envValue) return [];
     return envValue.split(',').map(k => k.trim().replace(/^["']|["']$/g, ''));
 }
 
 const LLM_TIMEOUT_MS = 15000;        // 15s para la mayoría de proveedores
-const LLM_TIMEOUT_NVIDIA_MS = 5000;  // 5s para NVIDIA (suele estar congestionado)
+const LLM_TIMEOUT_NVIDIA_MS = 8000;  // Aumentamos a 8s para NVIDIA/DeepSeek
 
+/**
+ * Intenta realizar una petición a un proveedor específico recorriendo sus llaves.
+ */
 async function tryProvider(
     providerName: string,
     keys: string[],
@@ -28,11 +33,9 @@ async function tryProvider(
                 ...(tools && tools.length > 0 && !(hasVision && providerName === 'Groq') ? { tools } : {}),
             };
             
-            if (config.extraBody) {
-                payload.extra_body = config.extraBody;
-            }
-            if (config.temperature) payload.temperature = config.temperature;
-            if (config.top_p) payload.top_p = config.top_p;
+            if (config.extraBody) payload.extra_body = config.extraBody;
+            if (config.temperature !== undefined) payload.temperature = config.temperature;
+            if (config.top_p !== undefined) payload.top_p = config.top_p;
 
             const timeout = providerName === 'Nvidia' ? LLM_TIMEOUT_NVIDIA_MS : LLM_TIMEOUT_MS;
             const timeoutPromise = new Promise<never>((_, reject) =>
@@ -44,16 +47,19 @@ async function tryProvider(
                 timeoutPromise
             ]) as any;
 
-            console.log(`[LLM] ${providerName} (${config.model}) Responded successfully.`);
+            console.log(`[LLM] ${providerName} (${config.model}) Respondió con éxito.`);
             return response.choices[0]?.message;
         } catch (error: any) {
-            console.warn(`[LLM] ${providerName} Key Failed: ${error.message}`);
-            continue;
+            console.warn(`[LLM] ${providerName} falló con una llave: ${error.message}`);
+            continue; // Intentar con la siguiente llave del mismo proveedor
         }
     }
-    throw new Error(`All ${providerName} keys failed or timed out`);
+    throw new Error(`Todas las llaves de ${providerName} fallaron o agotaron el tiempo.`);
 }
 
+/**
+ * Limpia y estandariza los mensajes para los proveedores.
+ */
 function cleanMessages(messages: any[]): any[] {
     return messages.map((msg: any) => {
         let content = msg.content;
@@ -77,15 +83,21 @@ function cleanMessages(messages: any[]): any[] {
     });
 }
 
+/**
+ * Orquestador principal de LLM con Failover automático.
+ */
 export async function callLLM(
     messages: any[],
     tools?: any[]
 ): Promise<any> {
     const cleanedMessages = cleanMessages(messages);
     const hasVision = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
+    
+    // Obtener TODA la configuración de una vez (Optimización)
+    const config = await getAllConfig();
 
-    // 1. Try Groq (First Choice - Fast and Reliable)
-    const groqKeys = getApiKeys(await getConfig('GROQ_API_KEY'));
+    // 1. Intentar Groq (Opción 1 - Velocidad y Herramientas)
+    const groqKeys = getApiKeys(config['GROQ_API_KEY']);
     if (groqKeys.length > 0) {
         try {
             return await tryProvider('Groq', groqKeys, {
@@ -95,34 +107,34 @@ export async function callLLM(
         } catch (e) {}
     }
 
-    // 2. Try Gemini
-    const geminiKeys = getApiKeys(await getConfig('GEMINI_API_KEY'));
+    // 2. Intentar Gemini
+    const geminiKeys = getApiKeys(config['GEMINI_API_KEY']);
     if (geminiKeys.length > 0) {
         try {
             return await tryProvider('Gemini', geminiKeys, {
                 baseURL: "https://generativelanguage.googleapis.com/v1beta/openai",
-                model: await getConfig('GEMINI_MODEL', "gemini-1.5-flash")
+                model: config['GEMINI_MODEL'] || "gemini-1.5-flash"
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
 
-    // 3. Try OpenAI
-    const openaiKeys = getApiKeys(await getConfig('OPENAI_API_KEY'));
+    // 3. Intentar OpenAI
+    const openaiKeys = getApiKeys(config['OPENAI_API_KEY']);
     if (openaiKeys.length > 0) {
         try {
             return await tryProvider('OpenAI', openaiKeys, {
-                model: await getConfig('OPENAI_MODEL', "gpt-4o-mini")
+                model: config['OPENAI_MODEL'] || "gpt-4o-mini"
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
 
-    // 4. Try OpenRouter
-    const orKeys = getApiKeys(await getConfig('OPENROUTER_API_KEY'));
+    // 4. Intentar OpenRouter
+    const orKeys = getApiKeys(config['OPENROUTER_API_KEY']);
     if (orKeys.length > 0) {
         try {
             return await tryProvider('OpenRouter', orKeys, {
                 baseURL: "https://openrouter.ai/api/v1",
-                model: await getConfig('OPENROUTER_MODEL', "meta-llama/llama-3.1-8b-instruct:free"),
+                model: config['OPENROUTER_MODEL'] || "meta-llama/llama-3.1-8b-instruct:free",
                 defaultHeaders: {
                     "HTTP-Referer": "http://localhost:3000",
                     "X-Title": "BotMaRe AI",
@@ -131,13 +143,13 @@ export async function callLLM(
         } catch (e) {}
     }
 
-    // 5. Try Nvidia (DeepSeek) - Last Choice (Unstable)
-    const nvidiaKeys = getApiKeys(await getConfig('NVIDIA_API_KEY'));
+    // 5. Intentar Nvidia (DeepSeek)
+    const nvidiaKeys = getApiKeys(config['NVIDIA_API_KEY']);
     if (nvidiaKeys.length > 0) {
         try {
             return await tryProvider('Nvidia', nvidiaKeys, {
                 baseURL: "https://integrate.api.nvidia.com/v1",
-                model: await getConfig('NVIDIA_MODEL', "deepseek-ai/deepseek-v4-pro"),
+                model: config['NVIDIA_MODEL'] || "deepseek-ai/deepseek-v4-pro",
                 max_tokens: 4000,
                 temperature: 1,
                 top_p: 0.95,
@@ -146,12 +158,17 @@ export async function callLLM(
         } catch (e) {}
     }
 
-    throw new Error("No LLM provider configured or all providers failed.");
+    throw new Error("No hay proveedores de IA configurados o todos han fallado.");
 }
 
+/**
+ * Transcripción de Audio usando Whisper de Groq
+ */
 export async function transcribeAudio(audioBuffer: Buffer) {
-    const groqKeys = getApiKeys(await getConfig('GROQ_API_KEY'));
-    if (groqKeys.length === 0) throw new Error("Groq API key required for transcription");
+    const config = await getAllConfig();
+    const groqKeys = getApiKeys(config['GROQ_API_KEY']);
+    
+    if (groqKeys.length === 0) throw new Error("Se requiere una API Key de Groq para la transcripción.");
     
     try {
         const client = new OpenAI({ apiKey: groqKeys[0], baseURL: "https://api.groq.com/openai/v1" });
@@ -161,7 +178,7 @@ export async function transcribeAudio(audioBuffer: Buffer) {
         });
         return response.text;
     } catch (error: any) {
-        console.error("Transcription error:", error.message);
+        console.error("Error en transcripción:", error.message);
         throw error;
     }
 }

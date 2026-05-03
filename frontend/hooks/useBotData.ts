@@ -1,26 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import { Audit, Reminder, Settings, Template, ConnectionState } from '../types';
+import { parseContactList } from '../utils/contactParser';
 
 const API_BASE = '/api';
-const SOCKET_URL = ''; // Connects back to the same host
+const SOCKET_URL = ''; 
 
 export type TabId = 'mass' | 'scheduling' | 'calendar' | 'templates' | 'personality' | 'settings' | 'audits';
 
 export function useBotData() {
-    // 1. Connection State (Socket.io)
     const [status, setStatus] = useState<ConnectionState>('disconnected');
     const [qr, setQr] = useState<string | null>(null);
-
-    // 2. Dashboard State
     const [activeTab, setActiveTab] = useState<TabId>('mass');
     const [audits, setAudits] = useState<Audit[]>([]);
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [settings, setSettings] = useState<Settings | null>(null);
     const [prefillDate, setPrefillDate] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    // 3. Fetching Logic
     const fetchData = useCallback(async (currentTab?: TabId) => {
         try {
             const [auditsRes, remindersRes, templatesRes] = await Promise.all([
@@ -38,26 +36,18 @@ export function useBotData() {
                 if (settingsRes.ok) setSettings(await settingsRes.json());
             }
         } catch (error) {
-            console.error('Fetch error:', error);
+            console.error('[useBotData] Error fetching data:', error);
         }
     }, [settings]);
 
-    // 4. Effects
     useEffect(() => {
         const socket = io(SOCKET_URL);
-
         socket.on('status', (newStatus: ConnectionState) => {
             setStatus(newStatus);
             if (newStatus === 'connected') setQr(null);
         });
-
-        socket.on('qr', (newQr: string) => {
-            setQr(newQr);
-        });
-
-        return () => {
-            socket.close();
-        };
+        socket.on('qr', (newQr: string) => setQr(newQr));
+        return () => { socket.close(); };
     }, []);
 
     useEffect(() => {
@@ -68,86 +58,81 @@ export function useBotData() {
         return () => clearInterval(interval);
     }, [activeTab, fetchData]);
 
-    // 5. Action Handlers
     const handleCleanUploads = async () => {
         if (!confirm('¿Deseas limpiar archivos temporales no utilizados?')) return;
         await fetch(`${API_BASE}/system/clean-uploads`, { method: 'DELETE' });
+        alert('Limpieza completada.');
     };
 
     const handleSendMass = async (contacts: string, message: string, media: File | null) => {
-        const formData = new FormData();
-        const contactList = contacts
-            .split('\n')
-            .filter(line => line.trim())
-            .map(line => {
-                const cleanLine = line.trim();
-                
-                // Case 1: Comma separated
-                if (cleanLine.includes(',')) {
-                    const parts = cleanLine.split(',');
-                    const part1 = parts[0].trim();
-                    const part2 = parts.slice(1).join(',').trim();
-                    if (/\d{8,}/.test(part1)) return { number: part1, name: part2 };
-                    return { number: part2, name: part1 };
-                }
+        setIsLoading(true);
+        try {
+            const contactList = parseContactList(contacts);
+            const formData = new FormData();
+            formData.append('contacts', JSON.stringify(contactList));
+            formData.append('message', message);
+            if (media) formData.append('media', media);
 
-                // Case 2: No comma, search for number in string
-                const numberMatch = cleanLine.match(/\+?\d{8,15}/);
-                if (numberMatch) {
-                    const number = numberMatch[0];
-                    const name = cleanLine.replace(number, '').replace(/^[-\s]+|[-\s]+$/g, '').trim();
-                    return { number, name };
-                }
-
-                return { number: cleanLine, name: '' };
+            const res = await fetch(`${API_BASE}/send-mass`, {
+                method: 'POST',
+                body: formData
             });
 
-        formData.append('contacts', JSON.stringify(contactList));
-        formData.append('message', message);
-        if (media) formData.append('media', media);
-
-        const res = await fetch(`${API_BASE}/send-mass`, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await res.json();
-        if (data.success) alert(`Cola iniciada. Procesando ${contactList.length} contactos.`);
-        else alert(`Error: ${data.error}`);
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ Cola iniciada. Procesando ${contactList.length} contactos.`);
+            } else {
+                alert(`❌ Error: ${data.error}`);
+            }
+        } catch (e) {
+            alert('❌ Error al procesar el envío.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleAIGeneration = async (text: string) => {
-        const res = await fetch(`${API_BASE}/ai/review-message`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text })
-        });
-        const data = await res.json();
-        return data.success ? data.corrected : null;
+        try {
+            const res = await fetch(`${API_BASE}/ai/review-message`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await res.json();
+            return data.success ? data.corrected : null;
+        } catch (e) {
+            return null;
+        }
     };
 
     const handleAddReminder = async (chatId: string, text: string, time: string, media: File | null, repeat?: string, repeatInterval?: number, repeatUnit?: string, title?: string) => {
-        const formData = new FormData();
-        formData.append('chatId', chatId);
-        formData.append('text', text);
-        formData.append('time', time);
-        if (title) formData.append('title', title);
-        if (media) formData.append('media', media);
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('chatId', chatId);
+            formData.append('text', text);
+            formData.append('time', time);
+            if (title) formData.append('title', title);
+            if (media) formData.append('media', media);
+            if (repeat) formData.append('repeat', repeat);
+            if (repeatInterval) formData.append('repeatInterval', repeatInterval.toString());
+            if (repeatUnit) formData.append('repeatUnit', repeatUnit);
 
-        if (repeat) formData.append('repeat', repeat);
-        if (repeatInterval) formData.append('repeatInterval', repeatInterval.toString());
-        if (repeatUnit) formData.append('repeatUnit', repeatUnit);
+            const url = media ? `${API_BASE}/reminders/with-media` : `${API_BASE}/reminders`;
+            const res = await fetch(url, {
+                method: 'POST',
+                body: media ? formData : JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit, title }),
+                headers: media ? {} : { 'Content-Type': 'application/json' }
+            });
 
-        const url = media ? `${API_BASE}/reminders/with-media` : `${API_BASE}/reminders`;
-        const res = await fetch(url, {
-            method: 'POST',
-            body: media ? formData : JSON.stringify({ chatId, text, time, repeat, repeatInterval, repeatUnit, title }),
-            headers: media ? {} : { 'Content-Type': 'application/json' }
-        });
-
-        if (res.ok) {
-            void fetchData(activeTab);
-            alert('Recordatorio programado con éxito.');
+            if (res.ok) {
+                void fetchData(activeTab);
+                alert('✅ Recordatorio programado.');
+            }
+        } catch (e) {
+            alert('❌ Error al programar.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -165,9 +150,7 @@ export function useBotData() {
         });
         if (res.ok) {
             setSettings(newSettings);
-            alert('Configuración guardada.');
-        } else {
-            alert('Error al guardar configuración.');
+            alert('✅ Configuración guardada.');
         }
     };
 
@@ -195,6 +178,7 @@ export function useBotData() {
         settings,
         prefillDate,
         setPrefillDate,
+        isLoading,
         fetchData,
         handleCleanUploads,
         handleSendMass,

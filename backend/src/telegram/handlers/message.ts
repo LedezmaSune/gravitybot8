@@ -12,7 +12,7 @@ export async function handleTelegramMessage(ctx: Context) {
   await ctx.replyWithChatAction("typing");
 
   try {
-    const agentResponse = await runAgent(userId, text);
+    const agentResponse = await runAgent(userId, text, userId, undefined, true);
     const needsVoice = /voz|audio|habla|dímelo|escuchar/i.test(text);
 
     if (needsVoice) {

@@ -1,364 +1,114 @@
-<h1 align="center">🦊 BotMaRe - Gravity Dashboard</h1>
+# 🦊 BotMaRe — The Gravity Dashboard
+> **Automatización Inteligente de WhatsApp con Arquitectura de Alta Disponibilidad**
 
-<p align="center">
-  <strong>La plataforma definitiva de automatización para WhatsApp impulsada por Inteligencia Artificial.</strong>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white" alt="Node.js"/>
-  <img src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs" alt="Next.js"/>
-  <img src="https://img.shields.io/badge/Express-5-000000?logo=express" alt="Express"/>
-  <img src="https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white" alt="TypeScript"/>
-  <img src="https://img.shields.io/badge/License-ISC-blue" alt="License"/>
-</p>
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)](https://nextjs.org)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
+[![License](https://img.shields.io/badge/License-ISC-blue)](LICENSE)
 
 ---
 
-## 📖 ¿Qué es BotMaRe?
+## 📖 Visión General
 
-BotMaRe (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramienta de negocios inteligente. Combina múltiples modelos de IA, automatización de mensajes y un panel de control premium con diseño **Glassmorphism**.
+**BotMaRe** es un ecosistema de automatización para WhatsApp diseñado para ser robusto, privado y extremadamente inteligente. A diferencia de otros bots, BotMaRe utiliza un **Orquestador de IA con Failover**, asegurando que el bot siempre responda incluso si un proveedor (como OpenAI o Groq) falla.
 
-### Arquitectura
-
-<p align="center">
-  <img src="docs/images/architecture.png" alt="Arquitectura del Sistema" width="700"/>
-</p>
+Su diseño **Glassmorphism** premium ("Gravity Design") ofrece una experiencia de usuario de nivel empresarial, permitiendo gestionar difusiones masivas, recordatorios y personalidades de IA desde una interfaz intuitiva.
 
 ---
 
-## ✨ Características
+## 🏗️ Arquitectura del Sistema
 
-| Módulo                    | Funcionalidades                                                               |
-| ------------------------- | ----------------------------------------------------------------------------- |
-| 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek (NVIDIA), OpenRouter — con failover automático |
-| 📱 **WhatsApp Bot**       | Respuestas inteligentes, imágenes, audio, documentos                          |
-| 📢 **Difusión Masiva**    | Envía mensajes personalizados a listas de contactos                           |
-| 📅 **Recordatorios**      | Programa mensajes en grupos o privados con lógica de reintento                |
-| 🗓️ **Calendario Gravity** | Vista tipo Google Calendar para gestionar recordatorios                       |
-| ✈️ **Telegram Bot**       | Controla el sistema remotamente desde Telegram                                |
-| 👥 **Gestor de Grupos**   | Selector de grupos integrado en el dashboard y detección de menciones mejorada |
-| 📄 **Plantillas**         | Crea, edita y reutiliza mensajes con variables inteligentes                   |
-| 🌐 **Tunnel Automático**  | Cloudflare Tunnel integrado para acceso remoto                                |
-| 🎨 **Dashboard Premium**  | Glassmorphism, modo oscuro/claro, micro-animaciones                           |
+El sistema se divide en tres capas fundamentales que trabajan en sincronía:
+
+```mermaid
+graph TD
+    A[Cliente WhatsApp] <--> B[Baileys Socket]
+    B <--> C{Kitsune Engine}
+    C <--> D[Orquestador LLM]
+    D --> E[Groq / Gemini / OpenAI]
+    C <--> F[SQLite Database]
+    G[Dashboard Next.js] <--> C
+    H[Telegram Bot] <--> C
+    C --> I[Sistema de Respaldos]
+```
+
+### Componentes Clave:
+*   **Kitsune Engine (Backend)**: Escrito en TypeScript, maneja la lógica de negocio, colas de mensajes y auditoría.
+*   **Orquestador LLM**: Un sistema inteligente que rota entre 5 proveedores de IA según disponibilidad y costo.
+*   **Gravity UI (Frontend)**: Interfaz Next.js optimizada para el rendimiento con componentes modulares.
+*   **Persistence Layer**: Base de datos SQLite local que garantiza que tus datos nunca salgan de tu servidor.
 
 ---
 
-## 🚀 Instalación Rápida
+## ✨ Características Analíticas
 
-### Requisitos Previos
+### 🧠 Orquestación de IA (Failover Dinámico)
+BotMaRe no depende de una sola "mente". Si un proveedor de IA experimenta latencia o caídas, el sistema escala automáticamente:
+1.  **Groq**: Velocidad ultra-rápida (Llama 3).
+2.  **Google Gemini**: Análisis de contexto profundo.
+3.  **OpenAI**: Estabilidad y precisión.
+4.  **OpenRouter / NVIDIA**: Acceso a modelos especializados como DeepSeek.
 
-| Software    | Versión Mínima | Enlace                                       |
-| ----------- | -------------- | -------------------------------------------- |
-| **Node.js** | v18+           | [nodejs.org](https://nodejs.org)             |
-| **Git**     | Cualquiera     | [git-scm.com](https://git-scm.com)           |
-| **API Key** | Al menos 1     | Ver [Proveedores de IA](#-proveedores-de-ia) |
+### 🛡️ Seguridad y Escudo de Inyección
+Implementamos un **Escudo de Seguridad** en el prompt del sistema. Cualquier intento del usuario por manipular las instrucciones del bot ("Prompt Injection") es detectado y bloqueado por la arquitectura de capas del mensaje.
 
-### Paso 1 — Clonar el repositorio
+### 🔄 Persistencia de Sesión SQLite
+A diferencia del método tradicional de archivos JSON, utilizamos **SQLite para la autenticación de Baileys**. Esto evita la corrupción de archivos y permite una portabilidad total del sistema sin perder la conexión.
 
+### 📦 Sistema de Mantenimiento Autónomo
+*   **Backups diarios**: Envío automático de la base de datos y config al Telegram del dueño.
+*   **Purga Inteligente**: El sistema detecta y elimina multimedia huérfana de más de 3 días para optimizar el almacenamiento.
+
+---
+
+## 🚀 Guía de Instalación
+
+### Opción A: El Método "Un Clic" (Para Todos)
+1.  Descarga el proyecto y descomprímelo.
+2.  Ejecuta **`setup.bat`** (instala todo automáticamente).
+3.  Configura tu API Key en el archivo `.env`.
+4.  Inicia con **`npm_run_dev.bat`**.
+
+### Opción B: Ejecutable Portátil (Beta)
+Si prefieres no instalar nada, ejecuta **`build_exe.bat`**. Esto generará una carpeta `En_Desarrollo_Portable` con un único archivo `.exe` que contiene todo el sistema.
+
+### Opción C: Instalación Profesional (Desarrolladores)
 ```bash
+# Clonar e instalar
 git clone https://github.com/LedezmaSune/BotMaRe.git
-cd BotMaRe
-```
+npm run install-all
 
-### Paso 2 — Instalar dependencias
-
-<details open>
-<summary>⭐ <strong>Instalación Manual</strong> (Recomendada)</summary>
-
-Ejecuta los siguientes comandos en la terminal desde la raíz del proyecto:
-
-```bash
-npm install
-cd backend && npm install && cd ..
-cd frontend && npm install && cd ..
-```
-
-Luego configura tus variables de entorno:
-
-```bash
+# Configurar
 cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
+# Edita las llaves en el archivo .env
 
-Edita `backend/.env` con tus API Keys (ver [Proveedores de IA](#-proveedores-de-ia)) y `frontend/.env` con tus credenciales del dashboard.
-
-> **💡 Tip:** Este es el método más confiable y funciona en **cualquier sistema operativo** (Windows, Linux, Mac).
-
-</details>
-
-<details>
-<summary>🐳 <strong>Docker</strong> (Servidores 24/7)</summary>
-
-```bash
-docker-compose up -d --build
-```
-
-Ideal para despliegues en producción con VPS.
-
-</details>
-
-<details>
-<summary>🐧 <strong>Linux / 🍎 Mac</strong> — Notas adicionales</summary>
-
-> **Ubuntu/Debian**: Si no tienes Node.js:
->
-> ```bash
-> curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-> sudo apt install -y nodejs
-> ```
-
-> **Mac con Homebrew**:
->
-> ```bash
-> brew install node
-> ```
-
-</details>
-
-<details>
-<summary>🧪 <strong>Scripts Automáticos</strong> (Experimental — en desarrollo)</summary>
-
-> [!WARNING]
-> Estos scripts están **en desarrollo activo** y pueden presentar comportamientos inesperados.
-> Se recomienda usar la **instalación manual** descrita arriba.
-
-**Windows** — `setup.bat`:
-
-```cmd
-setup.bat
-```
-
-**Linux/Mac** — `setup.sh`:
-
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-Los scripts intentan automatizar la instalación de dependencias y la configuración de archivos `.env`, pero aún no son estables para todos los entornos.
-
-</details>
-
-### Paso 3 — Iniciar el sistema
-
-```bash
+# Iniciar
 npm run dev
 ```
 
-Esto arranca **Backend (puerto 3001)** y **Frontend (puerto 3000)** simultáneamente.
+---
 
-```
-  BACKEND   🚀 KITSUNE ENGINE activo en: http://localhost:3001
-  BACKEND   🌍 TUNEL ACTIVADO: https://xxx.trycloudflare.com
-  FRONTEND  ▲ Next.js 16 - http://localhost:3000
-  BACKEND   🚀 Orchestrator Boot Sequence Completed!
-```
+## 🎨 Personalización (White-Label)
 
-### Paso 4 — Vincular WhatsApp
+BotMaRe está diseñado para ser marca blanca. Puedes personalizarlo editando el archivo `.env`:
 
-1. Abre **[http://localhost:3000](http://localhost:3000)** en tu navegador
-2. Verás el **Dashboard de Gravity**
-3. Aparecerá un **código QR** — escanéalo con tu celular:
-   - WhatsApp → **⋮ Menú** → **Dispositivos vinculados** → **Vincular dispositivo**
-4. ¡Listo! El estado cambiará a **Conectado** 🟢
+*   `NEXT_PUBLIC_APP_NAME`: Cambia el nombre de toda la plataforma.
+*   `bot_name`: Cambia el nombre con el que la IA se presenta.
+*   `system_prompt`: Define la "chispa" o personalidad de tu asistente.
 
 ---
 
-## 🔑 Proveedores de IA
+## ❓ Solución de Problemas Frecuentes
 
-BotMaRe soporta **5 proveedores** con failover automático. Solo necesitas **al menos 1**:
-
-| Proveedor             | Gratuito     | Obtener Key                                                   | Variable en `.env`   |
-| --------------------- | ------------ | ------------------------------------------------------------- | -------------------- |
-| **Groq** ⭐ (Prioridad 1) | ✅ Sí        | [console.groq.com/keys](https://console.groq.com/keys)        | `GROQ_API_KEY`       |
-| **Google Gemini**         | ✅ Sí        | [aistudio.google.com](https://aistudio.google.com/app/apikey) | `GEMINI_API_KEY`     |
-| **OpenAI**                | ❌ Pago      | [platform.openai.com](https://platform.openai.com/api-keys)   | `OPENAI_API_KEY`     |
-| **OpenRouter**            | ✅ Free tier | [openrouter.ai/keys](https://openrouter.ai/keys)              | `OPENROUTER_API_KEY` |
-| **DeepSeek (NVIDIA)**     | ❌ Pago      | [integrate.api.nvidia.com](https://integrate.api.nvidia.com)  | `NVIDIA_API_KEY`     |
-
-> **💡 Tip:** Puedes poner **múltiples keys separadas por comas** para mayor capacidad:
->
-> ```
-> GROQ_API_KEY=key1,key2,key3
-> ```
->
-> Si una key alcanza su límite, el sistema pasa automáticamente a la siguiente.
-
----
-
-## ⚙️ Configuración del Sistema
-
-BotMaRe ofrece dos formas de configurarse. La **pestaña de Configuración** en el Dashboard es el método recomendado, especialmente si planeas usar el bot de forma portable.
-
-### Método 1 — Panel de Control (Recomendado)
-Una vez iniciado el sistema, ve a la pestaña ⚙️ **Configuración** en el Dashboard. Desde aquí puedes:
-- ✍️ **Editar directamente**: Cambiar API Keys, modelos y puertos visualmente.
-- 📂 **Importar .env**: Arrastrar tu archivo `.env` actual y el sistema absorberá todos los valores automáticamente.
-- 🔐 **Persistencia**: Los cambios se guardan en la base de datos interna y tienen prioridad sobre los archivos de texto.
-
-### Método 2 — Configuración Manual (.env)
-Si prefieres usar archivos de texto, copia los ejemplos:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-### `backend/.env`
-
-```env
-PORT=3001
-
-# IA Providers (al menos 1 requerido)
-GROQ_API_KEY=gsk_tu_key_aqui
-GEMINI_API_KEY=
-OPENAI_API_KEY=
-NVIDIA_API_KEY=
-OPENROUTER_API_KEY=
-
-# Telegram (opcional)
-TELEGRAM_BOT_TOKEN=tu_token_de_botfather
-TELEGRAM_ALLOWED_USER_IDS=tu_id_numerico
-
-# Sistema
-DASHBOARD_URL=http://localhost:3000
-NODE_ENV=development
-LOGGER_LEVEL=error
-```
-
-### `frontend/.env`
-
-```env
-DASHBOARD_USER="admin"
-DASHBOARD_PASS="tu_password_seguro"
-```
-
-> **💡 Tip:** Si no configuras estas variables, el sistema usará por defecto:
-> - **Usuario:** `admin`
-> - **Contraseña:** `admin123`
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-BotMaRe/
-├── backend/                  # API + Motor de IA
-│   ├── src/
-│   │   ├── core/             # Agente IA, LLM, memoria, voz
-│   │   ├── whatsapp/         # Conexión Baileys, handlers
-│   │   ├── telegram/         # Bot de Telegram
-│   │   ├── services/         # Lógica de negocio
-│   │   ├── routes/           # Endpoints REST
-│   │   ├── tools/            # Herramientas del agente (hora, web, recordatorios)
-│   │   ├── modules/          # Scheduler, difusión masiva
-│   │   └── index.ts          # Punto de entrada
-│   ├── data/                 # Base de datos SQLite
-│   ├── .env                  # Variables de entorno (no se sube a GitHub)
-│   └── .env.example          # Plantilla de referencia
-│
-├── frontend/                 # Dashboard Next.js
-│   ├── app/                  # Páginas (App Router)
-│   ├── components/           # Componentes React
-│   ├── hooks/                # Custom hooks (useBotData, useWhatsApp)
-│   ├── types/                # Tipos TypeScript
-│   ├── .env                  # Credenciales del dashboard
-│   └── .env.example          # Plantilla de referencia
-│
-├── setup.bat                 # Setup rápido Windows
-├── setup.sh                  # Setup rápido Linux/Mac
-├── docker-compose.yml        # Deploy con Docker
-└── package.json              # Scripts raíz (npm run dev)
-```
-
----
-
-## 🏷️ Variables Inteligentes
-
-Al redactar mensajes en el dashboard, puedes usar variables que se reemplazan automáticamente:
-
-| Variable        | Resultado        | Ejemplo    |
-| --------------- | ---------------- | ---------- |
-| `{NOMBRE}`      | Nombre completo  | Juan Pérez |
-| `{NOMBRE_PILA}` | Primer nombre    | Juan       |
-| `{APELLIDO}`    | Apellidos        | Pérez      |
-| `{FECHA}`       | Fecha actual     | 01/05/2026 |
-| `{HORA_12}`     | Hora 12h         | 2:30 PM    |
-| `{HORA_24}`     | Hora 24h         | 14:30      |
-| `{DIA_SEMANA}`  | Día de la semana | Jueves     |
-
----
-
-## 📜 Scripts Disponibles
-
-| Comando                         | Descripción                           |
-| ------------------------------- | ------------------------------------- |
-| `npm run dev`                   | Inicia Backend + Frontend juntos      |
-| `npm run install-all`           | Instala dependencias en los 3 módulos |
-| `npm run dev --prefix backend`  | Solo el backend                       |
-| `npm run dev --prefix frontend` | Solo el frontend                      |
-
----
-
-## ❓ Solución de Problemas
-
-<details>
-<summary><strong>El QR no aparece</strong></summary>
-
-- Verifica que el backend esté corriendo en el puerto 3001
-- Revisa la terminal por errores
-- Intenta borrar `backend/data/whatsapp_auth.db` y reiniciar
-
-</details>
-
-<details>
-<summary><strong>El bot no responde mensajes</strong></summary>
-
-- Verifica que tienes al menos 1 API Key configurada en `backend/.env`
-- Revisa los logs: debería aparecer `[LLM] Provider Responded successfully`
-- Si ves `Timeout after 15000ms`, esa key no está respondiendo — prueba con otro proveedor
-
-</details>
-
-<details>
-<summary><strong>Error "npm install" falla</strong></summary>
-
-- Asegúrate de tener Node.js v18+ (`node -v`)
-- En Linux/Mac puede necesitar: `sudo npm install`
-- Borra `node_modules` y `package-lock.json` e intenta de nuevo
-
-</details>
-
-<details>
-<summary><strong>Los mensajes dicen "Usuario" en vez del nombre</strong></summary>
-
-- Al enviar difusiones, escribe los contactos como: `Juan 5212345678`
-- Si no pones nombre, el bot usa "Usuario" por defecto
-
-</details>
-
-<details>
-<summary><strong>Error de permisos en scripts (Linux/Mac)</strong></summary>
-
-```bash
-chmod +x setup.sh
-```
-
-</details>
-
----
-
-## 🤝 Contribuir
-
-1. Fork del repositorio
-2. Crea tu rama: `git checkout -b feature/mi-mejora`
-3. Commit: `git commit -m "feat: agregar nueva función"`
-4. Push: `git push origin feature/mi-mejora`
-5. Abre un Pull Request
+| Problema | Solución Analítica |
+| :--- | :--- |
+| **Error de Socket** | Revisa que el puerto 3001 esté libre. El sistema usa WebSockets para comunicación en tiempo real. |
+| **IA Lenta** | El orquestador espera 15s por proveedor. Prueba a usar Groq como prioridad 1 para respuestas instantáneas. |
+| **Pérdida de QR** | El QR se refresca automáticamente cada 60s. Asegúrate de tener una conexión estable a internet. |
 
 ---
 
 <p align="center">
-  Desarrollado con ❤️ por <strong><a href="https://github.com/LedezmaSune">LedezmaSune</a></strong><br/>
-  Impulsado por <strong>Kitsune Engine</strong> 🦊
+  Diseñado con rigor técnico por <strong><a href="https://github.com/LedezmaSune">LedezmaSune</a></strong><br/>
+  Impulsado por el motor <strong>Kitsune Engine</strong> 🦊
 </p>

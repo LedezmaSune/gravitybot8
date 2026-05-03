@@ -19,25 +19,9 @@ export class SystemController {
     });
 
     cleanUploads = asyncHandler(async (req: Request, res: Response) => {
-        if (!fs.existsSync(uploadDir)) return res.json({ success: true, deletedCount: 0 });
-        
-        const files = fs.readdirSync(uploadDir);
-        let deletedCount = 0;
-        const pendingReminders = await listReminders('owner');
-        const activePaths = new Set(pendingReminders.map((r: any) => r.mediaPath).filter(Boolean));
-        
-        files.forEach(file => {
-            const fullPath = path.join(uploadDir, file);
-            if (!activePaths.has(fullPath)) {
-                try {
-                    fs.unlinkSync(fullPath);
-                    deletedCount++;
-                } catch (e) {
-                    console.error("Could not delete file", fullPath, e);
-                }
-            }
-        });
-        res.json({ success: true, deletedCount });
+        const { BackupService } = require('../services/backup.service');
+        await BackupService.cleanOldUploads(0); // 0 días para limpieza manual inmediata
+        res.json({ success: true, message: 'Multimedia no utilizada eliminada con éxito.' });
     });
 
     resetWhatsApp = asyncHandler(async (req: Request, res: Response) => {
@@ -77,5 +61,42 @@ export class SystemController {
     applyUpdate = asyncHandler(async (req: Request, res: Response) => {
         const result = await this.updateService.performUpdate();
         res.json(result);
+    });
+
+    downloadBackup = asyncHandler(async (req: Request, res: Response) => {
+        const { BackupService } = require('../services/backup.service');
+        try {
+            const filePath = await BackupService.createBackup(true); // Enviar a Telegram también
+            res.download(filePath, path.basename(filePath), (err) => {
+                if (err) {
+                    console.error('Error al descargar backup:', err);
+                }
+                // Limpiar el archivo local después de descargar (opcional, BackupService ya tiene limpieza cron)
+            });
+        } catch (error) {
+            console.error('Error generando backup:', error);
+            res.status(500).json({ error: 'Error al generar el respaldo.' });
+        }
+    });
+
+    restoreBackup = asyncHandler(async (req: Request, res: Response) => {
+        const { BackupService } = require('../services/backup.service');
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ningún archivo de respaldo.' });
+        }
+
+        try {
+            const result = await BackupService.restoreBackup(req.file.path);
+            
+            // Eliminar el archivo temporal subido
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+
+            res.json(result);
+        } catch (error: any) {
+            console.error('Error restaurando backup:', error);
+            res.status(500).json({ error: error.message || 'Error al restaurar el respaldo.' });
+        }
     });
 }

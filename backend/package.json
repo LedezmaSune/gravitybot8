@@ -26,6 +26,7 @@
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "adm-zip": "^0.5.17",
     "axios": "^1.15.0",
     "better-sqlite3": "^12.8.0",
     "cloudflared": "^0.7.1",
@@ -38,6 +39,7 @@
     "http-proxy-middleware": "^3.0.5",
     "luxon": "^3.7.2",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "openai": "^6.34.0",
     "pdf-parse": "^2.4.5",
     "pino": "^10.3.1",
@@ -46,6 +48,7 @@
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
     "@types/axios": "^0.9.36",
     "@types/better-sqlite3": "^7.6.13",
     "@types/cors": "^2.8.19",
@@ -54,6 +57,7 @@
     "@types/luxon": "^3.7.1",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.6.0",
+    "@types/node-cron": "^3.0.11",
     "@types/pino": "^7.0.4",
     "@types/qrcode": "^1.5.6",
     "@vercel/ncc": "^0.38.4",

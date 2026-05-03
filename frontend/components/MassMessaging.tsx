@@ -46,17 +46,17 @@ export function MassMessaging({ onSend, onReview, templates }: MassMessagingProp
     const contactCount = contacts.split(/[\n,]+/).filter(c => c.trim()).length;
 
     return (
-        <section className="glass-effect border border-app-border rounded-[2.5rem] p-6 lg:p-10 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-6 duration-700 max-w-6xl mx-auto shadow-[0_32px_64px_rgba(0,0,0,0.2)] relative overflow-hidden transition-all">
+        <section className="glass-effect border border-app-border rounded-3xl md:rounded-[2.5rem] p-4 md:p-6 lg:p-10 backdrop-blur-3xl animate-in fade-in slide-in-from-bottom-6 duration-700 max-w-6xl mx-auto shadow-[0_32px_64px_rgba(0,0,0,0.2)] relative overflow-hidden transition-all">
             <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3"></div>
             
-            <div className="flex items-center gap-5 mb-12 relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 rounded-[1.75rem] flex items-center justify-center text-white shadow-[0_15px_30px_rgba(6,182,212,0.3)] transform -rotate-2 hover:rotate-0 transition-all duration-500">
-                    <Megaphone size={40} strokeWidth={2} />
+            <div className="flex items-center gap-4 md:gap-5 mb-8 md:mb-12 relative z-10">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 rounded-2xl md:rounded-[1.75rem] flex items-center justify-center text-white shadow-[0_15px_30px_rgba(6,182,212,0.3)] transform -rotate-2 hover:rotate-0 transition-all duration-500">
+                    <Megaphone className="w-8 h-8 md:w-10 md:h-10" strokeWidth={2} />
                 </div>
                 <div>
-                    <h2 className="text-3xl font-black text-app-text tracking-tighter">Difusión Masiva con IA</h2>
-                    <p className="text-app-text-muted text-[11px] font-bold uppercase tracking-[0.2em] mt-1.5 opacity-70">Campañas enriquecidas y personalización automática</p>
+                    <h2 className="text-2xl md:text-3xl font-black text-app-text tracking-tighter leading-tight">Difusión Masiva con IA</h2>
+                    <p className="text-app-text-muted text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] mt-1 opacity-70">Campañas enriquecidas y personalización</p>
                 </div>
             </div>
 

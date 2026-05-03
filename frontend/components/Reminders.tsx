@@ -130,16 +130,16 @@ export function Reminders({ reminders, templates, onAdd, onDelete, initialTime }
         }
     };
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Form */}
-            <section className="lg:col-span-1 bg-app-card border border-app-border rounded-3xl p-6 backdrop-blur-xl animate-in fade-in slide-in-from-left-4 duration-500 shadow-2xl h-fit transition-colors">
+            <section className="lg:col-span-1 bg-app-card border border-app-border rounded-3xl p-5 md:p-6 backdrop-blur-xl animate-in fade-in slide-in-from-left-4 duration-500 shadow-2xl h-fit transition-colors">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                        {editingId ? <Edit3 size={24} /> : <Bell size={24} />}
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                        {editingId ? <Edit3 size={20} className="md:w-6 md:h-6" /> : <Bell size={20} className="md:w-6 md:h-6" />}
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-app-text">{editingId ? 'Editar' : 'Programar'}</h2>
-                        <p className="text-app-text-muted text-xs">{editingId ? 'Modifica el recordatorio.' : 'Recordatorios automáticos.'}</p>
+                        <h2 className="text-lg md:text-xl font-bold text-app-text leading-tight">{editingId ? 'Editar' : 'Programar'}</h2>
+                        <p className="text-app-text-muted text-[10px] md:text-xs">{editingId ? 'Modifica el recordatorio.' : 'Recordatorios automáticos.'}</p>
                     </div>
                 </div>
 

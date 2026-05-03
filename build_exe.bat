@@ -1,56 +1,53 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo 🦊 Preparando la compilacion de BotMaRe Portable (.exe)...
+set BUILD_DIR=En_Desarrollo_Portable
+set APP_NAME=BotMaRe_AI
 
-:: 1. Instalar dependencias globales necesarias
-echo 📦 Verificando herramientas...
-call npm install -g pkg
+echo 🦊 Preparando la compilacion de %APP_NAME%...
+
+:: 1. Limpiar o crear carpeta de destino
+if exist %BUILD_DIR% (
+    echo 🧹 Limpiando compilaciones anteriores...
+    rd /s /q %BUILD_DIR%
+)
+mkdir %BUILD_DIR%
+mkdir %BUILD_DIR%\data
+mkdir %BUILD_DIR%\data\uploads
 
 :: 2. Construir Frontend
-echo 🎨 Compilando Frontend (Next.js)...
+echo 🎨 Compilando Interfaz (Next.js)...
 cd frontend
-call npm run build
-cd ..
-
-:: 3. Construir Backend
-echo ⚙️ Compilando Backend (TypeScript)...
-cd backend
 call npm install
 call npm run build
 cd ..
 
-:: 4. Preparar carpeta de distribucion
-echo 📦 Organizando archivos...
-if exist dist ( rd /s /q dist )
-mkdir dist
-mkdir dist\frontend
+:: 3. Copiar Frontend al destino
+echo 📦 Moviendo interfaz al paquete...
+xcopy /e /i /y frontend\out %BUILD_DIR%\frontend
 
-:: Copiar frontend compilado
-echo 🖼️ Copiando Dashboard...
-xcopy /e /i /y frontend\out dist\frontend
-
-:: Copiar librerias CRITICAS (node_modules)
-echo 📚 Copiando librerias del sistema...
-:: Copiamos las que dan problemas o son binarias
-mkdir dist\node_modules
-xcopy /e /i /y backend\node_modules\better-sqlite3 dist\node_modules\better-sqlite3
-xcopy /e /i /y backend\node_modules\cloudflared dist\node_modules\cloudflared
-xcopy /e /i /y backend\node_modules\@whiskeysockets dist\node_modules\@whiskeysockets
-xcopy /e /i /y backend\node_modules\lru-cache dist\node_modules\lru-cache
-
-:: 5. Empaquetar con PKG
-echo 🚀 Generando ejecutable...
+:: 4. Construir Backend
+echo ⚙️ Compilando Motor (Backend)...
 cd backend
-:: Usamos pkg directamente sobre el archivo compilado por tsc
-call pkg dist\index.js --targets node18-win-x64 --output ../dist/BotMaRe.exe
+call npm install
+call npm run build
+
+:: 5. Empaquetar Backend como EXE
+echo 📦 Generando archivo ejecutable...
+:: Usamos pkg para convertir el JS en EXE. 
+:: Nota: Debe estar instalado pkg globalmente o usarlo vía npx
+call npx pkg . --targets node18-win-x64 --output ..\%BUILD_DIR%\%APP_NAME%.exe --compress GZip
 cd ..
 
+:: 6. Copiar archivos necesarios adicionales
+echo 📄 Copiando archivos de configuracion...
+copy backend\.env.example %BUILD_DIR%\.env
+copy README.md %BUILD_DIR%\Instrucciones.md
+
 echo.
-echo ✅ ¡PROCESO COMPLETADO!
-echo El ejecutable se encuentra en: dist\BotMaRe.exe
-echo.
-echo NOTA: Para que funcione, las carpetas 'frontend' y 'node_modules' 
-echo deben estar junto al archivo 'BotMaRe.exe'.
-echo.
+echo ======================================================
+echo ✅ COMPILACION COMPLETADA
+echo 📂 Carpeta: %BUILD_DIR%
+echo 🚀 Ejecutable: %APP_NAME%.exe
+echo ======================================================
 pause
