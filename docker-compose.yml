@@ -7,14 +7,14 @@ services:
     container_name: wamasivos-backend
     restart: unless-stopped
     ports:
-      - "3001:3001"
+      - "8001:8001"
     volumes:
       # MUY IMPORTANTE: Estos volúmenes garantizan que no pierdas sesión ni datos
       - ./backend/auth_info_baileys:/app/auth_info_baileys
       - ./backend/data:/app/data
       - ./backend/dist:/app/dist # Optional caching
     environment:
-      - PORT=3001
+      - PORT=8001
       # Puedes añadir acá todas tus variables (OPENAI_API_KEY, GROQ_API_KEY, etc) 
       # o crear un archivo .env en el root del docer-compose  
     
@@ -24,9 +24,9 @@ services:
     container_name: wamasivos-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8000:8000"
     environment:
       # Le decimos al Frontend que el Backend está en la red interna de Docker
-      - BACKEND_URL=http://backend:3001
+      - BACKEND_URL=http://backend:8001
     depends_on:
       - backend

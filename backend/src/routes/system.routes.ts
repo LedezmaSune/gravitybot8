@@ -2,8 +2,19 @@ import { Router } from 'express';
 import { SystemController } from '../controllers/system.controller';
 import multer from 'multer';
 
-const upload = multer({ dest: 'backups/temp_uploads/' });
+import fs from 'fs';
+import path from 'path';
 
+const uploadDir = path.resolve('backups/temp_uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+});
+const upload = multer({ storage });
 export function createSystemRouter(controller: SystemController) {
     const router = Router();
     

@@ -4,8 +4,8 @@ import { Request, Response, NextFunction } from 'express';
  * Middleware para autenticación básica del Dashboard
  */
 export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
-    // No aplicar a rutas de API o WebSockets
-    if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+    // No aplicar a rutas de WebSockets (se maneja en el gateway)
+    if (req.path.startsWith('/socket.io')) {
         return next();
     }
 

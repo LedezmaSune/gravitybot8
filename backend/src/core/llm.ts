@@ -136,7 +136,7 @@ export async function callLLM(
                 baseURL: "https://openrouter.ai/api/v1",
                 model: config['OPENROUTER_MODEL'] || "meta-llama/llama-3.1-8b-instruct:free",
                 defaultHeaders: {
-                    "HTTP-Referer": "http://localhost:3000",
+                    "HTTP-Referer": "http://localhost:8000",
                     "X-Title": "BotMaRe AI",
                 }
             }, cleanedMessages, tools, hasVision);

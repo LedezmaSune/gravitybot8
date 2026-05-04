@@ -5,7 +5,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch auth_info_baileys,data,dist src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only --no-deprecation --ignore-watch auth_info_baileys,data,dist src/index.ts",
     "build": "tsc",
     "pkg": "pkg dist/index.js --targets node18-win-x64 --output dist/BotMaRe.exe"
   },

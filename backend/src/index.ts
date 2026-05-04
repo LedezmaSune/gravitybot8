@@ -63,7 +63,7 @@ const frontendPath = isPkg
 
 if (process.env.NODE_ENV === 'development' && !isPkg) {
     app.use('/', createProxyMiddleware({
-        target: 'http://localhost:3000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
         ws: true,
         pathFilter: (path: string) => !path.startsWith('/api') && !path.startsWith('/socket.io')
@@ -91,7 +91,7 @@ io.on('connection', (socket: any) => {
     if (status.qr) socket.emit('qr', status.qr);
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8001;
 
 /**
  * Bootstrap Application

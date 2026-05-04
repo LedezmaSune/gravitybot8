@@ -61,7 +61,7 @@ export function initTelegramBot(
   bot.command(["dashboard", "dashbord"], async (ctx) => {
     const { TunnelService } = await import("../core/tunnel");
     const tunnelUrl = TunnelService.getInstance().getUrl();
-    const targetUrl = tunnelUrl || process.env.DASHBOARD_URL || "http://localhost:3000";
+    const targetUrl = tunnelUrl || process.env.DASHBOARD_URL || "http://localhost:8000";
     await ctx.reply(`🌌 *OpenGravity Dashboard*\n🔗 ${targetUrl}`, { parse_mode: "Markdown" });
   });
 
@@ -84,7 +84,7 @@ export function initTelegramBot(
       if (data === "menu_dashboard") {
         const { TunnelService } = await import("../core/tunnel");
         const tunnelUrl = TunnelService.getInstance().getUrl();
-        const targetUrl = tunnelUrl || process.env.DASHBOARD_URL || "http://localhost:3000";
+        const targetUrl = tunnelUrl || process.env.DASHBOARD_URL || "http://localhost:8000";
         await ctx.reply(`🌌 *OpenGravity Dashboard*\n🔗 ${targetUrl}`, { parse_mode: "Markdown" });
       } else if (data === "menu_reminders") {
         const keyboard = new InlineKeyboard()
@@ -267,8 +267,8 @@ export function initTelegramBot(
     const caption = ctx.message.caption || "";
     if (caption.toLowerCase() === "/restaurar") {
         const doc = ctx.message.document;
-        if (!doc.file_name?.endsWith(".zip")) {
-            return ctx.reply("❌ Por favor, envía un archivo .zip válido.");
+        if (!doc.file_name?.endsWith(".zip") && !doc.file_name?.endsWith(".enc")) {
+            return ctx.reply("❌ Por favor, envía un archivo .zip o .zip.enc válido.");
         }
 
         await ctx.reply("⏳ Procesando restauración... Esto reemplazará todos tus datos.");
@@ -282,7 +282,8 @@ export function initTelegramBot(
             const { BackupService } = require("../services/backup.service");
             const axios = require("axios");
             const fs = require("fs");
-            const tempPath = path.join(BackupService.getBackupDir(), 'restore_from_telegram.zip');
+            const ext = doc.file_name?.endsWith(".enc") ? ".enc" : ".zip";
+            const tempPath = path.join(BackupService.getBackupDir(), `restore_from_telegram${ext}`);
             
             const response = await axios({
                 url: fileUrl,

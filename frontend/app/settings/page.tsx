@@ -1,0 +1,14 @@
+'use client';
+
+import { useGlobalBotData } from '@/app/BotDataProvider';
+import { Settings } from '@/components/Settings';
+
+export default function SettingsPage() {
+    const { settings, handleUpdateSettings, handleParseEnv } = useGlobalBotData();
+
+    if (!settings) return <div className="p-8 text-center animate-pulse">Cargando Configuración...</div>;
+
+    return (
+        <Settings settings={settings} onUpdate={handleUpdateSettings} onParseEnv={handleParseEnv} />
+    );
+}

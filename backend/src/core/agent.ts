@@ -31,7 +31,7 @@ ${fullAccess ? '' : '- [🔒 PRIVACIDAD Y ALCANCE]: NO menciones que eres un sis
 
     const history = await getHistory(chatId, 10);
     const { TunnelService } = await import("./tunnel");
-    const tunnelUrl = TunnelService.getInstance().getUrl() || process.env.DASHBOARD_URL || "http://localhost:3000";
+    const tunnelUrl = TunnelService.getInstance().getUrl() || process.env.DASHBOARD_URL || "http://localhost:8000";
     const dynamicContext = `\n[SISTEMA] FECHA Y HORA ACTUAL: ${new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' })}\n[SISTEMA] CHAT_ID: ${chatId}\n[SISTEMA] SENDER_ID: ${senderId}\n`;
 
     let userContent: any = `<<<INICIO DEL MENSAJE>>>\n${userMessage}\n<<<FIN DEL MENSAJE>>>`;

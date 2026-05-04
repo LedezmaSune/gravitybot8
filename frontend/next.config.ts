@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   // Permitir tráfico de desarrollo local y túneles
-  allowedDevOrigins: ['localhost:3000', 'localhost:3001', '*.trycloudflare.com', '192.168.56.1'],
+  allowedDevOrigins: ['localhost:8000', 'localhost:8001', '*.trycloudflare.com', '192.168.56.1'],
 };
 
 export default nextConfig;

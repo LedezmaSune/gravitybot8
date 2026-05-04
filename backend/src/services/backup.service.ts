@@ -2,9 +2,36 @@ import AdmZip from 'adm-zip';
 import path from 'path';
 import fs from 'fs';
 import cron from 'node-cron';
+import crypto from 'crypto';
 import { bot } from '../telegram/bot';
 import { getSettings } from '../core/memory';
 import { InputFile } from 'grammy';
+
+const ENCRYPTION_ALGORITHM = 'aes-256-cbc';
+
+function getEncryptionKey() {
+    const password = process.env.DASHBOARD_PASS || 'admin123';
+    return crypto.scryptSync(password, 'salt-botmare', 32);
+}
+
+function encryptFile(inputPath: string, outputPath: string) {
+    const initVector = crypto.randomBytes(16);
+    const key = getEncryptionKey();
+    const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, key, initVector);
+    const input = fs.readFileSync(inputPath);
+    const encrypted = Buffer.concat([initVector, cipher.update(input), cipher.final()]);
+    fs.writeFileSync(outputPath, encrypted);
+}
+
+function decryptFile(inputPath: string, outputPath: string) {
+    const input = fs.readFileSync(inputPath);
+    const initVector = input.subarray(0, 16);
+    const encryptedData = input.subarray(16);
+    const key = getEncryptionKey();
+    const decipher = crypto.createDecipheriv(ENCRYPTION_ALGORITHM, key, initVector);
+    const decrypted = Buffer.concat([decipher.update(encryptedData), decipher.final()]);
+    fs.writeFileSync(outputPath, decrypted);
+}
 
 export class BackupService {
     private static backupDir = path.join(process.cwd(), 'backups');
@@ -19,8 +46,9 @@ export class BackupService {
 
         const zip = new AdmZip();
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
-        const filename = `backup-botmare-${timestamp}.zip`;
+        const filename = `backup-botmare-${timestamp}.zip.enc`;
         const filePath = path.join(this.backupDir, filename);
+        const tempZipPath = path.join(this.backupDir, `temp-${timestamp}.zip`);
 
         // 1. Incluir carpeta data (DB, WhatsApp Session, Uploads)
         const dataPath = path.join(process.cwd(), 'data');
@@ -34,7 +62,10 @@ export class BackupService {
             zip.addLocalFile(envPath);
         }
 
-        zip.writeZip(filePath);
+        // Guardar temporalmente y cifrar
+        zip.writeZip(tempZipPath);
+        encryptFile(tempZipPath, filePath);
+        fs.unlinkSync(tempZipPath);
 
         if (sendToTelegram) {
             await this.sendBackupToTelegram(filePath, 'Manual');
@@ -62,7 +93,9 @@ export class BackupService {
                             `📁 *Archivo:* \`${filename}\`\n` +
                             `📅 *Fecha:* ${now}\n` +
                             `⚙️ *Tipo:* ${type}\n\n` +
-                            `💾 _El archivo adjunto contiene la Base de Datos, Sesiones de WhatsApp y Multimedia._`;
+                            `🔐 _El archivo está CIFRADO por seguridad (AES-256)._\n` +
+                            `🔑 _La contraseña de desencriptado es la contraseña de tu Dashboard._\n\n` +
+                            `💾 _Contiene: Base de Datos, Sesiones de WhatsApp y Multimedia._`;
 
             if (bot && settings.TELEGRAM_ALLOWED_USER_IDS) {
                 const userIds = settings.TELEGRAM_ALLOWED_USER_IDS.split(',').map((id: string) => id.trim());
@@ -117,8 +150,8 @@ export class BackupService {
         const msPerDay = 24 * 60 * 60 * 1000;
 
         files.forEach(file => {
-            // Solo procesar archivos .zip generados por el sistema
-            if (file.endsWith('.zip')) {
+            // Solo procesar archivos .zip.enc generados por el sistema
+            if (file.endsWith('.zip.enc') || file.endsWith('.zip')) {
                 const filePath = path.join(this.backupDir, file);
                 const stats = fs.statSync(filePath);
                 
@@ -139,7 +172,16 @@ export class BackupService {
      */
     static async restoreBackup(zipFilePath: string): Promise<{ success: boolean; message: string }> {
         try {
-            const zip = new AdmZip(zipFilePath);
+            const tempDecryptedPath = path.join(this.backupDir, 'temp_decrypted.zip');
+            
+            // Si viene cifrado (.enc), descifrarlo primero
+            if (zipFilePath.endsWith('.enc')) {
+                decryptFile(zipFilePath, tempDecryptedPath);
+            } else {
+                fs.copyFileSync(zipFilePath, tempDecryptedPath);
+            }
+
+            const zip = new AdmZip(tempDecryptedPath);
             const tempExtractPath = path.join(this.backupDir, 'temp_restore');
             
             if (fs.existsSync(tempExtractPath)) {
@@ -172,6 +214,9 @@ export class BackupService {
 
             // 5. Limpieza
             fs.rmSync(tempExtractPath, { recursive: true, force: true });
+            if (fs.existsSync(tempDecryptedPath)) {
+                fs.unlinkSync(tempDecryptedPath);
+            }
             
             return { 
                 success: true, 

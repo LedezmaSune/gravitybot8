@@ -50,4 +50,3 @@ echo ✅ COMPILACION COMPLETADA
 echo 📂 Carpeta: %BUILD_DIR%
 echo 🚀 Ejecutable: %APP_NAME%.exe
 echo ======================================================
-pause

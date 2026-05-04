@@ -18,6 +18,6 @@ COPY . .
 RUN npm run build
 
 # Expose backend port
-EXPOSE 3001
+EXPOSE 8001
 
 CMD ["npm", "start"]

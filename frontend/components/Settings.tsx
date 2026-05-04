@@ -121,7 +121,7 @@ export const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onParseE
             keys: [
                 { id: 'TELEGRAM_BOT_TOKEN', label: 'Telegram Bot Token', desc: 'De @BotFather' },
                 { id: 'TELEGRAM_ALLOWED_USER_IDS', label: 'ID Usuarios Telegram', desc: 'Separados por comas' },
-                { id: 'PORT', label: 'Puerto Backend', desc: 'Default: 3001' },
+                { id: 'PORT', label: 'Puerto Backend', desc: 'Default: 8001' },
             ]
         },
         {
@@ -183,7 +183,7 @@ export const Settings: React.FC<SettingsProps> = ({ settings, onUpdate, onParseE
                         <label className="flex items-center gap-2 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 px-6 py-3 rounded-2xl font-bold text-sm border border-emerald-500/30 transition-all active:scale-95 cursor-pointer">
                             <RefreshCw size={18} />
                             Importar Respaldo
-                            <input type="file" accept=".zip" className="hidden" onChange={handleRestoreBackup} />
+                            <input type="file" accept=".zip,.enc" className="hidden" onChange={handleRestoreBackup} />
                         </label>
 
                         <button 
