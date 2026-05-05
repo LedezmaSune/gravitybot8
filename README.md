@@ -22,9 +22,10 @@
 - 📊 **Nuevos Módulos de UI:** Integración de pestañas para **Auditorías**, **Personalidad de IA**, **Plantillas** y **Programación** directa.
 - 🧩 **Arquitectura Modular (Frontend):** Nuevo `BotDataProvider` para una sincronización en tiempo real perfecta entre el backend y los componentes del dashboard.
 - 🔒 **Respaldos Cifrados:** Tus datos viajan a Telegram protegidos con encriptación de grado militar (AES-256-CBC) en formato `.zip.enc`.
-- ⚡ **Express 5 & Next.js:** Migración a Express 5 para el motor de la API y Next.js App Router para el Dashboard.
-- 🚀 **Control Panel Pro:** Nuevo `manager.bat` para gestionar instalaciones, builds, y servicios de forma profesional.
-- 🌐 **Optimización de Puertos:** Acceso hiperrápido a través del puerto `8001` (versión compilada/producción).
+- ⚡ **Express 5 & Next.js:** Migración a Express 5 para el motor de la API y Next.js App Router para el Dashboard. Incluye fix de rutas dinámicas `/.*/`.
+- 🚀 **Control Panel Pro:** Nuevo `manager.bat` para gestionar instalaciones, builds, y servicios de forma profesional con soporte automático de PM2.
+- 🌐 **Optimización de Puertos:** Acceso hiperrápido a través del puerto `8001` (versión compilada/producción) con auto-build integrado.
+- 📦 **Estabilidad PM2:** Configuración de contexto `cwd` optimizada para garantizar la persistencia de sesiones de WhatsApp.
 
 ### Arquitectura
 <p align="center">

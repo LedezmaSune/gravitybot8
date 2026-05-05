@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "start": "npx pm2 start backend/dist/index.js --name \"BotMaRe-Engine\" && npx pm2 save",
+    "start": "npx pm2 start dist/index.js --name \"BotMaRe-Engine\" --cwd backend && npx pm2 save",
     "stop": "npx pm2 stop all && npx pm2 delete all && npx pm2 save",
     "list": "npx pm2 list",
     "logs": "npx pm2 logs",

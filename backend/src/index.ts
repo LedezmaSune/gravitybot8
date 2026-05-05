@@ -70,7 +70,7 @@ if (process.env.NODE_ENV === 'development' && !isPkg) {
     }));
 } else {
     app.use(express.static(frontendPath));
-    app.get('(.*)', (req: any, res: any) => {
+    app.get(/.*/, (req: any, res: any) => {
         if (!req.path.startsWith('/api')) {
             const indexPath = path.join(frontendPath, 'index.html');
             if (fs.existsSync(indexPath)) {
