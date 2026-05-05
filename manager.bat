@@ -5,9 +5,24 @@ color 0b
 
 :MENU
 cls
+:: --- AUTODIAGNOSTICO PARA NOVATOS ---
+set "MISSING="
+if not exist "node_modules" set "MISSING=1"
+if not exist "backend\node_modules" set "MISSING=1"
+if not exist "backend\.env" set "MISSING=1"
+
 echo ========================================================
 echo          🦊 BOTMARE - GRAVITY DASHBOARD 🦊
 echo ========================================================
+if defined MISSING (
+    color 0e
+    echo.
+    echo  [!] ATENCION: El sistema no esta configurado aun.
+    echo      Se recomienda elegir la OPCION 8 para comenzar.
+    echo  --------------------------------------------------------
+) else (
+    color 0b
+)
 echo.
 echo  [ 1 ] EJECUCION DEL SISTEMA
 echo  --------------------------------------------------------
@@ -30,7 +45,7 @@ echo  U. ACTUALIZAR (Git Pull + Install)
 echo.
 echo  [ 4 ] ACCESO RAPIDO
 echo  --------------------------------------------------------
-echo  D. Abrir Dashboard (http://localhost:8001)
+echo  D. Abrir Dashboard Local (http://localhost:8001)
 echo  T. Iniciar Tunel Cloudflare (Exponer Master)
 echo  X. Salir
 echo.
@@ -75,7 +90,9 @@ call npx pm2 delete BotMaRe-Engine >nul 2>&1
 call npm run start
 echo.
 echo ✅ BotMaRe-Engine iniciado en segundo plano.
-echo ✅ Dashboard disponible en: http://localhost:8001
+echo ✅ BotMaRe-Engine iniciado en segundo plano.
+echo ✅ Dashboard Local: http://localhost:8001
+echo ✅ Para acceso remoto use su IP de red (vea la ventana de logs).
 pause
 goto MENU
 

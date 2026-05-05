@@ -7,8 +7,14 @@ echo --------------------------------------------------
 :: 1. Verificar Node.js
 node -v >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [ERROR] Node.js no esta instalado. 
-    echo Por favor, instalalo desde https://nodejs.org/ antes de continuar.
+    echo.
+    echo ❌ [ERROR] Node.js no esta instalado.
+    echo.
+    echo BotMaRe necesita Node.js para funcionar. 
+    echo Voy a abrir la pagina de descarga por ti...
+    start https://nodejs.org/
+    echo.
+    echo Una vez instalado, reinicia este script.
     pause
     exit /b
 )

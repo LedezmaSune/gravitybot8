@@ -101,14 +101,23 @@ async function bootstrap() {
     SystemUtils.validateEnv();
     
     server.listen(Number(PORT), '0.0.0.0', async () => {
-        console.log(`\n🚀 KITSUNE ENGINE (Portable) activo en: http://localhost:${PORT}`);
+        const localIP = SystemUtils.getLocalIP();
+        
+        console.log(`\n=======================================================`);
+        console.log(`🦊 BOTMARE ENGINE ACTIVADO`);
+        console.log(`=======================================================`);
+        console.log(`🏠 LOCAL:  http://localhost:${PORT}`);
+        console.log(`🌐 RED:    http://${localIP}:${PORT}`);
         
         try {
             const tunnelUrl = await TunnelService.getInstance().start(Number(PORT));
-            if (tunnelUrl) console.log(`🌍 TUNEL: ${tunnelUrl}`);
+            if (tunnelUrl) {
+                console.log(`🌍 TUNEL:   ${tunnelUrl}`);
+            }
         } catch (e) {
-            console.error("[Tunnel] Error starting tunnel:", e);
+            console.log(`🌍 TUNEL:   Desactivado (o error al iniciar)`);
         }
+        console.log(`=======================================================\n`);
         
         await waClient.init();
         initTelegramBot(waService, reminderService, diffusionService);

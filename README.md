@@ -18,14 +18,13 @@
 
 **BotMaRe** (powered by **Kitsune Engine**) transforma tu WhatsApp en una herramienta de negocios inteligente. Combina múltiples modelos de IA, automatización de mensajes y un panel de control premium con diseño **Glassmorphism**.
 
-### Novedades Recientes (v2.5)
-- 📊 **Nuevos Módulos de UI:** Integración de pestañas para **Auditorías**, **Personalidad de IA**, **Plantillas** y **Programación** directa.
-- 🧩 **Arquitectura Modular (Frontend):** Nuevo `BotDataProvider` para una sincronización en tiempo real perfecta entre el backend y los componentes del dashboard.
-- 🔒 **Respaldos Cifrados:** Tus datos viajan a Telegram protegidos con encriptación de grado militar (AES-256-CBC) en formato `.zip.enc`.
-- ⚡ **Express 5 & Next.js:** Migración a Express 5 para el motor de la API y Next.js App Router para el Dashboard. Incluye fix de rutas dinámicas `/.*/`.
-- 🚀 **Control Panel Pro:** Nuevo `manager.bat` para gestionar instalaciones, builds, y servicios de forma profesional con soporte automático de PM2.
-- 🌐 **Optimización de Puertos:** Acceso hiperrápido a través del puerto `8001` (versión compilada/producción) con auto-build integrado.
-- 📦 **Estabilidad PM2:** Configuración de contexto `cwd` optimizada para garantizar la persistencia de sesiones de WhatsApp.
+### Novedades Recientes (v2.6)
+- 🌐 **Acceso Multi-Equipo:** Detección automática de IP LAN y configuración de orígenes permitidos para acceder al dashboard desde cualquier dispositivo de la red.
+- 🚀 **Kitsune Engine Pro:** El motor ahora sirve el frontend automáticamente en el puerto `8001` (Modo Producción), simplificando el despliegue a un solo puerto.
+- 📊 **Logs Inteligentes:** Nueva interfaz de consola que muestra URLs de acceso Local, LAN y Túnel Cloudflare al iniciar.
+- 🧩 **Arquitectura Modular (Frontend):** Sincronización en tiempo real mejorada entre el backend y los componentes del dashboard.
+- 🔒 **Respaldos Cifrados:** Backup AES-256-CBC automático enviado a Telegram.
+- ⚡ **Express 5 & Next.js:** Optimización de rendimiento y compatibilidad con las últimas versiones de Node.js.
 
 ### Arquitectura
 <p align="center">
@@ -110,14 +109,20 @@ Genera un archivo ejecutable (.exe) portátil en la carpeta `En_Desarrollo_Porta
 ```bash
 npm run dev
 ```
-O utiliza el nuevo script **`manager.bat`** (Recomendado). Esto te permite elegir entre Modo Desarrollo o Modo Producción (PM2) y acceder rápidamente al Dashboard en el puerto `8001`.
+O utiliza el nuevo script **`manager.bat`** (Recomendado). Esto te permite elegir entre Modo Desarrollo o Modo Producción (PM2).
 
-### Paso 4 — Vincular WhatsApp
-1. Abre **http://localhost:8001** en tu navegador (Versión rápida de producción).
-2. Verás el Dashboard de Gravity.
-3. Aparecerá un **código QR** — escanéalo con tu celular:
+### Paso 4 — Acceso Remoto y Despliegue
+Si has instalado BotMaRe en un servidor o en una computadora diferente a la que usas normalmente:
+
+1.  **Detección de IP:** Al iniciar el bot, la consola mostrará tu IP de red local (ej. `http://192.168.1.50:8001`).
+2.  **Firewall:** Asegúrate de que el puerto `8001` esté permitido en el Firewall de Windows para conexiones entrantes.
+3.  **Túnel Cloudflare:** Si necesitas acceso desde fuera de tu casa/oficina, usa la **Opción T** en el `manager.bat` para generar una URL pública segura.
+
+### Paso 5 — Vincular WhatsApp
+1. Abre el Dashboard en tu navegador (usa la IP que mostró la consola o `localhost:8001` si estás en la misma PC).
+2. Aparecerá un **código QR** — escanéalo con tu celular:
    - WhatsApp → ⋮ Menú → Dispositivos vinculados → Vincular dispositivo.
-4. ¡Listo! El estado cambiará a **Conectado** 🟢.
+3. ¡Listo! El estado cambiará a **Conectado** 🟢.
 
 ---
 
