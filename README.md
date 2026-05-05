@@ -22,8 +22,9 @@
 - 📊 **Nuevos Módulos de UI:** Integración de pestañas para **Auditorías**, **Personalidad de IA**, **Plantillas** y **Programación** directa.
 - 🧩 **Arquitectura Modular (Frontend):** Nuevo `BotDataProvider` para una sincronización en tiempo real perfecta entre el backend y los componentes del dashboard.
 - 🔒 **Respaldos Cifrados:** Tus datos viajan a Telegram protegidos con encriptación de grado militar (AES-256-CBC) en formato `.zip.enc`.
-- ⚡ **Next.js App Router:** Rutas dinámicas y componentes optimizados para una carga hiperrápida.
-- 🌐 **Nuevos Puertos:** Backend (`8001`) y Frontend (`8000`) rediseñados para evitar conflictos.
+- ⚡ **Express 5 & Next.js:** Migración a Express 5 para el motor de la API y Next.js App Router para el Dashboard.
+- 🚀 **Control Panel Pro:** Nuevo `manager.bat` para gestionar instalaciones, builds, y servicios de forma profesional.
+- 🌐 **Optimización de Puertos:** Acceso hiperrápido a través del puerto `8001` (versión compilada/producción).
 
 ### Arquitectura
 <p align="center">
@@ -108,10 +109,10 @@ Genera un archivo ejecutable (.exe) portátil en la carpeta `En_Desarrollo_Porta
 ```bash
 npm run dev
 ```
-O utiliza el nuevo script `npm_run_dev.bat`. Esto arranca Backend (puerto 8001) y Frontend (puerto 8000) simultáneamente.
+O utiliza el nuevo script **`manager.bat`** (Recomendado). Esto te permite elegir entre Modo Desarrollo o Modo Producción (PM2) y acceder rápidamente al Dashboard en el puerto `8001`.
 
 ### Paso 4 — Vincular WhatsApp
-1. Abre **http://localhost:8000** en tu navegador.
+1. Abre **http://localhost:8001** en tu navegador (Versión rápida de producción).
 2. Verás el Dashboard de Gravity.
 3. Aparecerá un **código QR** — escanéalo con tu celular:
    - WhatsApp → ⋮ Menú → Dispositivos vinculados → Vincular dispositivo.
