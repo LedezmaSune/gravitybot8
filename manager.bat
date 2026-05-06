@@ -5,11 +5,11 @@ color 0b
 
 :MENU
 cls
-:: --- AUTODIAGNOSTICO PARA NOVATOS ---
+:: --- AUTODIAGNOSTICO ---
 set "MISSING="
 if not exist "node_modules" set "MISSING=1"
-if not exist "backend\node_modules" set "MISSING=1"
-if not exist "backend\.env" set "MISSING=1"
+if not exist ".env" set "MISSING=1"
+if not exist "src\server.ts" set "MISSING=1"
 
 echo ========================================================
 echo          🦊 BOTMARE - GRAVITY DASHBOARD 🦊
@@ -26,8 +26,8 @@ if defined MISSING (
 echo.
 echo  [ 1 ] EJECUCION DEL SISTEMA
 echo  --------------------------------------------------------
-echo  1. MODO DESARROLLO (Backend + Frontend juntos)
-echo  2. MODO PRODUCCION (Iniciar en segundo plano con PM2)
+echo  1. MODO DESARROLLO (Dashboard + Motor juntos)
+echo  2. MODO PRODUCCION (Iniciar con PM2)
 echo  3. DETENER TODO (Stop PM2)
 echo  4. VER LOGS EN TIEMPO REAL
 echo.
@@ -39,8 +39,8 @@ echo  7. LIMPIAR CACHE (Borra dist y .next)
 echo.
 echo  [ 3 ] HERRAMIENTAS Y BUILD
 echo  --------------------------------------------------------
-echo  8. INSTALAR / REPARAR (Ejecuta Setup Completo)
-echo  9. COMPILAR PORTABLE (Genera .exe ejecutable)
+echo  8. INSTALAR / REPARAR (Setup Completo)
+echo  9. COMPILAR PORTABLE (Genera .exe)
 echo  U. ACTUALIZAR (Git Pull + Install)
 echo.
 echo  [ 4 ] ACCESO RAPIDO
@@ -75,31 +75,27 @@ goto MENU
 :DEV_MODE
 cls
 echo [!] Iniciando en Modo Desarrollo...
-call npm_run_dev.bat
+call npm run dev
 goto MENU
 
 :PROD_MODE
 cls
 echo [!] Iniciando en Modo Produccion (PM2)...
-echo [!] Compilando Frontend (esto puede tardar un poco)...
-cd frontend && call npm run build && cd ..
-echo [!] Compilando Backend...
-cd backend && call npm run build && cd ..
-echo [!] Reiniciando procesos en PM2...
-call npx pm2 delete BotMaRe-Engine >nul 2>&1
-call npm run start
+echo [!] Compilando Proyecto Unificado...
+call npm run build
+echo [!] Iniciando en PM2...
+call npx pm2 delete BotMaRe-Unified >nul 2>&1
+call npx pm2 start dist/server.js --name BotMaRe-Unified
 echo.
-echo ✅ BotMaRe-Engine iniciado en segundo plano.
-echo ✅ BotMaRe-Engine iniciado en segundo plano.
+echo ✅ BotMaRe-Unified iniciado en segundo plano.
 echo ✅ Dashboard Local: http://localhost:8001
-echo ✅ Para acceso remoto use su IP de red (vea la ventana de logs).
 pause
 goto MENU
 
 :STOP_ALL
 cls
 echo [!] Deteniendo todos los procesos...
-call npm run stop
+call npx pm2 stop all
 echo ✅ Procesos detenidos.
 pause
 goto MENU
@@ -107,7 +103,7 @@ goto MENU
 :VIEW_LOGS
 cls
 echo [!] Mostrando logs (Ctrl+C para salir)...
-call npm run logs
+call npx pm2 logs
 goto MENU
 
 :RESET_WA
@@ -120,10 +116,10 @@ set /p confirm="¿Estas seguro? (S/N): "
 if /i "%confirm%" neq "S" goto MENU
 
 echo Deteniendo procesos...
-call npm run stop >nul 2>&1
-echo Borrando base de datos de autenticacion...
-if exist backend\data\whatsapp_auth.db del /f /q backend\data\whatsapp_auth.db
-if exist backend\auth_info_baileys rd /s /q backend\auth_info_baileys
+call npx pm2 stop all >nul 2>&1
+echo Borrando datos de autenticacion...
+if exist data\whatsapp_auth.db del /f /q data\whatsapp_auth.db
+if exist auth_info_baileys rd /s /q auth_info_baileys
 echo.
 echo ✅ Sesion reseteada. Inicie el bot para ver el nuevo QR.
 pause
@@ -147,8 +143,8 @@ goto MENU
 :CLEAN_CACHE
 cls
 echo [!] Limpiando archivos temporales...
-if exist backend\dist rd /s /q backend\dist
-if exist frontend\.next rd /s /q frontend\.next
+if exist dist rd /s /q dist
+if exist .next rd /s /q .next
 echo ✅ Cache limpia.
 pause
 goto MENU
@@ -156,7 +152,9 @@ goto MENU
 :RUN_SETUP
 cls
 echo [!] Iniciando configuracion completa...
-call setup.bat
+call npm install
+echo ✅ Instalacion finalizada.
+pause
 goto MENU
 
 :BUILD_EXE

@@ -1,0 +1,209 @@
+import { DateTime } from 'luxon';
+import { MessageService } from '../messages/message.service';
+import { ReminderService } from '../reminders/reminder.service';
+import { db } from '../../core/memory'; // Still needed for raw queries for now, or we could move this to ReminderService
+import { processVariables } from '../../utils/variables';
+import { parseContactList } from '../../utils/contactParser';
+
+export class Scheduler {
+    private static waService: MessageService;
+    private static reminderService: ReminderService;
+
+    private static intervalId: NodeJS.Timeout | null = null;
+    private static isChecking: boolean = false;
+
+    static init(waService: MessageService, reminderService: ReminderService) {
+        this.waService = waService;
+        this.reminderService = reminderService;
+        console.log("[Scheduler] System Initialized");
+        
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.intervalId = setInterval(() => this.checkReminders(), 30000);
+        
+        // Background file cleanup (runs daily)
+        setInterval(() => this.checkUploadCleanup(), 24 * 60 * 60 * 1000);
+        setTimeout(() => this.checkUploadCleanup(), 5000); // Also run on startup after 5 secs
+    }
+
+    static stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            console.log("[Scheduler] System Stopped");
+        }
+    }
+
+    private static async asyncBatch(reminders: any[]) {
+        for (const r of reminders) {
+            try {
+                // Phase 1: Lock for processing
+                await this.reminderService.updateStatus(r.id, 'processing');
+                console.log(`[Scheduler] Procesando recordatorio ${r.id} para ${r.chatId}`);
+                
+                // Phase 2: Send
+                // Phase 2: Send
+                const parsedContacts = parseContactList(r.chatId);
+                
+                for (const contact of parsedContacts) {
+                    const targetId = contact.number;
+                    const targetName = contact.name;
+
+                    const personalizedText = processVariables(r.text, targetName);
+
+                    if (r.mediaPath) {
+                        await this.waService.sendMedia(targetId, r.mediaPath, personalizedText);
+                    } else {
+                        await this.waService.sendMessage(targetId, personalizedText);
+                    }
+                }
+
+                // Phase 3: Success
+                await this.reminderService.updateStatus(r.id, 'sent');
+                await this.reminderService.logAudit('system', 'REMINDER_SENT', { id: r.id, to: r.chatId, type: r.mediaPath ? 'media' : 'text' });
+                console.log(`[Scheduler] Recordatorio ${r.id} enviado con éxito.`);
+
+                // Phase 4: Repetition
+                if (r.repeat && r.repeat !== 'none') {
+                    let nextTime = DateTime.fromISO(r.time, { zone: 'America/Mexico_City' });
+                    let validRepeat = false;
+
+                    if (r.repeat === 'hourly') {
+                        nextTime = nextTime.plus({ hours: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'daily') {
+                        nextTime = nextTime.plus({ days: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'weekdays') {
+                        nextTime = nextTime.plus({ days: 1 });
+                        // Skip weekends (6 = Saturday, 7 = Sunday)
+                        while (nextTime.weekday > 5) {
+                            nextTime = nextTime.plus({ days: 1 });
+                        }
+                        validRepeat = true;
+                    } else if (r.repeat === 'weekly') {
+                        nextTime = nextTime.plus({ weeks: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'monthly') {
+                        nextTime = nextTime.plus({ months: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'yearly') {
+                        nextTime = nextTime.plus({ years: 1 });
+                        validRepeat = true;
+                    } else if (r.repeat === 'advanced' && r.repeatInterval && r.repeatUnit) {
+                        const obj: any = {};
+                        // Map units to luxon format if necessary
+                        let unit = r.repeatUnit; // minutes, hours, days, weeks, months
+                        obj[unit] = r.repeatInterval;
+                        nextTime = nextTime.plus(obj);
+                        validRepeat = true;
+                    }
+
+                    if (validRepeat) {
+                        const nextTimeStr = nextTime.toFormat("yyyy-MM-dd'T'HH:mm");
+                        db.prepare('INSERT INTO reminders (userId, chatId, text, time, mediaPath, mediaType, repeat, repeatInterval, repeatUnit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+                          .run(r.userId, r.chatId, r.text, nextTimeStr, r.mediaPath, r.mediaType, r.repeat, r.repeatInterval, r.repeatUnit);
+                        console.log(`[Scheduler] Recordatorio ${r.id} reprogramado para ${nextTimeStr}`);
+                    }
+                }
+            } catch (error: any) {
+                console.error(`[Scheduler] Error enviando recordatorio ${r.id}:`, error.message);
+                await this.reminderService.updateStatus(r.id, 'failed'); 
+                await this.reminderService.logAudit('system', 'REMINDER_FAILED', { id: r.id, to: r.chatId, error: error.message });
+            }
+        }
+    }
+
+    private static async checkReminders() {
+        if (this.isChecking) return;
+        this.isChecking = true;
+
+        try {
+            const now = DateTime.now().setZone('America/Mexico_City');
+            const nowStr = now.toISO()?.substring(0, 16);
+            
+            // Detection Phase - get all pending reminders and filter in JS for robustness
+            const allPending = db.prepare("SELECT * FROM reminders WHERE status = 'pending'").all() as any[];
+            
+            const due: any[] = [];
+            for (const r of allPending) {
+                let reminderTime = r.time;
+                
+                // Handle "inmediato" or "ahora"
+                if (reminderTime === 'inmediato' || reminderTime === 'ahora' || reminderTime === 'inmediatamente') {
+                    due.push(r);
+                    continue;
+                }
+
+                // Handle natural language like "mañana a las 10am" (minimal implementation)
+                if (reminderTime.includes('mañana')) {
+                    const tomorrow = now.plus({ days: 1 }).toFormat('yyyy-MM-dd');
+                    const timeMatch = reminderTime.match(/(\d{1,2}):(\d{2})/);
+                    const timePart = timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : '08:00';
+                    reminderTime = `${tomorrow}T${timePart}`;
+                } else if (reminderTime.length === 5 && reminderTime.includes(':')) {
+                    // Handle "HH:mm" -> prepend today
+                    reminderTime = `${now.toFormat('yyyy-MM-dd')}T${reminderTime}`;
+                }
+
+                if (reminderTime <= nowStr!) {
+                    due.push(r);
+                }
+            }
+
+            if (due.length > 0) {
+                console.log(`[Scheduler] [Audit] Iniciando proceso para ${due.length} recordatorios.`);
+                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_START', { count: due.length });
+                await this.asyncBatch(due);
+                await this.reminderService.logAudit('system', 'SCHEDULER_BATCH_COMPLETE', { count: due.length });
+            }
+        } catch (error: any) {
+            console.error("[Scheduler] Error en el ciclo de revisión:", error);
+            await this.reminderService.logAudit('system', 'SCHEDULER_CRITICAL_ERROR', { error: error.message });
+        } finally {
+            this.isChecking = false;
+        }
+    }
+
+    private static async checkUploadCleanup() {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const uploadDir = path.resolve('data/uploads');
+            if (!fs.existsSync(uploadDir)) return;
+            
+            const files = fs.readdirSync(uploadDir);
+            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            
+            // Querying pending reminders to avoid deleting active media
+            const pendingReminders = db.prepare("SELECT mediaPath FROM reminders WHERE status = 'pending' AND mediaPath IS NOT NULL").all();
+            const activePaths = new Set(pendingReminders.map((r: any) => r.mediaPath));
+            
+            let deleted = 0;
+            files.forEach((file: string) => {
+                const fullPath = path.join(uploadDir, file);
+                try {
+                    const stats = fs.statSync(fullPath);
+                    // Delete if older than 30 days and NOT currently used in a pending reminder
+                    if (!activePaths.has(fullPath) && (now - stats.mtimeMs > THIRTY_DAYS_MS)) {
+                        fs.unlinkSync(fullPath);
+                        deleted++;
+                    }
+                } catch(e) {}
+            });
+            if (deleted > 0) {
+                console.log(`[Scheduler] Cleaned up ${deleted} old media files.`);
+            }
+        } catch (error) {
+            console.error("[Scheduler] Error in cleanup cycle:", error);
+        }
+    }
+
+    static async sendNow(reminderId: number) {
+        const reminder = db.prepare("SELECT * FROM reminders WHERE id = ?").get(reminderId) as any;
+        if (!reminder) throw new Error("Recordatorio no encontrado");
+        if (reminder.status === 'sent') throw new Error("Este recordatorio ya fue enviado");
+
+        await this.asyncBatch([reminder]);
+    }
+}
