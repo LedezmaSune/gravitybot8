@@ -38,10 +38,12 @@ export class WhatsAppClient {
                 logger,
                 printQRInTerminal: false,
                 browser: ['BotMaRe AI', 'Chrome', '1.0.0'],
-                syncFullHistory: false, // No descargar todo el historial para evitar Timeouts
-                markOnlineOnConnect: false, // Menos tráfico al arrancar
-                connectTimeoutMs: 120000, // Darle 2 minutos para conectar
-                defaultQueryTimeoutMs: 120000, // Darle 2 minutos para consultas iniciales
+                syncFullHistory: false,
+                markOnlineOnConnect: false,
+                connectTimeoutMs: 120000,
+                defaultQueryTimeoutMs: 120000,
+                retryRequestDelayMs: 5000, // Esperar 5s entre reintentos de peticiones fallidas
+                maxMsgRetryCount: 5, // Limitar reintentos de mensajes
             });
 
             this.socket.ev.on('creds.update', saveCreds);

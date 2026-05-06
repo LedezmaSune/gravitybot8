@@ -104,14 +104,20 @@ export function initTelegramBot(
         try {
             const stmt = db.prepare('SELECT * FROM audits ORDER BY timestamp DESC LIMIT 10');
             const rows = stmt.all() as any[];
-            if (rows.length === 0) {
-              await ctx.reply("No hay registros de auditoría.");
-              return;
+            
+            if (!rows || rows.length === 0) {
+              return await ctx.reply("📊 No hay registros de auditoría aún.");
             }
-            const text = rows.map(r => `• [${r.timestamp}] ${r.action}:\n${r.details}`).join("\n\n");
-            await ctx.reply(`📊 Últimas Acciones:\n\n${text.substring(0, 4000)}`);
-        } catch(e) {
-            await ctx.reply("Error obteniendo auditoría.");
+
+            const text = rows.map(r => {
+                const details = r.details ? (r.details.length > 100 ? r.details.substring(0, 100) + '...' : r.details) : 'Sin detalles';
+                return `• [${r.timestamp}] *${r.action}*\n└ ${details}`;
+            }).join("\n\n");
+
+            await ctx.reply(`📊 *Últimas 10 Acciones:*\n\n${text}`, { parse_mode: "Markdown" });
+        } catch(e: any) {
+            console.error("[Telegram Audit Callback Error]", e);
+            await ctx.reply(`❌ Error obteniendo auditoría: ${e.message}`);
         }
       }
       return;
@@ -244,11 +250,20 @@ export function initTelegramBot(
     try {
         const stmt = db.prepare('SELECT * FROM audits ORDER BY timestamp DESC LIMIT 10');
         const rows = stmt.all() as any[];
-        if (rows.length === 0) return ctx.reply("No hay registros de auditoría.");
-        const text = rows.map(r => `• [${r.timestamp}] ${r.action}: ${r.details}`).join("\n");
-        await ctx.reply(`📊 *Últimas Acciones:*\n${text.substring(0, 4000)}`, { parse_mode: "Markdown" });
-    } catch(e) {
-        await ctx.reply("Error obteniendo auditoría.");
+        
+        if (!rows || rows.length === 0) {
+            return await ctx.reply("📊 No hay registros de auditoría aún.");
+        }
+
+        const text = rows.map(r => {
+            const details = r.details ? (r.details.length > 100 ? r.details.substring(0, 100) + '...' : r.details) : 'Sin detalles';
+            return `• [${r.timestamp}] *${r.action}*\n└ ${details}`;
+        }).join("\n\n");
+
+        await ctx.reply(`📊 *Últimas 10 Acciones:*\n\n${text}`, { parse_mode: "Markdown" });
+    } catch(e: any) {
+        console.error("[Telegram Audit Error]", e);
+        await ctx.reply(`❌ Error obteniendo auditoría: ${e.message}`);
     }
   });
 
