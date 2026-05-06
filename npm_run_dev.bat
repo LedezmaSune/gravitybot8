@@ -1,8 +1,12 @@
 @echo off
-echo 🚀 Iniciando BotMaRe - Gravity Dashboard...
-echo 🔗 DASHBOARD (USAR ESTE): http://localhost:8001
-echo ⚙️ Motor (Backend):       http://localhost:8001
-echo 🛠️ Frontend (Dev Only):  http://localhost:8000
+title BotMaRe - Modo Desarrollo
+color 0e
+echo ========================================================
+echo   🚀 INICIANDO BOTMARE UNIFICADO (MODO DEV)
+echo ========================================================
+echo   🔗 DASHBOARD: http://localhost:8000
+echo   🛠️  ESTADO:    Desarrollo con Recarga en Vivo
+echo ========================================================
 echo.
 npm run dev
 pause

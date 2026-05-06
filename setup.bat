@@ -1,8 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
+title BotMaRe - Instalador Maestro
+color 0b
 
-echo 🦊 Iniciando instalacion automatica de BotMaRe...
-echo --------------------------------------------------
+echo ========================================================
+echo   🦊 INICIANDO INSTALACION AUTOMATICA DE BOTMARE 🦊
+echo ========================================================
+echo.
 
 :: 1. Verificar Node.js
 node -v >nul 2>&1
@@ -19,46 +23,40 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: 2. Instalar dependencias raiz
-echo [1/5] Instalando dependencias de la raiz...
+:: 2. Instalar dependencias
+echo [1/3] Instalando dependencias del sistema...
 call npm install
-
-:: 3. Instalar dependencias Backend
-echo [2/5] Instalando dependencias del Backend...
-cd backend
-call npm install
-cd ..
-
-:: 4. Instalar dependencias Frontend
-echo [3/5] Instalando dependencias del Frontend...
-cd frontend
-call npm install
-cd ..
-
-:: 5. Configurar archivos .env
-echo [4/5] Configurando archivos de entorno (.env)...
-
-if not exist "backend\.env" (
-    echo Creando backend/.env desde el ejemplo...
-    copy "backend\.env.example" "backend\.env"
-) else (
-    echo El archivo backend/.env ya existe, saltando...
+if %errorlevel% neq 0 (
+    echo.
+    echo ❌ [ERROR] Hubo un problema al instalar las dependencias.
+    echo Intente ejecutar 'npm install' manualmente.
+    pause
+    exit /b
 )
 
-if not exist "frontend\.env" (
-    echo Creando frontend/.env desde el ejemplo...
-    copy "frontend\.env.example" "frontend/.env"
+:: 3. Configurar archivo .env
+echo [2/3] Configurando archivo de entorno (.env)...
+
+if not exist ".env" (
+    echo Creando archivo .env desde el ejemplo...
+    copy ".env.example" ".env"
+    echo.
+    echo [!] IMPORTANTE: Se ha creado un archivo .env
+    echo     Por favor, abrelo y pon tus API Keys.
 ) else (
-    echo El archivo frontend/.env ya existe, saltando...
+    echo El archivo .env ya existe, saltando...
 )
 
-echo [5/5] Finalizando...
+:: 4. Finalización
+echo [3/3] Finalizando instalacion...
 echo.
-echo --------------------------------------------------
+echo ========================================================
 echo ✅ INSTALACION COMPLETADA CON EXITO
+echo ========================================================
 echo.
 echo 📝 PROXIMOS PASOS:
-echo 1. Abre backend/.env y pon tus API Keys (Groq, Gemini, etc.)
-echo 2. Ejecuta 'npm_run_dev.bat' para iniciar el bot.
-echo --------------------------------------------------
+echo 1. Abre el archivo .env y pon tus llaves de IA (DeepSeek, etc.)
+echo 2. Ejecuta 'npm start' o usa el 'manager.bat' para iniciar.
+echo ========================================================
+echo.
 pause

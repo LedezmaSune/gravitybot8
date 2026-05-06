@@ -1,32 +1,21 @@
-
+version: '3.8'
 
 services:
-  backend:
+  botmare:
     build: 
-      context: ./backend
-    container_name: wamasivos-backend
-    restart: unless-stopped
-    ports:
-      - "8001:8001"
-    volumes:
-      # MUY IMPORTANTE: Estos volúmenes garantizan que no pierdas sesión ni datos
-      - ./backend/auth_info_baileys:/app/auth_info_baileys
-      - ./backend/data:/app/data
-      - ./backend/dist:/app/dist # Optional caching
-    environment:
-      - PORT=8001
-      # Puedes añadir acá todas tus variables (OPENAI_API_KEY, GROQ_API_KEY, etc) 
-      # o crear un archivo .env en el root del docer-compose  
-    
-  frontend:
-    build: 
-      context: ./frontend
-    container_name: wamasivos-frontend
+      context: .
+      dockerfile: Dockerfile
+    container_name: botmare-unified
     restart: unless-stopped
     ports:
       - "8000:8000"
+    volumes:
+      # Persistencia de sesiones y datos
+      - ./auth_info_baileys:/app/auth_info_baileys
+      - ./data:/app/data
+      - ./backups:/app/backups
+    env_file:
+      - .env
     environment:
-      # Le decimos al Frontend que el Backend está en la red interna de Docker
-      - BACKEND_URL=http://backend:8001
-    depends_on:
-      - backend
+      - PORT=8000
+      - NODE_ENV=production

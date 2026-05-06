@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title BotMaRe - Gravity Control Panel
+title BotMaRe - Unificado Control Panel
 color 0b
 
 :MENU
@@ -12,7 +12,7 @@ if not exist ".env" set "MISSING=1"
 if not exist "src\server.ts" set "MISSING=1"
 
 echo ========================================================
-echo          🦊 BOTMARE - GRAVITY DASHBOARD 🦊
+echo          🦊 BOTMARE - UNIFICADO DASHBOARD 🦊
 echo ========================================================
 if defined MISSING (
     color 0e
@@ -26,27 +26,27 @@ if defined MISSING (
 echo.
 echo  [ 1 ] EJECUCION DEL SISTEMA
 echo  --------------------------------------------------------
-echo  1. MODO DESARROLLO (Dashboard + Motor juntos)
-echo  2. MODO PRODUCCION (Iniciar con PM2)
+echo  1. MODO DESARROLLO (Recarga en vivo)
+echo  2. MODO PRODUCCION (Iniciar con PM2 - Segundo Plano)
 echo  3. DETENER TODO (Stop PM2)
 echo  4. VER LOGS EN TIEMPO REAL
 echo.
 echo  [ 2 ] MANTENIMIENTO Y SESION
 echo  --------------------------------------------------------
 echo  5. RESETEAR WHATSAPP (Cierra sesion y limpia QR)
-echo  6. LIMPIAR PUERTOS (Libera el 8000 y 8001)
-echo  7. LIMPIAR CACHE (Borra dist y .next)
+echo  6. LIBERAR PUERTO (Limpia el puerto 8000)
+echo  7. LIMPIAR CACHE (Borra dist, out y .next)
 echo.
 echo  [ 3 ] HERRAMIENTAS Y BUILD
 echo  --------------------------------------------------------
 echo  8. INSTALAR / REPARAR (Setup Completo)
-echo  9. COMPILAR PORTABLE (Genera .exe)
+echo  9. COMPILAR FRONTEND (Genera carpeta out)
 echo  U. ACTUALIZAR (Git Pull + Install)
 echo.
 echo  [ 4 ] ACCESO RAPIDO
 echo  --------------------------------------------------------
-echo  D. Abrir Dashboard Local (http://localhost:8001)
-echo  T. Iniciar Tunel Cloudflare (Exponer Master)
+echo  D. Abrir Dashboard Local (http://localhost:8000)
+echo  T. Iniciar Tunel Cloudflare (Exponer puerto 8000)
 echo  X. Salir
 echo.
 echo ========================================================
@@ -60,7 +60,7 @@ if "%opcion%"=="5" goto RESET_WA
 if "%opcion%"=="6" goto KILL_PORTS
 if "%opcion%"=="7" goto CLEAN_CACHE
 if "%opcion%"=="8" goto RUN_SETUP
-if "%opcion%"=="9" goto BUILD_EXE
+if "%opcion%"=="9" goto RUN_BUILD
 if "%opcion%"=="U" goto UPDATE_GIT
 if "%opcion%"=="u" goto UPDATE_GIT
 if "%opcion%"=="D" goto OPEN_DASH
@@ -81,14 +81,14 @@ goto MENU
 :PROD_MODE
 cls
 echo [!] Iniciando en Modo Produccion (PM2)...
-echo [!] Compilando Proyecto Unificado...
+echo [!] Compilando Interfaz Estatica...
 call npm run build
 echo [!] Iniciando en PM2...
 call npx pm2 delete BotMaRe-Unified >nul 2>&1
-call npx pm2 start dist/server.js --name BotMaRe-Unified
+call npx pm2 start "npx tsx src/server.ts" --name BotMaRe-Unified
 echo.
 echo ✅ BotMaRe-Unified iniciado en segundo plano.
-echo ✅ Dashboard Local: http://localhost:8001
+echo ✅ Dashboard Local: http://localhost:8000
 pause
 goto MENU
 
@@ -127,16 +127,14 @@ goto MENU
 
 :KILL_PORTS
 cls
-echo [!] Liberando puertos 8000 y 8001...
-for /L %%p in (8000,1,8001) do (
-    for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%%p "') do (
-        if "%%a" neq "0" (
-            echo Matando PID %%a en puerto %%p
-            taskkill /F /PID %%a >nul 2>&1
-        )
+echo [!] Liberando puerto 8000...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8000 "') do (
+    if "%%a" neq "0" (
+        echo Matando PID %%a en puerto 8000
+        taskkill /F /PID %%a >nul 2>&1
     )
 )
-echo ✅ Puertos listos.
+echo ✅ Puerto 8000 libre.
 pause
 goto MENU
 
@@ -145,6 +143,7 @@ cls
 echo [!] Limpiando archivos temporales...
 if exist dist rd /s /q dist
 if exist .next rd /s /q .next
+if exist out rd /s /q out
 echo ✅ Cache limpia.
 pause
 goto MENU
@@ -157,10 +156,12 @@ echo ✅ Instalacion finalizada.
 pause
 goto MENU
 
-:BUILD_EXE
+:RUN_BUILD
 cls
-echo [!] Iniciando compilacion de ejecutable portable...
-call build_exe.bat
+echo [!] Compilando Frontend (Export)...
+call npm run build
+echo ✅ Compilacion terminada. La carpeta 'out' esta lista.
+pause
 goto MENU
 
 :UPDATE_GIT
@@ -175,13 +176,13 @@ goto MENU
 :OPEN_DASH
 cls
 echo [!] Abriendo Dashboard...
-start http://localhost:8001
+start http://localhost:8000
 goto MENU
 
 :START_TUNNEL
 cls
-echo [!] Iniciando Cloudflare Tunnel para el puerto 8001...
-start cmd /c "title Cloudflare Tunnel && cloudflared tunnel --url http://localhost:8001"
+echo [!] Iniciando Cloudflare Tunnel para el puerto 8000...
+start cmd /c "title Cloudflare Tunnel && cloudflared tunnel --url http://localhost:8000"
 echo ✅ Tunnel activo en ventana aparte.
 pause
 goto MENU
