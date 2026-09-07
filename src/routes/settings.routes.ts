@@ -5,6 +5,7 @@ export function createSettingsRouter(controller: SettingsController) {
     const router = Router();
     
     router.get('/', controller.getSettings);
+    router.get('/test-llm', controller.testLLM);
     router.post('/', controller.updateSettings);
     router.delete('/clean-uploads', controller.cleanUploads);
     

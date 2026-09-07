@@ -57,6 +57,12 @@ export class SettingsController {
         res.json({ success: true, count: Object.keys(parsed).length });
     });
 
+    testLLM = asyncHandler(async (req: Request, res: Response) => {
+        const { runLLMDiagnostic } = await import('../../core/llmTest');
+        const result = await runLLMDiagnostic();
+        res.json(result);
+    });
+
     cleanUploads = asyncHandler(async (req: Request, res: Response) => {
         const uploadDir = path.resolve('data/uploads');
         if (!fs.existsSync(uploadDir)) return res.json({ success: true, deletedCount: 0 });

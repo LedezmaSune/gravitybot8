@@ -24,12 +24,33 @@ export const Settings: React.FC<SettingsProps> = ({ settings, networkStatus, onU
     const [localSettings, setLocalSettings] = useState<any>({});
     const [isSaving, setIsSaving] = useState(false);
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [isTestingLLM, setIsTestingLLM] = useState(false);
+    const [llmTestMap, setLlmTestMap] = useState<Record<string, { success: boolean; latencyMs: number; error?: string }>>({});
 
     useEffect(() => {
         if (settings) {
             setLocalSettings(settings);
         }
     }, [settings]);
+
+    const handleTestLLM = async () => {
+        setIsTestingLLM(true);
+        try {
+            const res = await fetch('/api/settings/test-llm');
+            const data = await res.json();
+            if (data && data.results) {
+                const map: Record<string, any> = {};
+                data.results.forEach((r: any) => {
+                    map[r.provider] = r;
+                });
+                setLlmTestMap(map);
+            }
+        } catch (e) {
+            console.error('Error al probar LLMs:', e);
+        } finally {
+            setIsTestingLLM(false);
+        }
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -191,6 +212,15 @@ DASHBOARD_PASS=admin123
                         </button>
 
                         <button 
+                            onClick={handleTestLLM}
+                            disabled={isTestingLLM}
+                            className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm border-2 bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            <RefreshCw size={18} className={isTestingLLM ? 'animate-spin' : ''} />
+                            {isTestingLLM ? 'Probando IAs...' : '⚡ Probar Conexiones IA'}
+                        </button>
+
+                        <button 
                             onClick={handleDownloadTemplate}
                             className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm border-2 bg-app-bg border-app-border text-app-text-muted hover:border-slate-500/50 hover:text-white transition-all active:scale-95"
                         >
@@ -321,9 +351,18 @@ DASHBOARD_PASS=admin123
                             {section.keys.map((k) => (
                                 <div key={k.id} className="group">
                                     <div className="flex items-center justify-between mb-2 ml-1">
-                                        <label className="block text-xs font-bold text-app-text-muted group-focus-within:text-cyan-400 transition-colors">
-                                            {k.label}
-                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <label className="block text-xs font-bold text-app-text-muted group-focus-within:text-cyan-400 transition-colors">
+                                                {k.label}
+                                            </label>
+                                            {k.provider && llmTestMap[k.provider] && (
+                                                <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                    llmTestMap[k.provider].success ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                                }`}>
+                                                    {llmTestMap[k.provider].success ? `🟢 ${llmTestMap[k.provider].latencyMs}ms` : `🔴 ${llmTestMap[k.provider].error?.substring(0, 18)}`}
+                                                </span>
+                                            )}
+                                        </div>
                                         {k.url && (
                                             <a 
                                                 href={k.url} 
