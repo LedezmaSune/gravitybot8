@@ -1,9 +1,34 @@
 # 📓 Bitácora de Desarrollo - BotMaRe
 
-> [!WARNING]
-> **ESTADO: EN CONSTRUCCIÓN 🚧**
+> [!NOTE]
+> **ESTADO: VERSIÓN 2.5.0 ESTABLE Y OPTIMIZADA 🚀**
 > 
-> *Actualmente estamos definiendo y configurando todo el tema del dominio (`apptienda.online`), túneles de Cloudflare y redirecciones.*
+> *Sistemas de IA multiproveedor, diagnósticos en tiempo real, refactorización del actualizador `update.sh`, mantenimiento pasivo de Baileys/SQLite sin desconexión y actualización de UI.*
+
+## Fecha: 7 de Septiembre de 2026
+
+### ✅ Tareas Completadas (Sesión Actual - Release v2.5.0)
+1. **Infraestructura Multi-LLM y Failover Inteligente:**
+   - Soporte ampliado a 11 proveedores de IA (Groq, Cerebras, SambaNova, SiliconFlow, Mistral, Together, Gemini 2.5, DeepSeek, OpenRouter, Nvidia NIM, OpenAI).
+   - Sanitización automática de modelos obsoletos mediante `resolveModel()` (ej. migración automática de `llama-3.1-70b-versatile` a `llama-3.3-70b-versatile`).
+   - Implementación del sistema de diagnóstico en tiempo real (`pnpm test:llm`), comando Telegram `/diagnostico` y botón interactivo `🤖 Estado IA`.
+   - Botón de prueba en la Web UI (`⚡ Probar Conexiones IA`) y enlaces directos `Obtener Key ↗` en el panel de Ajustes.
+
+2. **Auditoría y Refactorización del Script de Actualización (`update.sh`):**
+   - Incorporación de control estricto de errores (`set -Eeuo pipefail`) y trampas de limpieza `trap EXIT`.
+   - Respaldo de seguridad con fallback automático a copia cruda si `tar` no está disponible.
+   - Sincronización robusta con Git Stash / Rebase y soporte mejorado para reinicio con PM2.
+
+3. **Mantenimiento Pasivo No-Destructivo de Baileys y SQLite:**
+   - Rediseño completo de `BaileysMaintenanceJob` y `purgePreKeys`.
+   - Eliminación del borrado agresivo de claves `pre-key-*` y del comando bloqueante `VACUUM` en caliente para **prevenir desconexiones o invalidación de QR en WhatsApp**.
+   - Implementación de optimización pasiva WAL (`wal_checkpoint(PASSIVE)`) y recolección segura de basura en RAM (`global.gc()`).
+
+4. **UI/UX y Actualizaciones de Versión:**
+   - Incremento global de versión a **v2.5.0** (`package.json`, `README.md`, `UpdateCenter.tsx`).
+   - Soporte para reducción de movimiento (`@media (prefers-reduced-motion: reduce)`) en `globals.css`.
+
+---
 
 ## Fecha: 29 de Agosto de 2026 (Noche)
 
