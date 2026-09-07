@@ -18,11 +18,8 @@ export class BaileysMaintenanceJob {
             }
 
             // 2. Mantenimiento pasivo de SQLite (WAL Checkpoint sin borrado de claves)
-            if (waService?.getClient()) {
-                const client = waService.getClient() as any;
-                if (typeof client?.purgePreKeys === 'function') {
-                    client.purgePreKeys();
-                }
+            if (waService) {
+                waService.purgePreKeys();
             }
         } catch (error: any) {
             console.warn("[BaileysMaintenanceJob] Aviso en mantenimiento de Baileys:", error.message);
