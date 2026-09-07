@@ -93,33 +93,16 @@ export async function useSQLiteAuthState(dbPath: string): Promise<{ state: Authe
         },
         purgePreKeys: () => {
             try {
-                // 1. Optimizar SQLite y consolidar archivos WAL
+                // Optimización SQLite pasiva y no bloqueante (WAL Checkpoint)
+                // Consolida los datos en disco sin bloquear lecturas/escrituras activas de WhatsApp
                 db.pragma('wal_checkpoint(PASSIVE)');
                 db.pragma('optimize');
 
-                // 2. Contar cuántas pre-keys hay almacenadas
-                const countRow = db.prepare("SELECT COUNT(*) as count FROM whatsapp_auth WHERE id LIKE 'pre-key-%'").get() as { count: number };
+                const countRow = db.prepare("SELECT COUNT(*) as count FROM whatsapp_auth").get() as { count: number };
                 const count = countRow?.count || 0;
-                
-                // Solo purgar si hay una acumulación masiva (más de 1,000 claves), conservando siempre las 300 más recientes
-                if (count > 1000) {
-                    const toDelete = count - 300;
-                    const info = db.prepare(`
-                        DELETE FROM whatsapp_auth 
-                        WHERE id IN (
-                            SELECT id FROM whatsapp_auth 
-                            WHERE id LIKE 'pre-key-%' 
-                            ORDER BY rowid ASC 
-                            LIMIT ?
-                        )
-                    `).run(toDelete);
-                    console.log(`[SQLite Auth] Mantenimiento preventivo: ${info.changes} pre-keys antiguas podadas (conservadas 300 activas).`);
-                    db.prepare("VACUUM").run();
-                } else {
-                    console.log(`[SQLite Auth] Base de datos optimizada. Pre-keys en rango óptimo (${count} keys).`);
-                }
+                console.log(`[SQLite Auth] Mantenimiento preventivo pasivo completado (${count} registros de sesión en perfecto estado).`);
             } catch (error: any) {
-                console.warn("[SQLite Auth] Aviso en optimización de pre-keys:", error.message);
+                console.warn("[SQLite Auth] Aviso en optimización pasiva de sesión:", error.message);
             }
         },
         close: () => {

@@ -9,13 +9,20 @@ export class BaileysMaintenanceJob {
      */
     static async execute(waService?: MessageService): Promise<void> {
         try {
-            // [PAUSADO A PETICIÓN DEL USUARIO]
-            // console.log("[BaileysMaintenanceJob] 🛠️ Ejecutando mantenimiento y optimización de base de datos de sesión...");
-            return;
+            console.log("[BaileysMaintenanceJob] 🛠️ Ejecutando optimización pasiva de memoria y sesión...");
 
+            // 1. Invocar recolección de basura de RAM si Node.js lo soporta
             if (typeof global.gc === 'function') {
                 global.gc?.();
                 console.log("[BaileysMaintenanceJob] 🧹 Memoria RAM optimizada.");
+            }
+
+            // 2. Mantenimiento pasivo de SQLite (WAL Checkpoint sin borrado de claves)
+            if (waService?.getClient()) {
+                const client = waService.getClient() as any;
+                if (typeof client?.purgePreKeys === 'function') {
+                    client.purgePreKeys();
+                }
             }
         } catch (error: any) {
             console.warn("[BaileysMaintenanceJob] Aviso en mantenimiento de Baileys:", error.message);
