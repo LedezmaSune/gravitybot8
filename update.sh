@@ -2,11 +2,13 @@
 
 # ═══════════════════════════════════════════════════════════════════
 #  🦊 BotMaRe AI - Script de Actualización Inteligente y Seguro
-#  Versión: 2.0  •  2026
+#  Versión: 2.5.0  •  2026
 #
 #  Mantiene tu bot al día sincronizándolo con el repositorio,
 #  asegurando tus bases de datos, llaves de sesión y variables.
 # ═══════════════════════════════════════════════════════════════════
+
+set -Eeuo pipefail
 
 # ── Colores y estilos ──────────────────────────────────────────────
 BOLD='\033[1m'
@@ -25,6 +27,17 @@ fail()    { echo -e "${RED}  ✗ ${NC}$1"; }
 banner()  { echo -e "${BLUE}${BOLD}$1${NC}"; }
 step()    { echo -e "\n${MAGENTA}${BOLD}[$1/5]${NC} ${BOLD}$2${NC}"; }
 divider() { echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}"; }
+
+# Trampa para detectar interrupciones o fallos no capturados
+cleanup_on_error() {
+    local exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+        echo ""
+        fail "La actualización ha sido cancelada o falló inesperadamente (Código de salida: $exit_code)."
+        warn "Revisa los mensajes anteriores para más detalles."
+    fi
+}
+trap cleanup_on_error EXIT
 
 clear 2>/dev/null || true
 divider
@@ -58,15 +71,19 @@ mkdir -p "$BACKUP_DIR"
 
 # Respaldar carpeta data completa en un archivo comprimido
 if [ -d "data" ]; then
-    tar -czf "$BACKUP_DIR/data_backup.tar.gz" data/ 2>/dev/null
-    info "Carpeta de datos completa respaldada en data_backup.tar.gz."
+    if tar -czf "$BACKUP_DIR/data_backup.tar.gz" data/ 2>/dev/null; then
+        info "Carpeta de datos completa respaldada en data_backup.tar.gz."
+    else
+        warn "No se pudo comprimir la carpeta 'data', creando copia de directorio..."
+        cp -r data/ "$BACKUP_DIR/data_raw/" 2>/dev/null || true
+    fi
 else
     warn "No se encontró la carpeta 'data' para respaldar."
 fi
 
 # Respaldar variables de entorno
 if [ -f ".env" ]; then
-    cp ".env" "$BACKUP_DIR/" 2>/dev/null
+    cp ".env" "$BACKUP_DIR/" 2>/dev/null || true
     info "Archivo de configuración (.env) respaldado."
 fi
 
@@ -75,30 +92,29 @@ ok "Respaldo preventivo guardado en: ${BOLD}${BACKUP_DIR}/${NC}"
 # 3. Descargar cambios de GitHub
 step 2 "Sincronizando código con GitHub..."
 info "Protegiendo cambios locales antes de actualizar..."
-# Guardar cambios locales que no han sido commiteados
-STASH_RESULT=$(git stash 2>&1)
-if [[ "$STASH_RESULT" != *"No local changes to save"* && "$STASH_RESULT" != *"No hay cambios locales"* ]]; then
-    warn "Se detectaron cambios locales. Se han guardado en 'git stash'."
+
+HAS_STASH=false
+STASH_RESULT=$(git stash save "Auto-stash por update.sh $(date +%s)" 2>&1 || true)
+if [[ "$STASH_RESULT" != *"No local changes to save"* && "$STASH_RESULT" != *"No hay cambios locales"* && "$STASH_RESULT" != *"No local changes"* ]]; then
+    warn "Se detectaron cambios locales. Se han guardado temporalmente en 'git stash'."
     HAS_STASH=true
-else
-    HAS_STASH=false
 fi
 
 info "Trayendo actualizaciones desde la rama principal..."
-git pull --rebase origin main
-
-if [ $? -ne 0 ]; then
+if ! git pull --rebase origin main; then
     fail "Error al descargar las actualizaciones de GitHub."
-    warn "Intentando restaurar estado anterior..."
-    git rebase --abort 2>/dev/null
-    [ "$HAS_STASH" = true ] && git stash pop
+    warn "Intentando restaurar el estado anterior..."
+    git rebase --abort 2>/dev/null || true
+    if [ "$HAS_STASH" = true ]; then
+        git stash pop 2>/dev/null || true
+    fi
     exit 1
 fi
 
 if [ "$HAS_STASH" = true ]; then
     info "Restaurando tus cambios locales..."
     if ! git stash pop; then
-        warn "Hubo conflictos al restaurar tus cambios locales."
+        warn "Hubo conflictos al aplicar tus cambios locales."
         warn "Por favor resuelve los conflictos de Git manualmente."
     fi
 fi
@@ -110,9 +126,8 @@ if ! command -v pnpm &>/dev/null; then
     fail "pnpm no está instalado. Ejecuta 'npm install -g pnpm' primero."
     exit 1
 fi
-pnpm install
 
-if [ $? -ne 0 ]; then
+if ! pnpm install; then
     fail "Fallo al instalar las dependencias."
     warn "Intenta ejecutar manualmente 'pnpm install' para ver el error completo."
     exit 1
@@ -128,13 +143,13 @@ if [[ "$OS" != "macos" ]] && [[ "$OS" != "termux" ]]; then
 
     if [ "$TOTAL_RAM_MB" -gt 0 ] 2>/dev/null; then
         if [ "$TOTAL_RAM_MB" -le 1500 ] && [ "$SWAP_SIZE" -le 512 ]; then
-            warn "Tu servidor tiene poca RAM (${TOTAL_RAM_MB} MB) y poco Swap."
-            warn "Next.js puede fallar durante la compilación."
+            warn "Tu servidor tiene poca RAM (${TOTAL_RAM_MB} MB) y poco Swap (${SWAP_SIZE} MB)."
+            warn "Next.js puede requerir más memoria para compilar."
             read -p "  ¿Deseas crear un archivo Swap de 2 GB? (s/n): " -n 1 -r CREATE_SWAP
             echo ""
             if [[ "$CREATE_SWAP" =~ ^[Ss]$ ]]; then
                 if [ -f "/swapfile" ]; then
-                    warn "Ya existe un /swapfile."
+                    warn "Ya existe un /swapfile en el sistema."
                 else
                     info "Creando archivo Swap de 2 GB..."
                     if sudo fallocate -l 2G /swapfile 2>/dev/null; then
@@ -143,15 +158,15 @@ if [[ "$OS" != "macos" ]] && [[ "$OS" != "termux" ]]; then
                         sudo swapon /swapfile
                         ok "Swap de 2 GB creado con fallocate."
                     else
-                        info "fallocate falló, intentando con dd (esto puede tardar unos segundos)..."
-                        sudo dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
+                        info "fallocate no disponible, intentando con dd..."
+                        sudo dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress 2>/dev/null || true
                         sudo chmod 600 /swapfile
                         sudo mkswap /swapfile
                         sudo swapon /swapfile
                         ok "Swap de 2 GB creado con dd."
                     fi
-                    if ! grep -q '/swapfile' /etc/fstab; then
-                        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null
+                    if ! grep -q '/swapfile' /etc/fstab 2>/dev/null; then
+                        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab >/dev/null || true
                     fi
                 fi
             fi
@@ -159,10 +174,8 @@ if [[ "$OS" != "macos" ]] && [[ "$OS" != "termux" ]]; then
     fi
 fi
 
-pnpm run build
-
-if [ $? -ne 0 ]; then
-    fail "Error al compilar el Dashboard."
+if ! pnpm run build; then
+    fail "Error al compilar la aplicación con Next.js."
     warn "Puedes intentar compilarlo manualmente ejecutando: pnpm run build"
     exit 1
 fi
@@ -174,8 +187,11 @@ divider
 banner "          ✅ ACTUALIZACIÓN COMPLETADA CON ÉXITO"
 divider
 echo ""
-info "Tu sistema ahora se encuentra en la versión más reciente."
+info "Tu sistema ahora se encuentra en la versión más reciente (v2.5.0)."
 echo ""
+
+# Desactivar el trap al llegar al final exitosamente
+trap - EXIT
 
 # Menú interactivo para iniciar/reiniciar
 echo -e "${BOLD}¿Cómo deseas arrancar el bot ahora?${NC}"
@@ -200,22 +216,24 @@ case "$START_MODE" in
         ;;
     3)
         info "Reiniciando proceso en segundo plano con PM2..."
-        if command -v pm2 &>/dev/null; then
-            if pm2 describe BotMaRe-Unified &>/dev/null; then
-                pm2 restart BotMaRe-Unified
+        if command -v pm2 &>/dev/null || pnpm exec pm2 -v &>/dev/null; then
+            if pnpm run pm2:restart 2>/dev/null; then
+                ok "BotMaRe reiniciado con PM2 de forma exitosa."
             else
+                info "Iniciando proceso en PM2 por primera vez..."
                 pnpm run pm2:start
+                ok "BotMaRe iniciado con PM2."
             fi
-            ok "BotMaRe reiniciado con PM2 de forma exitosa."
             info "Puedes ver la consola ejecutando: ${BOLD}pnpm run pm2:logs${NC}"
         else
-            fail "PM2 no está instalado globalmente. No se pudo reiniciar."
-            warn "Inicia manualmente usando pnpm run start."
+            fail "PM2 no está disponible en tu sistema."
+            warn "Puedes iniciar manualmente usando: pnpm run start"
         fi
         ;;
     *)
-        ok "Actualización terminada. Puedes iniciar el bot de forma manual cuando gustes."
+        ok "Actualización terminada. Puedes iniciar el bot manualmente cuando gustes."
         ;;
 esac
 
 echo ""
+
