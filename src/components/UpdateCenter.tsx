@@ -16,6 +16,20 @@ interface Release {
 // Fallback local en caso de que la API de GitHub no responda
 const FALLBACK_RELEASES: Release[] = [
     {
+        version: 'V 2.5.0',
+        date: '07 Septiembre 2026',
+        title: 'Super-Failover Multi-IA (11 Proveedores), Diagnóstico Live y Enlaces Directos',
+        type: 'major',
+        description: 'Lanzamiento mayor que transforma el motor de Inteligencia Artificial de BotMaRe en una infraestructura hiper-resiliente con soporte nativo para 11 proveedores de IA, pruebas de salud en vivo (consola, Telegram y web), enlaces directos de consolas oficiales y sanitizado automático de modelos.',
+        features: [
+            '🤖 Multi-Proveedor LLM Failover (11 IAs): Integración nativa de Groq, Cerebras AI, SambaNova, SiliconFlow (DeepSeek V3/R1), Mistral AI, Together AI, Google Gemini 2.5 Flash, DeepSeek Directo, OpenRouter, Nvidia NIM y OpenAI.',
+            '⚡ Diagnóstico de Salud en Vivo (Live Test): Sistema de pruebas de latencia y estado ejecutable vía consola (`pnpm test:llm`), Telegram (comando `/diagnostico` y botón `🤖 Estado IA`), y botón web `⚡ Probar Conexiones IA`.',
+            '🔗 Enlaces de Consola Oficiales en Dashboard: Botones interactivos `Obtener Key ↗` al lado de cada campo en el panel para acceder directamente a la creación de llaves sin salir de la app.',
+            '🛡️ Sanitizado Inteligente de Modelos (`resolveModel`): Reemplazo automático de modelos descontinuados o viejos almacenados en la BD (ej. `llama-3.1-70b-versatile` ➔ `llama-3.3-70b-versatile`).',
+            '♿ Accesibilidad y Rendimiento CSS: Soporte para `@media (prefers-reduced-motion: reduce)` en animaciones globales.'
+        ]
+    },
+    {
         version: 'V 2.4.1',
         date: '29 Agosto 2026',
         title: 'Contador Anti-Ban, RAG (Base) y Seguridad en Webhooks',

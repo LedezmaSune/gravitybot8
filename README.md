@@ -56,10 +56,12 @@
 
 | Característica | Descripción |
 | :--- | :--- |
-| 🧠 **IA Multi-Proveedor** | Groq, Gemini, OpenAI, DeepSeek, OpenRouter y Nvidia con Failover automático. |
+| 🧠 **IA Multi-Proveedor (11 IAs)** | Groq, Cerebras, SambaNova, SiliconFlow (DeepSeek V3/R1), Mistral, Together, Gemini 2.5, DeepSeek, OpenRouter, Nvidia NIM y OpenAI con Failover automático. |
+| ⚡ **Diagnóstico de IAs Live** | Pruebas de latencia y estado desde consola (`pnpm test:llm`), Telegram (`/diagnostico`) y Web (`⚡ Probar Conexiones IA`). |
+| 🔗 **Enlaces Directos en Dashboard** | Botones `Obtener Key ↗` en la interfaz web para acceder a consolas de desarrollo en 1 clic. |
 | 🧩 **Plugins JS en Sandbox** | Entorno seguro Node.js VM con plantillas prediseñadas, comandos, APIs y multimedia. |
 | 📱 **WhatsApp Agent** | Comprensión de imágenes (Visión), transcripción de audio (Whisper), documentos y QR/Pairing Code instantáneo. |
-| 🦊 **Asistente Telegram** | Control remoto total por comandos y botones interactivos con emojis. |
+| 🦊 **Asistente Telegram** | Control remoto total por comandos (`/diagnostico`, `/backup`, `/start`) y botones interactivos. |
 | 📢 **Difusión con Spintax** | Campañas masivas anti-spam con variación de frases y macros de contacto. |
 | 📅 **Recordatorios Inteligentes** | Programación individual y grupal con frecuencias configurables (horas, días, semanas, meses). |
 | 🛡️ **Blindaje Anti-Ban** | Retardos progresivos, pausas y simulación humana ("Escribiendo...", "Grabando audio..."). |
