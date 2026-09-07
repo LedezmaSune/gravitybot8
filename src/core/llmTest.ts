@@ -95,6 +95,16 @@ const PROVIDERS = [
     },
 ];
 
+function resolveModel(provider: string, val: string | undefined, fallback: string): string {
+    const raw = (val || '').trim();
+    if (!raw) return fallback;
+    if (provider === 'Groq' && (raw === 'llama-3.1-70b-versatile' || raw.includes('3.1'))) return 'llama-3.3-70b-versatile';
+    if (provider === 'OpenRouter' && (raw === 'google/gemma-2-9b-it:free' || raw === 'meta-llama/llama-3.2-3b-instruct:free')) {
+        return 'meta-llama/llama-3.3-70b-instruct:free';
+    }
+    return raw;
+}
+
 export async function runLLMDiagnostic(): Promise<{ results: DiagnosticResult[]; summary: string; textReport: string }> {
     const config = await getAllConfig();
     const results: DiagnosticResult[] = [];
@@ -105,7 +115,8 @@ export async function runLLMDiagnostic(): Promise<{ results: DiagnosticResult[];
 
     for (const p of PROVIDERS) {
         const keys = cleanKeys(config[p.envKey] || process.env[p.envKey]);
-        const model = (p.modelEnvKey && config[p.modelEnvKey]) || p.defaultModel;
+        const rawModel = p.modelEnvKey ? config[p.modelEnvKey] : undefined;
+        const model = resolveModel(p.name, rawModel, p.defaultModel);
 
         if (keys.length === 0) {
             textReport += `⚪ *${p.name}:* Sin llaves configuradas\n`;

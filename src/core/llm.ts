@@ -114,6 +114,16 @@ function cleanMessages(messages: any[]): any[] {
     });
 }
 
+function resolveModel(provider: string, val: string | undefined, fallback: string): string {
+    const raw = (val || '').trim();
+    if (!raw) return fallback;
+    if (provider === 'Groq' && raw === 'llama-3.1-70b-versatile') return 'llama-3.3-70b-versatile';
+    if (provider === 'OpenRouter' && (raw === 'google/gemma-2-9b-it:free' || raw === 'meta-llama/llama-3.2-3b-instruct:free')) {
+        return 'meta-llama/llama-3.3-70b-instruct:free';
+    }
+    return raw;
+}
+
 /**
  * Orquestador principal de LLM con Failover automático.
  */
@@ -133,7 +143,7 @@ export async function callLLM(
         try {
             return await tryProvider('Groq', groqKeys, {
                 baseURL: "https://api.groq.com/openai/v1",
-                model: hasVision ? "llama-3.2-11b-vision-instant" : (config['GROQ_MODEL'] || "llama-3.3-70b-versatile")
+                model: hasVision ? "llama-3.2-11b-vision-instant" : resolveModel('Groq', config['GROQ_MODEL'], "llama-3.3-70b-versatile")
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
@@ -198,7 +208,7 @@ export async function callLLM(
         try {
             return await tryProvider('OpenRouter', orKeys, {
                 baseURL: "https://openrouter.ai/api/v1",
-                model: config['OPENROUTER_MODEL'] || "meta-llama/llama-3.3-70b-instruct:free",
+                model: resolveModel('OpenRouter', config['OPENROUTER_MODEL'], "meta-llama/llama-3.3-70b-instruct:free"),
                 defaultHeaders: {
                     "HTTP-Referer": "http://localhost:8000",
                     "X-Title": "BotMaRe AI",
