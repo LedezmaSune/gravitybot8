@@ -5,17 +5,29 @@ import {
     Radio, 
     Send, 
     MessageSquare, 
-    Instagram, 
-    Facebook, 
     Globe, 
     Smartphone, 
-    Clock, 
-    Sparkles, 
-    Zap, 
     CheckCircle2, 
-    Layers, 
-    Bot
+    Sparkles
 } from 'lucide-react';
+
+function InstagramIcon({ size = 24 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+    );
+}
+
+function FacebookIcon({ size = 24 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+        </svg>
+    );
+}
 
 interface ChannelCardProps {
     name: string;
@@ -52,7 +64,7 @@ const channels: ChannelCardProps[] = [
     {
         name: 'Instagram Direct Messages',
         description: 'Auto-respuestas para mensajes directos e interacciones con historias de Instagram.',
-        icon: Instagram,
+        icon: InstagramIcon,
         color: 'from-fuchsia-500 to-pink-600',
         badge: 'Próximamente',
         badgeColor: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/30',
@@ -62,7 +74,7 @@ const channels: ChannelCardProps[] = [
     {
         name: 'Facebook Messenger',
         description: 'Integración oficial con Fanpages de Facebook para mensajería automatizada.',
-        icon: Facebook,
+        icon: FacebookIcon,
         color: 'from-blue-600 to-indigo-700',
         badge: 'Próximamente',
         badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
