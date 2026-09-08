@@ -163,7 +163,7 @@ DASHBOARD_PASS=admin123
                 { id: 'TELEGRAM_ALLOWED_USER_IDS', label: 'ID Usuarios Telegram', desc: 'Separados por comas' },
                 { id: 'HTTPSMS_API_KEY', label: 'httpSMS API Key', desc: 'Clave para la pasarela de SMS' },
                 { id: 'HTTPSMS_FROM_NUMBER', label: 'Teléfonos Emisores SMS', desc: 'Separados por comas con código de país (Ej. +52123..., +1234...)' },
-                { id: 'HTTPSMS_API_URL', label: 'httpSMS API URL', desc: 'Default: https://api-sms.apptienda.online/v1/messages/send' },
+                { id: 'HTTPSMS_API_URL', label: 'httpSMS API URL', desc: 'Default: https://api-sms.apptienda.site/v1/messages/send' },
                 { id: 'PORT', label: 'Puerto Backend', desc: 'Default: 8001' },
             ]
         },

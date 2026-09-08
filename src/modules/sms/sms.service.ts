@@ -12,7 +12,7 @@ export class SmsService {
         this.apiKey = process.env.HTTPSMS_API_KEY || '';
         const rawNumbers = process.env.HTTPSMS_FROM_NUMBER || '';
         this.fromNumbers = rawNumbers.split(',').map(n => n.trim()).filter(n => n !== '');
-        this.apiUrl = process.env.HTTPSMS_API_URL || 'https://api-sms.apptienda.online/v1/messages/send';
+        this.apiUrl = process.env.HTTPSMS_API_URL || 'https://api-sms.apptienda.site/v1/messages/send';
     }
 
     async getAvailableNumbers(): Promise<string[]> {
@@ -26,12 +26,11 @@ export class SmsService {
     }
 
     async sendMessage(targetId: string, content: string): Promise<boolean> {
-        // Carga dinámica de ajustes desde base de datos o variables de entorno
         const apiKey = await getConfig('HTTPSMS_API_KEY', this.apiKey || process.env.HTTPSMS_API_KEY || '');
         const rawNumbers = await getConfig('HTTPSMS_FROM_NUMBER', process.env.HTTPSMS_FROM_NUMBER || '');
         const dynamicNumbers = rawNumbers.split(',').map(n => n.trim()).filter(n => n !== '');
         const fromNumbers = dynamicNumbers.length > 0 ? dynamicNumbers : this.fromNumbers;
-        const apiUrl = await getConfig('HTTPSMS_API_URL', this.apiUrl || process.env.HTTPSMS_API_URL || 'https://api-sms.apptienda.online/v1/messages/send');
+        const apiUrl = await getConfig('HTTPSMS_API_URL', this.apiUrl || process.env.HTTPSMS_API_URL || 'https://api-sms.apptienda.site/v1/messages/send');
 
         if (!apiKey || fromNumbers.length === 0) {
             console.error('[SmsService] Error: HTTPSMS_API_KEY o HTTPSMS_FROM_NUMBER no están configurados en .env ni en los ajustes');
