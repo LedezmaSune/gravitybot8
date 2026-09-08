@@ -21,7 +21,7 @@ const PROVIDERS = [
         name: 'Groq',
         envKey: 'GROQ_API_KEY',
         modelEnvKey: 'GROQ_MODEL',
-        defaultModel: 'llama-3.3-70b-versatile',
+        defaultModel: 'llama-3.3-70b-specdec',
         baseURL: 'https://api.groq.com/openai/v1',
     },
     {

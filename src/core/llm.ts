@@ -143,7 +143,7 @@ export async function callLLM(
         try {
             return await tryProvider('Groq', groqKeys, {
                 baseURL: "https://api.groq.com/openai/v1",
-                model: hasVision ? "llama-3.2-11b-vision-instant" : resolveModel('Groq', config['GROQ_MODEL'], "llama-3.3-70b-versatile")
+                model: hasVision ? "llama-3.2-11b-vision-instant" : resolveModel('Groq', config['GROQ_MODEL'], "llama-3.3-70b-specdec")
             }, cleanedMessages, tools, hasVision);
         } catch (e) {}
     }
