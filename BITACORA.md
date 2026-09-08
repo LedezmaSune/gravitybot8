@@ -28,6 +28,11 @@
    - Incremento global de versión a **v2.5.0** (`package.json`, `README.md`, `UpdateCenter.tsx`).
    - Soporte para reducción de movimiento (`@media (prefers-reduced-motion: reduce)`) en `globals.css`.
 
+5. **Módulo de Futuros Canales y Separación de Telegram (`/channels`):**
+   - Creación e integración de la vista `/channels` (`FutureChannelsUI.tsx`) para el Roadmap Omnicanal.
+   - Separación explícita entre el **Telegram Bot Admin Privado** (control del sistema, comandos de diagnóstico y alertas) y el **Telegram Customer Bot & Broadcast** (difusión a clientes y atención automatizada).
+   - Sustitución de dependencias de íconos sociales por componentes SVG vectoriales nativos para una compilación 100% limpia sin advertencias de *barrel exports*.
+
 ---
 
 ## Fecha: 29 de Agosto de 2026 (Noche)
