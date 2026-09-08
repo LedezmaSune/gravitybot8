@@ -128,6 +128,7 @@ DASHBOARD_PASS=admin123
                 { id: 'DEEPSEEK_API_KEY', label: 'DeepSeek API Key', desc: 'sk-... (DeepSeek Directo)', provider: 'DeepSeek', url: 'https://platform.deepseek.com/api_keys' },
                 { id: 'OPENROUTER_API_KEY', label: 'OpenRouter API Key', desc: 'sk-or-... (Múltiples modelos gratis)', provider: 'OpenRouter', url: 'https://openrouter.ai/keys' },
                 { id: 'NVIDIA_API_KEY', label: 'Nvidia NIM Key', desc: 'nvapi-... (Créditos gratis)', provider: 'Nvidia', url: 'https://build.nvidia.com' },
+                { id: 'CHEAPERINFERENCE_API_KEY', label: 'CheaperInference Key', desc: 'ci_live_... (Gateway Económico Multi-IA)', provider: 'CheaperInference', url: 'https://cheaperinference.com/dashboard/keys' },
                 { id: 'OPENAI_API_KEY', label: 'OpenAI API Key', desc: 'sk-... (GPT-4o, GPT-4o-mini)', provider: 'OpenAI', url: 'https://platform.openai.com/api-keys' },
             ]
         },
@@ -153,6 +154,7 @@ DASHBOARD_PASS=admin123
                 { id: 'OPENAI_MODEL', label: 'Modelo OpenAI', desc: 'Default: gpt-4o-mini' },
                 { id: 'OPENROUTER_MODEL', label: 'Modelo OpenRouter', desc: 'Default: meta-llama/llama-3.2-3b-instruct:free' },
                 { id: 'NVIDIA_MODEL', label: 'Modelo Nvidia', desc: 'Default: deepseek-ai/deepseek-v4-pro' },
+                { id: 'CHEAPERINFERENCE_MODEL', label: 'Modelo CheaperInference', desc: 'Default: gemini-3.7-flash' },
             ]
         },
         {

@@ -93,6 +93,13 @@ const PROVIDERS = [
         defaultModel: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
         baseURL: 'https://api.together.xyz/v1',
     },
+    {
+        name: 'CheaperInference',
+        envKey: 'CHEAPERINFERENCE_API_KEY',
+        modelEnvKey: 'CHEAPERINFERENCE_MODEL',
+        defaultModel: 'gemini-3.7-flash',
+        baseURL: 'https://api.cheaperinference.com/v1',
+    },
 ];
 
 function resolveModel(provider: string, val: string | undefined, fallback: string): string {

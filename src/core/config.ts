@@ -61,6 +61,8 @@ export async function getAllConfig(): Promise<Record<string, string>> {
         'HTTPSMS_API_KEY',
         'HTTPSMS_FROM_NUMBER',
         'HTTPSMS_API_URL',
+        'CHEAPERINFERENCE_API_KEY',
+        'CHEAPERINFERENCE_MODEL',
         'AUTO_DEPLOY'
     ];
     

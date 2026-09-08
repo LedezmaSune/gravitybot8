@@ -265,6 +265,17 @@ export async function callLLM(
         } catch (e) {}
     }
 
+    // 9. Intentar CheaperInference (Gateway Económico Multi-IA)
+    const ciKeys = getApiKeys(config['CHEAPERINFERENCE_API_KEY']);
+    if (ciKeys.length > 0) {
+        try {
+            return await tryProvider('CheaperInference', ciKeys, {
+                baseURL: "https://api.cheaperinference.com/v1",
+                model: config['CHEAPERINFERENCE_MODEL'] || "gemini-3.7-flash"
+            }, cleanedMessages, tools, hasVision);
+        } catch (e) {}
+    }
+
     throw new Error("No hay proveedores de IA configurados o todos han fallado.");
 }
 
