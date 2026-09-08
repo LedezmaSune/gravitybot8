@@ -8,7 +8,8 @@ import {
     Globe, 
     Smartphone, 
     CheckCircle2, 
-    Sparkles
+    Sparkles,
+    ShieldCheck
 } from 'lucide-react';
 
 function InstagramIcon({ size = 24 }: { size?: number }) {
@@ -52,14 +53,24 @@ const channels: ChannelCardProps[] = [
         progress: 100
     },
     {
-        name: 'Telegram Bot API',
-        description: 'Conexión nativa con Bots de Telegram para gestión de comandos, canales y grupos masivos.',
+        name: 'Telegram Bot Admin (Panel Privado)',
+        description: 'Control y supervisión remota del sistema exclusiva para administradores autorizados en TELEGRAM_ALLOWED_USER_IDS.',
+        icon: ShieldCheck,
+        color: 'from-amber-500 to-amber-700',
+        badge: 'Admin Privado',
+        badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+        features: ['Diagnósticos `/diagnostico` y test de LLMs', 'Monitoreo de estado y notificaciones del sistema', 'Alertas automáticas de fallos y respaldos', 'Privado para administradores (No clientes)'],
+        progress: 100
+    },
+    {
+        name: 'Telegram Customer Bot & Broadcast',
+        description: 'Canal público de atención al cliente para difusión masiva a canales y respuestas de usuarios.',
         icon: Send,
         color: 'from-sky-500 to-blue-600',
         badge: 'En Desarrollo',
         badgeColor: 'bg-sky-500/10 text-sky-400 border-sky-500/30',
-        features: ['Diagnóstico `/diagnostico` integrado', 'Comandos interactivos con botones Inline', 'Broadcast a canales ilimitados', 'Notificaciones de recordatorios al admin'],
-        progress: 85
+        features: ['Broadcast masivo a canales y grupos públicos', 'Botones Inline interactivos para usuarios', 'IA conversacional aislada del panel admin', 'Captura de Leads a CRM'],
+        progress: 60
     },
     {
         name: 'Instagram Direct Messages',
