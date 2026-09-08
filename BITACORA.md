@@ -36,6 +36,10 @@
 6. **Migración de Pasarela SMS (`apptienda.site`):**
    - Actualización de `HTTPSMS_API_URL` a `https://api-sms.apptienda.site/v1/messages/send` en `.env`, `sms.service.ts` y `Settings.tsx` tras la reconfiguración del túnel de Cloudflare.
 
+7. **Integración de CheaperInference API y Corrección de Modelos:**
+   - Adición de CheaperInference como proveedor de IA en `.env`, `config.ts`, `llm.ts`, `llmTest.ts` y Web UI (`Settings.tsx`).
+   - Actualización del modelo por defecto de Groq a `llama-3.3-70b-specdec` resolviendo deprecaciones del proveedor.
+
 ---
 
 ## Fecha: 29 de Agosto de 2026 (Noche)
