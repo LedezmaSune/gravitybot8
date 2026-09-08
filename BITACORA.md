@@ -33,6 +33,9 @@
    - Separación explícita entre el **Telegram Bot Admin Privado** (control del sistema, comandos de diagnóstico y alertas) y el **Telegram Customer Bot & Broadcast** (difusión a clientes y atención automatizada).
    - Sustitución de dependencias de íconos sociales por componentes SVG vectoriales nativos para una compilación 100% limpia sin advertencias de *barrel exports*.
 
+6. **Migración de Pasarela SMS (`apptienda.site`):**
+   - Actualización de `HTTPSMS_API_URL` a `https://api-sms.apptienda.site/v1/messages/send` en `.env`, `sms.service.ts` y `Settings.tsx` tras la reconfiguración del túnel de Cloudflare.
+
 ---
 
 ## Fecha: 29 de Agosto de 2026 (Noche)

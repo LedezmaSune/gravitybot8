@@ -368,6 +368,12 @@ Ejecución continua 24/7 en servidores de producción:
 
 ## 🔄 Historial de Actualizaciones (Changelog)
 
+- **[2.5.0] - 2026-09-07:** Motor Multi-IA, Mantenimiento Seguro y Servidor SMS `.site`:
+  - 🤖 **Conexión Multi-IA (11 Proveedores):** Integración con Groq, Cerebras, SambaNova, SiliconFlow, Mistral, Together, Gemini 2.5, DeepSeek, OpenRouter, Nvidia NIM y OpenAI con sanitizador dinámico `resolveModel()`.
+  - 📡 **Actualización de Pasarela SMS (`apptienda.site`):** Migración de la URL base del servidor httpSMS a `https://api-sms.apptienda.site/v1/messages/send` para mayor velocidad y aislamiento de dominio.
+  - 🛡️ **Mantenimiento Pasivo de Baileys / SQLite:** Eliminación del borrado agresivo de `pre-keys` y `VACUUM` en caliente para **prevenir desconexiones o invalidación de QR de WhatsApp**.
+  - 🚀 **Navegación Omnicanal (`/channels`):** Nueva interfaz visual en el Dashboard con la Hoja de Ruta para integrar Telegram públicos, Instagram DM, Facebook Messenger, WebChat y Discord.
+  - 🛠️ **Refactorización del Actualizador (`update.sh`):** Control estricto de errores (`set -Eeuo pipefail`), resguardo de respaldos y gestión inteligente de PM2.
 - **[2.4.1] - 2026-08-29:** Contador Anti-Ban, RAG (Base) y Seguridad en Webhooks:
   - 🛡️ **Contador Visual Anti-Ban:** Nueva interfaz en el despachador masivo que muestra una cuenta regresiva animada (Glassmorphism Ámbar) al activarse la Protección de Ráfaga.
   - 🔒 **Seguridad en Webhooks:** Transición de claves de Webhooks a variables de entorno estáticas (`.env`) previniendo exposición en la base de datos.
@@ -381,7 +387,7 @@ Ejecución continua 24/7 en servidores de producción:
 - **[2.3.1] - 2026-08-11:** Soporte Internacional para SMS, Normalización E.164 y Ajustes Dinámicos:
   - 🌐 **Soporte SMS Internacional (E.164 Global):** Compatibilidad completa para envíos masivos y recordatorios por SMS vía pasarela httpSMS hacia números de cualquier país (EE. UU. `+1`, España `+34`, Argentina `+549`, Colombia `+57`, Chile `+56`, Perú `+51`, Brasil `+55`, Ecuador `+593`, etc.).
   - 🔄 **Normalización Inteligente de Prefijos:** Limpieza y adaptación automática de prefijos internacionales (`00`, `011`), eliminación de sufijos WhatsApp (`@s.whatsapp.net`) y normalización del prefijo móvil de México (`+521` a `+52`) para garantizar entrega en operadoras móviles.
-  - ⚙️ **Configuración Dinámica de SMS:** Recarga en tiempo real de `HTTPSMS_API_KEY`, `HTTPSMS_FROM_NUMBER` y `HTTPSMS_API_URL` desde los ajustes del panel y base de datos sin requerir reinicio del servidor.
+  - ⚙️ **Configuración Dinámica de SMS:** Recarga en tiempo real de `HTTPSMS_API_KEY`, `HTTPSMS_FROM_NUMBER` y `HTTPSMS_API_URL` (`https://api-sms.apptienda.site/v1/messages/send`) desde los ajustes del panel y base de datos sin requerir reinicio del servidor.
   - 📋 **Mejoras en el Parser de Contactos:** Preservación del signo `+` en listas de contactos multilínea y archivos CSV para números internacionales.
   - 🧪 **Suite de Pruebas Unitarias:** Nuevos tests unitarios en Vitest verificando el formateo y normalización de números internacionales para SMS y contactos.
 - **[2.3.0] - 2026-08-09:** CRM Completo, Ecosistema de Plugins JS & Resiliencia de Red:
